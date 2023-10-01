@@ -1,0 +1,55 @@
+.container {
+  width: auto;
+  background-color: aquamarine;
+  padding: 5px 60px;
+  .topMenu {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .left {
+      display: flex;
+      align-items: center;
+      .logo {
+        margin-right: 30px;
+      }
+      .searchBarContainer {
+        input {
+          width: 353px;
+          border: none;
+          outline: none;
+          padding: 10px 10px;
+          font-size: 13px;
+        }
+        button {
+          border: none;
+          padding: 10px 10px;
+          background-color: aquamarine;
+          cursor: pointer;
+        }
+      }
+    }
+    .right {
+      display: flex;
+      align-items: center;
+    }
+  }
+  .bottomMenu {
+    height: 40px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    ul {
+      display: flex;
+      align-items: center;
+      flex: row;
+      margin-left: 22px;
+      li {
+        margin-right: 10px;
+        cursor: pointer;
+      }
+    }
+  }
+}

@@ -1,2 +1,10 @@
-:root {
+* {
+  margin: 0;
+  top: 0;
+}
+ul {
+  list-style: none;
+}
+a {
+  text-decoration: none;
 }

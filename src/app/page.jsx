@@ -1,8 +1,9 @@
 import DemoComponent from '@/components/DemoComponent';
+import HomePage from './homepage/page';
 
 export default function Home() {
 
-  return <div><ul>
-    <DemoComponent />
-  </ul></div>;
+  return <div>
+    <HomePage />
+  </div>;
 }

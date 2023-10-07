@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from "./Header.module.scss"
+import Link from 'next/link'
 
 const Header = () => {
   return (
@@ -17,7 +18,9 @@ const Header = () => {
           </form>
         </div>
         <div className={styles.right}>
-          Tài khoản cá nhân
+          <Link href="/account/profile">
+            Tài khoản cá nhân
+          </Link>
         </div>
       </div>
       <div className={styles.bottomMenu}>

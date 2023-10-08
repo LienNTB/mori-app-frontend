@@ -1,8 +1,11 @@
+"use client"
 import React from 'react'
 import styles from "./Header.module.scss"
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const Header = () => {
+  const router = useRouter();
   return (
     <div className={styles.container}>
       <div className={styles.topMenu}>
@@ -17,10 +20,9 @@ const Header = () => {
             </button>
           </form>
         </div>
-        <div className={styles.right}>
-          <Link href="/account/profile">
-            Tài khoản cá nhân
-          </Link>
+        <div className={styles.right} onClick={() => router.push("/account/profile")}>
+          Tài khoản cá nhân
+
         </div>
       </div>
       <div className={styles.bottomMenu}>

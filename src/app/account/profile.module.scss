@@ -54,6 +54,39 @@
         margin-right: 1.8rem;
       }
     }
+    .profileInfo {
+      border-radius: 5px;
+      background-color: #ffffff;
+      margin-bottom: 10px;
+      padding: 1.5rem 2.5rem;
+      .uHead {
+        background-color: #ededed;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 10px 15px;
+        align-items: center;
+        margin-bottom: 10px;
+        border-radius: 10px;
+
+        .updateBtn {
+        }
+      }
+      .libraryHead {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        .title {
+          font-size: 17px;
+          font-weight: 700;
+        }
+      }
+      .libraryBody {
+        margin-top: 15px;
+      }
+      .historyHead {
+      }
+    }
   }
 }
 .ruler {
@@ -62,4 +95,9 @@
   border-radius: 20px;
   background-color: rgb(241, 241, 241);
   margin: 5px 0;
+}
+
+.title {
+  font-size: 17px;
+  font-weight: 700;
 }

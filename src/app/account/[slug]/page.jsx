@@ -1,15 +1,34 @@
+"use client"
 import React from 'react'
 import styles from "../profile.module.scss"
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
 import Link from 'next/link'
-import { useRouter } from "next/router"
+import { useParams } from 'next/navigation'
+import {
+  Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Table,
+  TableHeader, TableColumn, TableBody, TableRow, TableCell, Checkbox, Tabs, Tab
+} from "@nextui-org/react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleXmark, faCoffee, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { useState } from 'react'
+
 
 const Profile = () => {
+  const params = useParams()
+  const id = params.slug;
+  const [currentTopic, setCurrentTopic] = useState(id)
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  console.log("currenttopic", currentTopic)
+
   return (
     <div className={styles.profileContainer}>
       <Header />
       <div className={styles.profileContent}>
+
+
         <section className={styles.accountContainer}>
           <div className={styles.accountBody}>
             <div className={styles.accountAvatar}>
@@ -48,23 +67,120 @@ const Profile = () => {
           </div>
           <div className={styles.accountNav}>
             <div className={styles.navItem}>
-              <Link href="/account/profile">
+              <Link href="/account/profile" >
                 Thông tin cá nhân
               </Link>
             </div>
             <div className={styles.navItem}>
-              <Link href="/account/library">
+              <Link href="/account/library" >
                 Thư viện của tôi
               </Link>
             </div>
             <div className={styles.navItem}>
-              <Link href="/account/history">
+              <Link href="/account/history" >
                 Lịch sử đọc             </Link>
             </div>
           </div>
         </section>
+        {/* profile section */}
+        {currentTopic == "profile" ? <section className={styles.profileInfo}>
+          <div className={styles.uHead}>
+            <div className={styles.title}>Thông tin cá nhân</div>
+            <Button color="primary" variant="flat">
+              Cập nhật
+            </Button>
+          </div>
+          <div className={styles.uTable}>
+            <Table hideHeader aria-label="Example static collection table">
+              <TableHeader>
+                <TableColumn></TableColumn>
+                <TableColumn></TableColumn>
+              </TableHeader>
+              <TableBody>
+                <TableRow key="1">
+                  <TableCell>Họ tên</TableCell>
+                  <TableCell>Huong Pham Quynh</TableCell>
+                </TableRow>
+                <TableRow key="2">
+                  <TableCell>Email</TableCell>
+                  <TableCell>qhuong1008@gmail.com</TableCell>
+                </TableRow>
+                <TableRow key="3">
+                  <TableCell>Mật khẩu</TableCell>
+                  <TableCell>********</TableCell>
+                </TableRow>
+
+              </TableBody>
+            </Table>
+          </div>
+        </section> : <></>}
+        {/* library section */}
+        {currentTopic == "library" ? <section className={styles.profileInfo}>
+          <div className={styles.libraryHead}>
+            <div className={styles.title}>
+              Tiêu đề sách, truyện
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <Tabs variant="solid" color="primary" aria-label="Tabs variants">
+                <Tab key="sachdangdoc" title="Sách đang đọc" />
+                <Tab key="sachyeuthich" title="Sách yêu thích" />
+              </Tabs>
+            </div>
+          </div>
+          <div className={styles.libraryBody}>
+            <Table selectionMode="single" hideHeader color="primary" aria-label="Example static collection table">
+              <TableHeader>
+                <TableColumn></TableColumn>
+                <TableColumn></TableColumn>
+                <TableColumn></TableColumn>
+              </TableHeader>
+              <TableBody>
+                <TableRow key="4">
+                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
+                  <TableCell>Đắc nhân tâm</TableCell>
+                  <TableCell><FontAwesomeIcon icon={faTrashCan} className='cursor-pointer' /></TableCell>
+                </TableRow>
+                <TableRow key="1">
+                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
+                  <TableCell>Đắc nhân tâm</TableCell>
+                  <TableCell><FontAwesomeIcon icon={faTrashCan} className='cursor-pointer' /></TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        </section> : <></>}
+        {/* history section */}
+        {currentTopic == "history" ? <section className={styles.profileInfo}>
+          <div className={styles.historyHead}>
+            <div className={styles.title}>
+              Danh sách sách, truyện bạn đã đọc            </div>
+
+          </div>
+          <div className={styles.libraryBody}>
+            <Table selectionMode="single" color="primary" aria-label="Example static collection table">
+              <TableHeader>
+                <TableColumn>Hình ảnh</TableColumn>
+                <TableColumn>Tiêu đề</TableColumn>
+                <TableColumn>Lần đọc gần nhất</TableColumn>
+              </TableHeader>
+              <TableBody>
+                <TableRow key="4">
+                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
+                  <TableCell>Đắc nhân tâm</TableCell>
+                  <TableCell>Thứ Bảy, 30/09/2023, 09:07</TableCell>
+                </TableRow>
+                <TableRow key="1">
+                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
+                  <TableCell>Đắc nhân tâm</TableCell>
+                  <TableCell>Thứ Bảy, 30/09/2023, 09:07</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        </section> : <></>}
       </div>
       <Footer />
+
     </div>
   )
 }

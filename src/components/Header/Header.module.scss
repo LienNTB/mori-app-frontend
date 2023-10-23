@@ -1,14 +1,19 @@
 .container {
-  width: auto;
-  background-color: aquamarine;
+  width: 100%;
   padding: 5px 60px;
   .topMenu {
-    height: 50px;
-    width: 100%;
+    background-color: white;
+    // padding-top: 10px;
+    height: 70px;
+    width: 100vw;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-
+    position: fixed;
+    top: 0;
+    z-index: 999 !important;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
     .left {
       display: flex;
       align-items: center;
@@ -16,17 +21,22 @@
         margin-right: 30px;
       }
       .searchBarContainer {
+        border: 2px solid rgb(176, 176, 176);
+        border-radius: 7px;
         input {
           width: 353px;
-          border: none;
+          border-radius: 7px;
+
           outline: none;
           padding: 10px 10px;
           font-size: 13px;
         }
         button {
-          border: none;
+          border-top-right-radius: 7px;
+          border-bottom-right-radius: 7px;
           padding: 10px 10px;
-          background-color: aquamarine;
+          background-color: rgb(196, 196, 196);
+          font-size: 13px;
           cursor: pointer;
         }
       }
@@ -37,6 +47,8 @@
     }
   }
   .bottomMenu {
+    background-color: white;
+    margin-top: 65px;
     height: 40px;
     font-size: 15px;
     display: flex;

@@ -4,6 +4,8 @@ import styles from "./Header.module.scss"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { UserAuth } from '@/app/context/AuthContext'
+import Image from "next/image";
+import logo from '../../../public/logo-nobg.png'
 
 
 const Header = () => {
@@ -24,7 +26,7 @@ const Header = () => {
       <div className={styles.topMenu}>
         <div className={styles.left}>
           <div className={styles.logo}>
-            logo
+            <Image src={logo} width={120} height={120} />
           </div>
           <form className={styles.searchBarContainer} action="/search">
             <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...' />

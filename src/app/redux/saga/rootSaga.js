@@ -1,9 +1,7 @@
 import { all, takeEvery, takeLatest } from "redux-saga/effects";
 import accountSaga from "./accountSaga";
-import * as type from "../types";
-import * as accountHandler from "../saga/handlers/account";
-import { GET_ACCOUNTS } from "../types";
+import bookSaga from "./bookSaga";
 
 export default function* rootSaga() {
-  yield all([accountSaga()]);
+  yield all([accountSaga(), bookSaga()]);
 }

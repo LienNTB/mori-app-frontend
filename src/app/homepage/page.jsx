@@ -6,35 +6,28 @@ import BookItem from '@/components/BookItem/BookItem'
 import Tag from '@/components/Tag/Tag'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAccounts } from '../redux/actions/account'
-import axios from "axios"
+
+import { getBooks } from '../redux/actions/book'
 
 
 const HomePage = () => {
   const dispatch = useDispatch()
-  const accounts = useSelector(state => state.accounts)
-  const isLoading = useSelector(state => state.accounts.loading)
-  const error = useSelector(state => state.accounts.error)
+  const books = useSelector(state => state.books.books)
+  const isLoading = useSelector(state => state.books.loading)
+  const error = useSelector(state => state.books.error)
 
-  console.log("accounts:", accounts)
+  console.log("books:", books)
   console.log("isLoading:", isLoading)
   useEffect(() => {
-    dispatch(getAccounts());
+    dispatch(getBooks());
   }, [dispatch]);
 
-  // const [data, setData] = useState(null)
-  // useEffect(() => {
-  //   axios.get("http://localhost:8080/api/account/get-account")
-  //     .then((res) => setData(res))
-  //     .then(() => console.log("dong 26", data.data.accounts))
-  // }, [])
 
   if (isLoading) {
     console.log("is loading...")
     return <>loading...</>
   }
   else {
-
     return (
       <div className={styles.homePageContainer}>
         <Header />
@@ -85,30 +78,16 @@ const HomePage = () => {
             </div>
             <div className={styles.sectionBody}>
               <div className={styles.bookList}>
-                <div className={styles.bookItem}>
-                  <BookItem />
-                </div>
-                <div className={styles.bookItem}>
-                  <BookItem />
-                </div>
-                <div className={styles.bookItem}>
-                  <BookItem />
-                </div>
-                <div className={styles.bookItem}>
-                  <BookItem />
-                </div>
-                <div className={styles.bookItem}>
-                  <BookItem />
-                </div>
-                <div className={styles.bookItem}>
-                  <BookItem />
-                </div>
-                <div className={styles.bookItem}>
-                  <BookItem />
-                </div>
-                <div className={styles.bookItem}>
-                  <BookItem />
-                </div>
+                {
+                  books.map(book => {
+                    return (
+                      <div className={styles.bookItem}>
+                        <BookItem book={book} />
+                      </div>
+                    )
+                  })
+                }
+
               </div>
             </div>
           </section>

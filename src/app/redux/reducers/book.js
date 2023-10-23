@@ -1,25 +1,25 @@
 import * as type from "../types";
 
 const initialState = {
-  accounts: [],
+  books: [],
   loading: false,
   error: null,
 };
 
-export default function accounts(state = initialState, action) {
+export default function books(state = initialState, action) {
   switch (action.type) {
-    case type.GET_ACCOUNTS_REQUESTED:
+    case type.GET_BOOKS_REQUESTED:
       return {
         ...state,
         loading: true,
       };
-    case type.GET_ACCOUNTS_SUCCESS:
+    case type.GET_BOOKS_SUCCESS:
       return {
         ...state,
         loading: false,
-        accounts: action.accounts,
+        books: action.books,
       };
-    case type.GET_ACCOUNTS_FAILED:
+    case type.GET_BOOKS_FAILED:
       return {
         ...state,
         loading: false,

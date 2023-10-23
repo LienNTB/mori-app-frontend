@@ -1,5 +1,5 @@
-export const getAccountsRequest = async () => {
-  return fetch(`http://localhost:8080/api/account/get-account`, {
+export const getAllBooksRequest = async () => {
+  return fetch(`http://localhost:8080/api/book/get-book`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

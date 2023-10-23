@@ -1,19 +1,46 @@
+"use client"
 import React from 'react'
 import styles from './login.module.scss'
-
+import { UserAuth } from '@/app/context/AuthContext'
 import Image from 'next/image'
+import { redirect } from 'next/navigation'
+
+
 const Login = () => {
+  const { user, googleSignIn, facebookSignIn } = UserAuth();
+  const handleSignInGoogle = async () => {
+    try {
+      await googleSignIn()
+    }
+    catch (err) {
+      console.log(err)
+    }
+  }
+  const handleSignInFacebook = async () => {
+    console.log("dong 20")
+    try {
+      await facebookSignIn()
+    }
+    catch (err) {
+      console.log(err)
+    }
+  }
+  if (user) {
+    redirect("/")
+  }
   return (
     <div className={styles.loginContainer}>
       <div className={styles.main}>
         <p className={styles.sign} align="center">Chào mừng bạn đến với Mori</p>
         <div className={styles.loginButtons}>
-          <button>
+          <button onClick={handleSignInGoogle} >
             <Image src="/google.png" width={20}
               height={20} />
             Tiếp tục với Google</button>
-          <button><Image src="/facebook.png" width={20}
-            height={20} />Tiếp tục với Facebook</button>
+          <button onClick={handleSignInFacebook}><Image src="/facebook.png" width={20}
+            height={20}
+
+          />Tiếp tục với Facebook</button>
         </div>
       </div>
     </div>

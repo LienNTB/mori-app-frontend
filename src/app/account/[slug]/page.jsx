@@ -12,7 +12,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark, faCoffee, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
-
+import { UserAuth } from '@/app/context/AuthContext'
+import { redirect } from 'next/navigation'
 
 const Profile = () => {
   const params = useParams()
@@ -21,8 +22,13 @@ const Profile = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  console.log("currenttopic", currentTopic)
+  console.log("currenttopic", currentTopic);
 
+  const { user } = UserAuth()
+
+  if (!user) {
+    redirect("/login")
+  }
   return (
     <div className={styles.profileContainer}>
       <Header />
@@ -32,12 +38,14 @@ const Profile = () => {
         <section className={styles.accountContainer}>
           <div className={styles.accountBody}>
             <div className={styles.accountAvatar}>
-              <img src="https://docsachhay.net/frontend/images/default-avatar.jpg" alt="avt" />
+              {user.photoURL ?
+                <img src={user.photoURL} alt="avt" />
+                : <img src="https://docsachhay.net/frontend/images/default-avatar.jpg" alt="avt" />}
             </div>
             <div className={styles.accountPanel}>
               <div className={styles.accountInfo}>
                 <div className={styles.title}>
-                  Huong pham quynh
+                  {user.displayName}
                 </div>
                 <div className={styles.auth}>
                   <div className={styles.type}>
@@ -56,7 +64,7 @@ const Profile = () => {
                         <path d="M21 5H2.99999C2.69999 5 2.49999 5.10005 2.29999 5.30005L11.2 13.3C11.7 13.7 12.4 13.7 12.8 13.3L21.7 5.30005C21.5 5.10005 21.3 5 21 5Z" fill="black"></path>
                       </svg>
                     </span>
-                    qhuong1008@gmail.com
+                    {user.email}
                   </div>
                 </div>
               </div>
@@ -86,9 +94,6 @@ const Profile = () => {
         {currentTopic == "profile" ? <section className={styles.profileInfo}>
           <div className={styles.uHead}>
             <div className={styles.title}>Thông tin cá nhân</div>
-            <Button color="primary" variant="flat">
-              Cập nhật
-            </Button>
           </div>
           <div className={styles.uTable}>
             <Table hideHeader aria-label="Example static collection table">
@@ -99,16 +104,13 @@ const Profile = () => {
               <TableBody>
                 <TableRow key="1">
                   <TableCell>Họ tên</TableCell>
-                  <TableCell>Huong Pham Quynh</TableCell>
+                  <TableCell>{user.displayName}</TableCell>
                 </TableRow>
                 <TableRow key="2">
                   <TableCell>Email</TableCell>
-                  <TableCell>qhuong1008@gmail.com</TableCell>
+                  <TableCell>{user.email}</TableCell>
                 </TableRow>
-                <TableRow key="3">
-                  <TableCell>Mật khẩu</TableCell>
-                  <TableCell>********</TableCell>
-                </TableRow>
+
 
               </TableBody>
             </Table>

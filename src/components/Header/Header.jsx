@@ -3,9 +3,22 @@ import React from 'react'
 import styles from "./Header.module.scss"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { UserAuth } from '@/app/context/AuthContext'
+
 
 const Header = () => {
   const router = useRouter();
+  const { user, logOut } = UserAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await logOut();
+    }
+    catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.topMenu}>
@@ -20,10 +33,19 @@ const Header = () => {
             </button>
           </form>
         </div>
-        <div className={styles.right} onClick={() => router.push("/account/profile")}>
-          Tài khoản cá nhân
 
-        </div>
+        {user ? (<>
+          <div className={styles.right} onClick={() => router.push("/account/profile")}>
+            Tài khoản cá nhân
+          </div>
+          <div className={styles.right} onClick={handleSignOut}>
+            Log out
+          </div>
+        </>)
+          : (<div className={styles.right} onClick={() => router.push("/login")} >
+            Login
+          </div>)
+        }
       </div>
       <div className={styles.bottomMenu}>
         <ul>

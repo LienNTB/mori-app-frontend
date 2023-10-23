@@ -1,12 +1,13 @@
 "use client"
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import { NextUIProviders } from "./providers/providers";
 import { AuthContextProvider } from "./context/AuthContext";
 import { Provider } from 'react-redux';
 import store from './redux/store';
 
-const inter = Inter({ subsets: ["latin"] });
+
+const inter = Montserrat({ subsets: ['latin'] })
 
 export const metadata = {
   title: "Create Next App",

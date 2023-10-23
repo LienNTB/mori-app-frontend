@@ -1,9 +1,9 @@
 .container {
   width: 100%;
-  padding: 5px 60px;
   .topMenu {
     background-color: white;
     // padding-top: 10px;
+    padding: 5px 60px;
     height: 70px;
     width: 100vw;
     display: flex;
@@ -44,9 +44,11 @@
     .right {
       display: flex;
       align-items: center;
+      cursor: pointer;
     }
   }
   .bottomMenu {
+    padding: 5px 41px;
     background-color: white;
     margin-top: 65px;
     height: 40px;

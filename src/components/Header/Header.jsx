@@ -37,16 +37,16 @@ const Header = () => {
         </div>
 
         {user ? (<>
-          <div className={styles.right} onClick={() => router.push("/account/profile")}>
+          <Link className={styles.right} href={"/account/profile"}>
             Tài khoản cá nhân
-          </div>
+          </Link>
           <div className={styles.right} onClick={handleSignOut}>
             Log out
           </div>
         </>)
-          : (<div className={styles.right} onClick={() => router.push("/login")} >
+          : (<Link className={styles.right} href={"/login"} >
             Login
-          </div>)
+          </Link>)
         }
       </div>
       <div className={styles.bottomMenu}>

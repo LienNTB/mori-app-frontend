@@ -26,7 +26,7 @@ const Header = () => {
       <div className={styles.topMenu}>
         <div className={styles.left}>
           <div className={styles.logo}>
-            <Image src={logo} width={120} height={120} />
+            <Image src={logo} width={120} height={120} onClick={() => router.push("/")} />
           </div>
           <form className={styles.searchBarContainer} action="/search">
             <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...' />

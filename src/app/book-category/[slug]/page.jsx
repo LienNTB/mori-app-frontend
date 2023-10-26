@@ -68,7 +68,6 @@ const BookWithCategory = () => {
             <section className={styles.bookSectionContainer}>
               <div class={styles.sectionHeader}>
                 <h3>Sách hay nên đọc</h3>
-                <a title="Sách hay nên đọc" href="https://docsachhay.net/cat/tam-ly-ky-nang-song/xem-nhieu-nhat-thang" class="getmorebtn">Xem thêm</a>
               </div>
               <div className={styles.ruler}>
 

@@ -6,21 +6,21 @@ import styles from "./search.module.scss"
 import BookItem from '@/components/BookItem/BookItem'
 import Tag from '@/components/Tag/Tag'
 import { useDispatch, useSelector } from 'react-redux'
-import { getBooks } from '../../redux/actions/book'
+import { getBooks, searchBooks } from '../redux/actions/book'
 import Loading from '@/components/Loading/Loading'
 import { Pagination } from "@nextui-org/react";
 
 const SearchBook = () => {
   const dispatch = useDispatch()
-  const books = useSelector(state => state.books.books)
+  const filteredBooks = useSelector(state => state.books.filteredBooks)
   const isLoading = useSelector(state => state.books.loading)
 
+
   const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     dispatch(getBooks());
   }, [dispatch]);
-
-
 
   return (
     <div className={styles.homePageContainer}>
@@ -32,7 +32,7 @@ const SearchBook = () => {
 
             <section className={styles.bookSectionContainer}>
               <div class={styles.sectionHeader}>
-                <h3>Kết quả tìm kiếm</h3>
+                <h3>Kết quả tìm</h3>
               </div>
               <div className={styles.ruler}>
 
@@ -40,7 +40,7 @@ const SearchBook = () => {
               <div className={styles.sectionBody}>
                 <div className={styles.bookList}>
                   {
-                    books.map(book => {
+                    filteredBooks.map(book => {
                       return (
                         <div className={styles.bookItem}>
                           <BookItem book={book} />

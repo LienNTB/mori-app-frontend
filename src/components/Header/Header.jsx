@@ -8,9 +8,13 @@ import Image from "next/image";
 import logo from '../../../public/logo-nobg.png'
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useState } from 'react'
+import { searchBooks } from '@/app/redux/actions/book'
+import { useDispatch } from 'react-redux'
 
 const Header = () => {
+  const dispatch = useDispatch()
   const [isOpenListbox, setIsOpenListbox] = useState(false)
+  const [searchValue, setSearchValue] = useState("")
   const router = useRouter();
   const { user, logOut } = UserAuth();
 
@@ -45,12 +49,15 @@ const Header = () => {
           <div className={styles.logo}>
             <Image src={logo} width={120} height={120} onClick={() => router.push("/")} />
           </div>
-          <form className={styles.searchBarContainer} action="/search">
-            <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...' />
-            <button type='submit'>
-              Tìm kiếm
-            </button>
-          </form>
+          <div className={styles.searchBarContainer}>
+            <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
+              onChange={(e) => setSearchValue(e.target.value)} />
+            <Link href="/search">
+              <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
+                Tìm kiếm
+              </button>
+            </Link>
+          </div>
         </div>
 
         {user ? (<>

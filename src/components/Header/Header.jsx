@@ -99,7 +99,9 @@ const Header = () => {
           </li>
           <li className={styles.bottomMenuItem}>Sách đọc</li>
           <li className={styles.bottomMenuItem}>Sách nói</li>
-          <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
+          <Link href="/ranking/sachdoc">
+            <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
+          </Link>
 
         </ul>
       </div>

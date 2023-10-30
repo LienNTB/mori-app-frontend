@@ -1,3 +1,4 @@
+"use client"
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
 import React, { useState } from 'react'
@@ -11,19 +12,13 @@ import { getBooks } from '../redux/actions/book'
 import Loading from '@/components/Loading/Loading'
 
 
-const HomePage = () => {
-  const dispatch = useDispatch()
-  const books = useSelector(state => state.books.books)
-  const isLoading = useSelector(state => state.books.loading)
+const HomePage = (props) => {
 
-  useEffect(() => {
-    dispatch(getBooks());
-  }, [dispatch]);
+  const books = props.books.books;
 
-
-  console.log("isLoading:", isLoading)
 
   return (
+
     <div className={styles.homePageContainer}>
       <Header />
 
@@ -76,19 +71,14 @@ const HomePage = () => {
           </div>
           <div className={styles.sectionBody}>
             <div className={styles.bookList}>
-              {isLoading ? <Loading />
-                :
-                <>
-                  {
-                    books.map(book => {
-                      return (
-                        <div className={styles.bookItem}>
-                          <BookItem book={book} />
-                        </div>
-                      )
-                    })
-                  }
-                </>
+              {
+                books.map(book => {
+                  return (
+                    <div className={styles.bookItem}>
+                      <BookItem book={book} />
+                    </div>
+                  )
+                })
               }
             </div>
           </div>

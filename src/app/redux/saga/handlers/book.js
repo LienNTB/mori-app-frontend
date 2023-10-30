@@ -17,6 +17,18 @@ export function* getAllBooksHandler() {
   }
 }
 
+export function* getBookByIdHandler({ payload }) {
+  try {
+    const result = yield call(bookRequest.getBookByIdRequest, payload);
+    yield put({
+      type: types.GET_BOOK_SUCCESS,
+      book: result.book,
+    });
+  } catch (e) {
+    yield put({ type: types.GET_BOOK_FAILED, message: e.message });
+  }
+}
+
 export function* searchBooksHandler({ type, payload }) {
   let books = store.getState().books.books;
   try {

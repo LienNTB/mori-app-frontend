@@ -5,4 +5,9 @@ import * as type from "../types";
 
 export default function* accountSaga() {
   yield takeEvery(type.GET_ACCOUNTS_REQUESTED, handler.getAllAccountsHandler);
+  yield takeEvery(type.CREATE_ACCOUNT_REQUESTED, handler.createAccountHandler);
+  yield takeEvery(
+    type.GET_CURRENT_ACCOUNT_REQUESTED,
+    handler.getCurrentAccountHandler
+  );
 }

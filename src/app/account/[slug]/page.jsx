@@ -14,6 +14,7 @@ import { faCircleXmark, faCoffee, faTrashCan, faXmark } from '@fortawesome/free-
 import { useState } from 'react'
 import { UserAuth } from '@/app/context/AuthContext'
 import { redirect } from 'next/navigation'
+import { getAuth, updateProfile } from 'firebase/auth'
 
 const Profile = () => {
   const params = useParams()
@@ -22,9 +23,9 @@ const Profile = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  console.log("currenttopic", currentTopic);
 
   const { user } = UserAuth()
+
 
   if (!user) {
     redirect("/login")

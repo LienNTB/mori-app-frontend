@@ -1,8 +1,7 @@
 .container {
   width: 100%;
-  .topMenu {
+  .menuLaptop {
     background-color: white;
-    // padding-top: 10px;
     padding: 5px 60px;
     height: 70px;
     width: 100vw;
@@ -14,6 +13,45 @@
     z-index: 999 !important;
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
       var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+  }
+
+  .menuMobile {
+    background-color: white;
+    padding: 5px 60px;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    z-index: 999 !important;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+    .menuWrapper {
+      background-color: white;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      height: 70px;
+    }
+    .menuList {
+      background-color: white;
+      z-index: 999 !important;
+      font-weight: 600;
+
+      .menuItem {
+        padding: 10px;
+        cursor: pointer;
+        &:hover {
+          color: #31b6ba !important;
+        }
+        a {
+          &:hover {
+            color: #31b6ba !important;
+          }
+        }
+      }
+    }
+  }
+  .topMenu {
+    background-color: white;
     .left {
       display: flex;
       align-items: center;
@@ -55,7 +93,7 @@
   .bottomMenu {
     padding: 5px 41px;
     background-color: white;
-    margin-top: 65px;
+    margin-top: 67px;
     height: 40px;
     font-size: 15px;
     display: flex;
@@ -99,5 +137,55 @@
       &:hover {
       }
     }
+  }
+}
+@media (max-width: 576px) {
+  .menuLaptop,
+  .bottomMenu {
+    display: none !important;
+  }
+  .menuMobile {
+    .searchBarContainer {
+      display: none !important;
+    }
+    .menu {
+      width: 20px;
+      height: auto;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .menuLaptop,
+  .bottomMenu {
+    display: none !important;
+  }
+  .menuMobile {
+    .searchBarContainer {
+      display: none !important;
+    }
+    .menu {
+      width: 20px;
+      height: auto;
+    }
+  }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .menuLaptop {
+    display: none !important;
+  }
+  .menuMobile {
+    .searchBarContainer {
+      display: none !important;
+    }
+    .menu {
+      width: 20px;
+      height: auto;
+    }
+  }
+}
+@media (min-width: 1025px) {
+  .menuMobile {
+    display: none !important;
   }
 }

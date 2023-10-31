@@ -10,10 +10,13 @@ import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useState } from 'react'
 import { searchBooks } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBars, faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
 
 const Header = () => {
   const dispatch = useDispatch()
   const [isOpenListbox, setIsOpenListbox] = useState(false)
+  const [isOpenMenuList, setIsOpenMenuList] = useState(false)
   const [searchValue, setSearchValue] = useState("")
   const router = useRouter();
   const { user, logOut } = UserAuth();
@@ -45,33 +48,117 @@ const Header = () => {
   return (
     <div className={styles.container}>
       <div className={styles.topMenu}>
-        <div className={styles.left}>
-          <div className={styles.logo}>
-            <Image src={logo} width={120} height={120} onClick={() => router.push("/")} />
+        <div className={styles.menuLaptop}>
+          <div className={styles.left}>
+            <div className={styles.logo}>
+              <Image src={logo} width={120} height={120} onClick={() => router.push("/")} />
+            </div>
+            <div className={styles.searchBarContainer}>
+              <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
+                onChange={(e) => setSearchValue(e.target.value)} />
+              <Link href="/search">
+                <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
+                  Tìm kiếm
+                </button>
+              </Link>
+            </div>
           </div>
-          <div className={styles.searchBarContainer}>
-            <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
-              onChange={(e) => setSearchValue(e.target.value)} />
-            <Link href="/search">
-              <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
-                Tìm kiếm
-              </button>
+
+          {user ? (<>
+            <Link className={styles.right} href={"/account/profile"}>
+              Tài khoản cá nhân
             </Link>
-          </div>
+            <div className={styles.right} onClick={handleSignOut}>
+              Đăng xuất
+            </div>
+          </>)
+            : (<Link className={styles.right} href={"/login"} >
+              Login
+            </Link>)
+          }
         </div>
 
-        {user ? (<>
-          <Link className={styles.right} href={"/account/profile"}>
-            Tài khoản cá nhân
-          </Link>
-          <div className={styles.right} onClick={handleSignOut}>
-            Log out
+        <div className={styles.menuMobile}>
+          <div className={styles.menuWrapper}>
+            <div className={styles.left}>
+              <div className={styles.logo}>
+                <Image src={logo} width={120} height={120} onClick={() => router.push("/")} />
+              </div>
+              <div className={styles.searchBarContainer}>
+                <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
+                  onChange={(e) => setSearchValue(e.target.value)} />
+                <Link href="/search">
+                  <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
+                    Tìm kiếm
+                  </button>
+                </Link>
+              </div>
+            </div>
+            <div className={styles.right}>
+              <FontAwesomeIcon className={styles.menu} icon={faBars} onClick={() => setIsOpenMenuList(p => !p)} />
+            </div>
+
           </div>
-        </>)
-          : (<Link className={styles.right} href={"/login"} >
-            Login
-          </Link>)
-        }
+          {isOpenMenuList ? <div className={styles.menuList}>
+            {user ? <>
+              <div className={styles.menuItem}>
+                Danh mục
+              </div>
+              <div className={styles.menuItem}>
+                <Link href="/ranking/sachdoc">
+                  Sách đọc
+                </Link>
+              </div>
+              <div className={styles.menuItem}>
+                <Link href="/ranking/sachnoi">
+                  Sách nói
+                </Link>
+              </div>
+              <div className={styles.menuItem}>
+                <Link href="/ranking/sachdoc">
+                  Bảng xếp hạng
+                </Link>
+              </div>
+              <div className={styles.menuItem} >
+                <Link href={"/account/profile"}>
+                  Tài khoản cá nhân
+                </Link>
+              </div>
+              <div className={styles.menuItem} onClick={handleSignOut}>
+                Đăng xuất
+              </div>
+            </>
+              :
+              <>
+                <div className={styles.menuItem}>
+                  Danh mục
+                </div>
+                <div className={styles.menuItem}>
+                  <Link href="/ranking/sachdoc">
+                    Sách đọc
+                  </Link>
+                </div>
+                <div className={styles.menuItem}>
+                  <Link href="/ranking/sachnoi">
+                    Sách nói
+                  </Link>
+                </div>
+                <div className={styles.menuItem}>
+                  <Link href="/ranking/sachdoc">
+                    Bảng xếp hạng
+                  </Link>
+                </div>
+                <div className={styles.menuItem} >
+                  <Link href={"/login"}>
+                    Đăng nhập
+                  </Link>
+                </div>
+
+              </>
+            }
+
+          </div> : <></>}
+        </div>
       </div>
       <div className={styles.bottomMenu}>
         <ul>

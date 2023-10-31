@@ -44,9 +44,35 @@ export function* searchBooksHandler({ type, payload }) {
       type: types.SEARCH_BOOKS_SUCCESS,
       filteredBooks: filteredBooks,
     });
-
-    console.log("filteredBooks:", store.getState().books.filteredBooks);
   } catch (e) {
     yield put({ type: types.SEARCH_BOOKS_FAILED, message: e.message });
+  }
+}
+
+export function* increaseTotalReadHandler({ payload }) {
+  try {
+    yield call(bookRequest.increaseTotalReadRequest, payload);
+    yield put({
+      type: types.INCREASE_TOTAL_READ_SUCCESS,
+    });
+  } catch (e) {
+    yield put({
+      type: types.INCREASE_TOTAL_READ_FAIL,
+      message: e.message,
+    });
+  }
+}
+
+export function* increaseTotalSavedHandler({ payload }) {
+  try {
+    yield call(bookRequest.increaseTotalSavedRequest, payload);
+    yield put({
+      type: types.INCREASE_TOTAL_SAVED_SUCCESS,
+    });
+  } catch (e) {
+    yield put({
+      type: types.INCREASE_TOTAL_SAVED_FAIL,
+      message: e.message,
+    });
   }
 }

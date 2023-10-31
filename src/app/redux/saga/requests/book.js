@@ -17,9 +17,41 @@ export const getAllBooksRequest = async () => {
 };
 
 export const getBookByIdRequest = async (id) => {
-  console.log("id in request:", id);
+  console.log("get book by id");
   return fetch(`http://localhost:8080/api/book/get-book/${id}`, {
     method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const increaseTotalReadRequest = async (id) => {
+  return fetch(`http://localhost:8080/api/book/total-read/${id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const increaseTotalSavedRequest = async (id) => {
+  return fetch(`http://localhost:8080/api/book/total-saved/${id}`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },

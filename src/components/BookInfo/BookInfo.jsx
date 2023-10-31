@@ -7,9 +7,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faHeart, faSave, faStar } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import Tag from '@/components/Tag/Tag';
-function BookInfo({ bookInfo }) {
+import { getBookById, increaseTotalRead, increaseTotalSaved } from '@/app/redux/actions/book';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'next/navigation';
+import { useState } from "react"
 
-  const book = bookInfo.book
+function BookInfo({ bookInfo }) {
+  const dispatch = useDispatch()
+  const params = useParams()
+  const [book, setBook] = useState(bookInfo.book)
+  const updatedBook = useSelector(state => state.books.book)
+  const isLoading = useSelector(state => state.books.loading)
+  console.log("params", params.id)
+  console.log("book:", book)
+
+  const handleReadBtn = () => {
+    dispatch(increaseTotalRead(book._id))
+    dispatch(getBookById(params.id))
+    if (!isLoading) {
+      setBook(updatedBook)
+    }
+    console.log("updatedBook:", updatedBook)
+  }
+
+
 
   return (<>
     <div className={styles.bookContainer}>
@@ -69,9 +90,10 @@ function BookInfo({ bookInfo }) {
                 </Link>
               </div>
               <div className={styles.nextAction}>
-                <Link href={book.pdf}>
+                {/* <Link href={book.pdf} onClick={handleReadBtn}> */}
+                <div onClick={handleReadBtn}>
                   <button className={styles.read}>Đọc ngay</button>
-                </Link>
+                </div>
                 <Link href={"/book-category/tamlykynang"}>
                   <button className={styles.save}>Đánh dấu</button>
                 </Link>

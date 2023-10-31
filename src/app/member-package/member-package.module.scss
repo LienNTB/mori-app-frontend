@@ -1,0 +1,178 @@
+.memberPackContainer {
+  background-color: #eaeff6;
+
+  .memberPackContent {
+    .banner {
+      background: linear-gradient(90rad, #366ba9 -100%, #15425b);
+      width: 100%;
+      padding-right: 15px;
+      padding-left: 15px;
+      margin-right: auto;
+      margin-left: auto;
+      .container {
+        padding: 50px 160px;
+      }
+      .bannerContent {
+        color: white;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .left {
+          width: 380px;
+          margin-right: 30px;
+          .title {
+            font-weight: 700;
+            font-size: 50px;
+          }
+          .subTitle {
+            font-size: 25px;
+          }
+        }
+        .right {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          .banner1,
+          .banner2 {
+            img {
+              height: 120px;
+              width: auto;
+            }
+          }
+        }
+      }
+    }
+    .packageList {
+      padding: 50px 50px;
+      display: flex;
+      flex-direction: row;
+      .packageItem {
+        background-color: white;
+        border-radius: 40px;
+        color: #2e4362;
+        width: 380px;
+        // height: 320px;
+        padding: 30px;
+        margin-right: 30px;
+        .titleWrapper {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          .title {
+            font-weight: 700;
+            font-size: 30px;
+          }
+          .bestPrice {
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #4cd0d0 0, #2cbaba);
+            padding: 10px 10px;
+            border-radius: 50px;
+          }
+        }
+        .mainPrice {
+          font-weight: 700;
+          font-size: 30px;
+          margin-top: 30px;
+        }
+        .eachMonth {
+          font-weight: 600;
+          font-size: 17px;
+          margin-top: 20px;
+        }
+        .registerBtn {
+          cursor: pointer;
+          color: white;
+          display: flex;
+          justify-content: center;
+          width: 100%;
+          font-size: 18px;
+          font-weight: 600;
+          background: linear-gradient(90deg, #52d0d0 0, #1badad);
+          padding: 15px 10px;
+          border-radius: 50px;
+          margin-top: 30px;
+        }
+      }
+    }
+  }
+}
+@media (max-width: 576px) {
+  .memberPackContent {
+    .bannerContent {
+      display: flex;
+      flex-direction: column !important;
+    }
+  }
+  .left {
+    width: 100% !important;
+    margin: 0px !important;
+  }
+  .banner1,
+  .banner2 {
+    img {
+      height: 100% !important;
+      width: auto;
+    }
+  }
+  .container {
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .memberPackContent {
+    .bannerContent {
+      display: flex;
+      flex-direction: column !important;
+    }
+  }
+  .left {
+    width: 100% !important;
+    margin: 0px !important;
+  }
+  .banner1,
+  .banner2 {
+    img {
+      height: 100% !important;
+      width: auto;
+    }
+  }
+  .container {
+    padding: 30px !important;
+  }
+  .packageList {
+    padding: 50px 50px !important;
+    flex-direction: column !important;
+    .packageItem {
+      width: 100% !important;
+      margin-top: 30px;
+    }
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .memberPackContent {
+    .bannerContent {
+      display: flex;
+      flex-direction: column !important;
+    }
+  }
+  .left {
+    width: 100% !important;
+    margin: 0px !important;
+  }
+  .banner1,
+  .banner2 {
+    img {
+      height: 100% !important;
+      width: auto;
+    }
+  }
+}
+
+@media (min-width: 1025px) {
+  /* CSS áp dụng cho màn hình có chiều rộng từ 1025px trở lên */
+}

@@ -75,7 +75,7 @@ const HomePage = (props) => {
                 books.map(book => {
                   return (
                     <div className={styles.bookItem}>
-                      <BookItem book={book} />
+                      <BookItem book={book} key={book._id} />
                     </div>
                   )
                 })

@@ -1,0 +1,165 @@
+.bookContainer {
+  background-color: #f5f5f5;
+  .bookContent {
+    .novelHeader {
+      border-radius: 10px;
+      background-color: white;
+      display: flex;
+      flex-direction: row;
+      margin: 30px 200px;
+      align-items: center;
+      .left {
+        margin-right: 40px;
+        img {
+          margin: 20px 20px;
+          width: 258px;
+          height: 366px;
+          border-radius: 10px;
+        }
+      }
+      .right {
+        .mainHead {
+          .novelTitle {
+            font-size: 26px;
+            font-weight: 700;
+          }
+          .author {
+          }
+          .rating {
+            display: flex;
+            flex-direction: row;
+          }
+          .yourRating {
+            font-size: 13px;
+            font-style: italic;
+          }
+          .headerStats {
+            display: flex;
+            flex-direction: row;
+            .statItem {
+              margin-right: 10px;
+              border-right: 1.5px solid black;
+              padding-right: 50px;
+
+              small {
+                font-size: 16px;
+              }
+              strong {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                font-weight: 400;
+                .icon {
+                  margin-right: 5px;
+                }
+              }
+            }
+          }
+          .category {
+            margin-top: 10px;
+            .title {
+              font-weight: 600;
+            }
+            .tag {
+              background-color: #4ebec0;
+              color: white;
+              padding: 5px 10px;
+              border-radius: 10px;
+            }
+          }
+          .nextAction {
+            margin-top: 20px;
+            button {
+              margin-right: 10px;
+              font-size: 17px;
+              background-color: #4ebec0;
+              color: white;
+              padding: 10px 10px;
+              border-radius: 10px;
+              text-transform: uppercase;
+            }
+          }
+        }
+      }
+    }
+    .novelContent {
+      border-radius: 10px;
+      background-color: white;
+      margin: 30px 200px;
+
+      .title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        h1 {
+          margin: 20px 20px;
+          font-size: 20px;
+          font-weight: 700;
+          width: 130px;
+        }
+        .line {
+          display: block;
+          height: 2px;
+          width: 100%;
+          background-color: rgb(217, 217, 217);
+          margin-right: 20px;
+        }
+      }
+      .content {
+        padding: 0 20px;
+      }
+      .tagWrapper {
+        .titleWrapper {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          h1 {
+            margin: 20px 20px;
+            font-size: 20px;
+            font-weight: 700;
+            width: 60px;
+          }
+          .line {
+            display: block;
+            height: 2px;
+            width: 100%;
+            background-color: rgb(217, 217, 217);
+            margin-right: 20px;
+          }
+        }
+        .tagList {
+          margin: 0 20px;
+          display: flex;
+          flex-wrap: wrap;
+        }
+      }
+    }
+    .relatedBooks {
+      border-radius: 10px;
+      background-color: white;
+      margin: 30px 200px;
+
+      .title {
+        margin: 20px 20px;
+        h1 {
+          padding-top: 20px;
+          font-size: 20px;
+          font-weight: 700;
+        }
+      }
+      .bookList {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: 10px;
+        width: 100%;
+        .bookItem {
+          margin-right: 20px;
+          margin-bottom: 20px;
+          width: calc(16.6666666667% - 20px);
+          display: block;
+        }
+      }
+    }
+  }
+}

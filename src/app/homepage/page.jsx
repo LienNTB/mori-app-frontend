@@ -16,7 +16,6 @@ const HomePage = (props) => {
 
   const books = props.books.books;
 
-
   return (
 
     <div className={styles.homePageContainer}>

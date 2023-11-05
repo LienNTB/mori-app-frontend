@@ -5,6 +5,7 @@ import { NextUIProviders } from "./providers/providers";
 import { AuthContextProvider } from "./context/AuthContext";
 import { Provider } from 'react-redux';
 import store from './redux/store';
+import "react-toastify/dist/ReactToastify.css";
 
 
 const inter = Montserrat({ subsets: ['latin'] })
@@ -21,7 +22,9 @@ export default function RootLayout({ children }) {
         <Provider store={store}>
           <AuthContextProvider>
             <NextUIProviders>
+
               {children}
+
             </NextUIProviders>
           </AuthContextProvider>
         </Provider>

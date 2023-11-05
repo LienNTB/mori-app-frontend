@@ -7,25 +7,28 @@ import { redirect } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { createNewAccount, getCurrentAccount } from "../redux/actions/account"
 import { useSelector } from 'react-redux'
+
 const Login = () => {
   const { user, googleSignIn, facebookSignIn } = UserAuth();
-  const dispatch = useDispatch()
 
-  const currentAccount = useSelector(state => state.accounts.currentAccount)
+  const getCurrentUser = () => {
+    const { user } = UserAuth();
 
+    let newAccount = {
+      email: user.email,
+      displayName: user.displayName,
+      avatar: user.photoURL,
+      role: 0,
+      is_member: false,
+      is_blocked: false,
+    };
+    dispatch(createNewAccount(newAccount));
+    dispatch(getCurrentAccount(newAccount));
+  }
   const handleSignInGoogle = async () => {
     try {
       await googleSignIn();
-      let newAccount = {
-        email: user.email,
-        displayName: user.displayName,
-        avatar: user.photoURL,
-        role: 0,
-        is_member: false,
-        is_blocked: false,
-      }
-      dispatch(createNewAccount(newAccount));
-      dispatch(getCurrentAccount(newAccount))
+      getCurrentUser()
 
     }
     catch (err) {

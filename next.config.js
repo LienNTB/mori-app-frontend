@@ -14,6 +14,17 @@ const nextConfig = {
     };
     return config;
   },
+  images: {
+    formats: ["image/avif", "image/webp"],
+    domains: ["localhost"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "moristorage123.blob.core.windows.net",
+        pathname: "/bookimg/**",
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

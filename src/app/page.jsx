@@ -1,6 +1,6 @@
+import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper';
 import HomePage from './homepage/page';
 import * as bookRequest from "./redux/saga/requests/book"
-
 
 async function generateStaticParams() {
 
@@ -15,5 +15,6 @@ export default async function Home() {
 
   return <div>
     <HomePage books={books} />
+    <ToastContainerWrapper />
   </div>;
 }

@@ -1,9 +1,93 @@
-import React from 'react'
+"use client"
+import React, { useCallback, useEffect, useState } from 'react'
 import styles from './member-package.module.scss'
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
+import { useDispatch, useSelector } from 'react-redux'
+import { registerMembership } from '../redux/actions/membership'
+import { UserAuth } from '../context/AuthContext'
+import { createNewAccount, getCurrentAccount } from '../redux/actions/account'
+import { toast } from "react-toastify";
+import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
 
 const MemberPackage = () => {
+
+  const [membertype, setMembertype] = useState(null);
+  const dispatch = useDispatch()
+  const currentAccount = useSelector(state => state.accounts.currentAccount);
+
+  const { user } = UserAuth();
+
+  console.log("currentAccount", currentAccount)
+
+  // dung useCallback de xu li rerender
+  const getCurrentUser = useCallback(() => {
+    console.log("call back")
+    if (user != null) {
+      let newAccount = {
+        email: user.email,
+        displayName: user.displayName,
+        avatar: user.photoURL,
+      };
+      dispatch(createNewAccount(newAccount));
+      dispatch(getCurrentAccount(newAccount));
+    }
+  }, [user])
+
+  useEffect(() => {
+    getCurrentUser()
+  }, [])
+
+  const getCurrentDate = () => {
+    const currentDate = new Date()
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const day = currentDate.getDate();
+    return `${year}-${month + 1}-${day}`
+  }
+  const getExpiredDate = () => {
+    const currentDate = new Date()
+    const expiredDate = new Date(currentDate)
+
+    // define when expire date is on and calculate
+    if (membertype === "year") expiredDate.setDate(currentDate.getDate() + 365)
+    else if (membertype === "3month") expiredDate.setDate(currentDate.getDate() + 90)
+    else if (membertype === "1month") expiredDate.setDate(currentDate.getDate() + 30)
+
+    // transfer date to yy-mm-dd type
+    const year = expiredDate.getFullYear();
+    const month = expiredDate.getMonth();
+    const day = expiredDate.getDate();
+    return `${year}-${month + 1}-${day}`
+  }
+  const currentDate = new Date(getCurrentDate())
+  const expiredDate = new Date(getExpiredDate()); // Set the expire date
+
+  if (currentDate > expiredDate) {
+    console.log('The expiration date has passed.'); // Perform actions for an expired date
+  } else {
+    console.log('The expiration date is still valid.'); // Perform actions for a valid date
+  }
+
+  console.log("currentAccount", currentAccount)
+  const handleMemberRegisterBtnOnlick = () => {
+    const membership = {
+      user: currentAccount._id,
+      type: membertype,
+      start_date: getCurrentDate(),
+      outdated_on: getExpiredDate()
+    }
+    var register = confirm("Bạn muốn đăng kí member?");
+    if (register == true) {
+      dispatch(registerMembership(membership));
+      toast("Registered successfully!", {
+        autoClose: 2000,
+        type: "success",
+      });
+    }
+  }
+
+
   return (
     <div className={styles.memberPackContainer}>
       <Header />
@@ -46,7 +130,10 @@ const MemberPackage = () => {
             <div className={styles.eachMonth}>
               (Chỉ còn 75.000 ₫ mỗi tháng)
             </div>
-            <div className={styles.registerBtn}>
+            <div className={styles.registerBtn} onClick={(() => {
+              setMembertype("year");
+              handleMemberRegisterBtnOnlick()
+            })}>
               Mua gói năm
             </div>
           </div>
@@ -63,7 +150,10 @@ const MemberPackage = () => {
             <div className={styles.eachMonth}>
               (Chỉ còn 83.000 ₫ mỗi tháng)
             </div>
-            <div className={styles.registerBtn}>
+            <div className={styles.registerBtn} onClick={(() => {
+              setMembertype("3month");
+              handleMemberRegisterBtnOnlick()
+            })}>
               Mua gói 3 tháng
             </div>
           </div>
@@ -79,13 +169,17 @@ const MemberPackage = () => {
             <div className={styles.eachMonth}>
 
             </div>
-            <div className={styles.registerBtn}>
+            <div className={styles.registerBtn} onClick={(() => {
+              setMembertype("1month");
+              handleMemberRegisterBtnOnlick()
+            })}>
               Mua gói tháng
             </div>
           </div>
         </div>
       </div>
       <Footer />
+      <ToastContainerWrapper />
     </div>
   )
 }

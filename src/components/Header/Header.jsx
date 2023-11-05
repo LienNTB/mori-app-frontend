@@ -68,6 +68,11 @@ const Header = () => {
             <Link className={styles.right} href={"/account/profile"}>
               Tài khoản cá nhân
             </Link>
+            <Link className={styles.right} href={"/member-package"}>
+              <div className={styles.memberRegisterBtn}>
+                Tham gia hội viên
+              </div>
+            </Link>
             <div className={styles.right} onClick={handleSignOut}>
               Đăng xuất
             </div>
@@ -126,6 +131,13 @@ const Header = () => {
               </div>
               <div className={styles.menuItem} onClick={handleSignOut}>
                 Đăng xuất
+              </div>
+              <div className={styles.menuItem} >
+                <Link className={styles.right} href={"/member-package"}>
+                  <div className={styles.memberRegisterBtn}>
+                    Tham gia hội viên
+                  </div>
+                </Link>
               </div>
             </>
               :

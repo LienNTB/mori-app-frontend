@@ -1,27 +1,57 @@
 "use client"
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
-import React, { useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import styles from "./homepage.module.scss"
 import BookItem from '@/components/BookItem/BookItem'
 import Tag from '@/components/Tag/Tag'
+import { UserAuth } from '@/app/context/AuthContext'
+
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { getBooks } from '../redux/actions/book'
 import Loading from '@/components/Loading/Loading'
-
+import { createNewAccount, getCurrentAccount } from '../redux/actions/account'
+import { toast } from "react-toastify";
 
 const HomePage = (props) => {
-
+  const dispatch = useDispatch();
   const books = props.books.books;
+  const currentAccount = useSelector(state => state.accounts.currentAccount);
+  const { user } = UserAuth();
+
+  console.log("currentAccount", currentAccount)
+
+  // dung useCallback de xu li rerender
+  const getCurrentUser = useCallback(() => {
+    console.log("call back")
+
+    if (user != null) {
+      let newAccount = {
+        email: user.email,
+        displayName: user.displayName,
+        avatar: user.photoURL,
+      };
+      dispatch(createNewAccount(newAccount));
+      dispatch(getCurrentAccount(newAccount));
+    }
+  }, [user])
+
+  const handleToast = () => {
+    toast('Toast is good', { hideProgressBar: true, autoClose: 2000, type: 'success' })
+  }
+  useEffect(() => {
+    getCurrentUser()
+  }, [])
+
 
   return (
 
     <div className={styles.homePageContainer}>
       <Header />
 
-
+      <button onClick={handleToast}>Click me</button>
       <div className={styles.homePageContent}>
         <div className={styles.headContent} >
           <h1>Sách hay, hot, sách online miễn phí</h1>

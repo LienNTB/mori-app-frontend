@@ -69,18 +69,23 @@ const Header = () => {
             <Link className={styles.right} href={"/account/profile"}>
               Tài khoản cá nhân
             </Link>
-            <Link className={styles.right} href={"/member-package"}>
-              <div className={styles.memberRegisterBtn}>
-                Tham gia hội viên
-              </div>
-            </Link>
+
             <div className={styles.right} onClick={() => handleSignOut()}>
               Đăng xuất
             </div>
           </>)
-            : (<Link className={styles.right} href={"/login"} >
-              Login
-            </Link>)
+            : (
+              <>
+                <Link className={styles.right} href={"/member-package"}>
+                  <div className={styles.memberRegisterBtn}>
+                    Tham gia hội viên
+                  </div>
+                </Link>
+                <Link className={styles.right} href={"/login"} >
+                  Login
+                </Link>
+              </>
+            )
           }
         </div>
 

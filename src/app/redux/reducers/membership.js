@@ -3,9 +3,10 @@ import * as type from "../types";
 const initialState = {
   loading: false,
   error: null,
+  message: "",
 };
 
-export default function mmebership(state = initialState, action) {
+export default function mebership(state = initialState, action) {
   switch (action.type) {
     case type.REGISTER_MEMBERSHIP_REQUESTED:
       return {
@@ -16,12 +17,14 @@ export default function mmebership(state = initialState, action) {
       return {
         ...state,
         loading: false,
+        message: action.message,
       };
 
     case type.REGISTER_MEMBERSHIP_FAILED:
       return {
         ...state,
         loading: false,
+        message: action.message,
       };
 
     default:

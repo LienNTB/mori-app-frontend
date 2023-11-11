@@ -9,33 +9,27 @@ import { UserAuth } from '../context/AuthContext'
 import { createNewAccount, getCurrentAccount } from '../redux/actions/account'
 import { toast } from "react-toastify";
 import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
+import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 const MemberPackage = () => {
-
+  const router = useRouter()
   const [membertype, setMembertype] = useState(null);
   const dispatch = useDispatch()
   const currentAccount = useSelector(state => state.accounts.currentAccount);
+  const registerResult = useSelector(state => state.memberships.message)
 
   const { user } = UserAuth();
 
-  console.log("currentAccount", currentAccount)
-
-  // dung useCallback de xu li rerender
-  const getCurrentUser = useCallback(() => {
-    console.log("call back")
-    if (user != null) {
+  useEffect(() => {
+    if (user != null && currentAccount == null) {
       let newAccount = {
         email: user.email,
         displayName: user.displayName,
         avatar: user.photoURL,
       };
-      dispatch(createNewAccount(newAccount));
       dispatch(getCurrentAccount(newAccount));
     }
-  }, [user])
-
-  useEffect(() => {
-    getCurrentUser()
   }, [])
 
   const getCurrentDate = () => {
@@ -71,19 +65,35 @@ const MemberPackage = () => {
 
   console.log("currentAccount", currentAccount)
   const handleMemberRegisterBtnOnlick = () => {
-    const membership = {
-      user: currentAccount._id,
-      type: membertype,
-      start_date: getCurrentDate(),
-      outdated_on: getExpiredDate()
+    console.log("handleMemberRegisterBtnOnlick")
+    if (currentAccount === null) {
+      router.push("/login")
     }
-    var register = confirm("Bạn muốn đăng kí member?");
-    if (register == true) {
-      dispatch(registerMembership(membership));
-      toast("Registered successfully!", {
-        autoClose: 2000,
-        type: "success",
-      });
+    else {
+      const membership = {
+        user: currentAccount._id,
+        type: membertype,
+        start_date: getCurrentDate(),
+        outdated_on: getExpiredDate()
+      }
+      var register = confirm("Bạn muốn đăng kí member?");
+      if (register == true) {
+        dispatch(registerMembership(membership));
+        if (registerResult === 0) {
+          toast("Đăng kí gói cước thành công!", {
+            autoClose: 2000,
+            type: "success",
+          });
+        }
+        if (registerResult === 1) {
+          toast("Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!", {
+            autoClose: 2000,
+            type: "error",
+          });
+        }
+      }
+
+
     }
   }
 

@@ -6,14 +6,18 @@ import { call, put } from "redux-saga/effects";
 export function* registerMembershipHandler({ payload }) {
   console.log("registerMembershipHandler");
   try {
-    yield call(membershipRequest.registerMembershipRequest, payload);
+    const result = yield call(
+      membershipRequest.registerMembershipRequest,
+      payload
+    );
     yield put({
       type: type.REGISTER_MEMBERSHIP_SUCCESS,
+      message: result,
     });
   } catch (e) {
     yield put({
       type: type.REGISTER_MEMBERSHIP_FAILED,
-      message: e.message,
+      message: result,
     });
   }
 }

@@ -23,26 +23,15 @@ const HomePage = (props) => {
 
   console.log("currentAccount", currentAccount)
 
-  // dung useCallback de xu li rerender
-  const getCurrentUser = useCallback(() => {
-    console.log("call back")
-
-    if (user != null) {
+  useEffect(() => {
+    if (user != null && currentAccount == null) {
       let newAccount = {
         email: user.email,
         displayName: user.displayName,
         avatar: user.photoURL,
       };
-      dispatch(createNewAccount(newAccount));
       dispatch(getCurrentAccount(newAccount));
     }
-  }, [user])
-
-  const handleToast = () => {
-    toast('Toast is good', { hideProgressBar: true, autoClose: 2000, type: 'success' })
-  }
-  useEffect(() => {
-    getCurrentUser()
   }, [])
 
 
@@ -50,8 +39,6 @@ const HomePage = (props) => {
 
     <div className={styles.homePageContainer}>
       <Header />
-
-      <button onClick={handleToast}>Click me</button>
       <div className={styles.homePageContent}>
         <div className={styles.headContent} >
           <h1>Sách hay, hot, sách online miễn phí</h1>

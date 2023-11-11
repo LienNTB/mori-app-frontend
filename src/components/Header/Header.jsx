@@ -24,6 +24,7 @@ const Header = () => {
   const handleSignOut = async () => {
     try {
       await logOut();
+      localStorage.removeItem("authenticated")
     }
     catch (err) {
       console.log(err)
@@ -73,7 +74,7 @@ const Header = () => {
                 Tham gia hội viên
               </div>
             </Link>
-            <div className={styles.right} onClick={handleSignOut}>
+            <div className={styles.right} onClick={() => handleSignOut()}>
               Đăng xuất
             </div>
           </>)

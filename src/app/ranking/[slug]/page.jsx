@@ -1,18 +1,34 @@
-"use client"
-import Footer from '@/components/Footer/Footer'
-import Header from '@/components/Header/Header'
-import React, { useMemo } from 'react'
-import styles from '../ranking.module.scss'
-import Link from 'next/link'
+"use client";
+import Footer from "@/components/Footer/Footer";
+import Header from "@/components/Header/Header";
+import React, { useMemo } from "react";
+import styles from "../ranking.module.scss";
+import Link from "next/link";
 import {
-  Button, DropdownTrigger, Table,
-  TableHeader, TableColumn, TableBody, TableRow, TableCell, Dropdown,
-  DropdownMenu, DropdownItem, Spinner, Pagination, getKeyValue
+  Button,
+  DropdownTrigger,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Spinner,
+  Pagination,
+  getKeyValue,
 } from "@nextui-org/react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleXmark, faCoffee, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { useState } from 'react'
-import useSWR from 'swr'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleXmark,
+  faCoffee,
+  faTrashCan,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
+import useSWR from "swr";
 
 const Ranking = () => {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["Ngày"]));
@@ -22,13 +38,19 @@ const Ranking = () => {
     [selectedKeys]
   );
 
+  const [selectedRanking, setSelectedRanking] = useState("daily");
+
   // for table
   const fetcher = (...args) => fetch(...args).then((res) => res.json());
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useSWR(`https://swapi.py4e.com/api/people?page=${page}`, fetcher, {
-    keepPreviousData: true,
-  });
+  const { data, isLoading } = useSWR(
+    `http://localhost:8080/api/bookRanking/getRanking/${selectedRanking}`,
+    fetcher,
+    {
+      keepPreviousData: true,
+    }
+  );
 
   const rowsPerPage = 10;
 
@@ -36,7 +58,8 @@ const Ranking = () => {
     return data?.count ? Math.ceil(data.count / rowsPerPage) : 0;
   }, [data?.count, rowsPerPage]);
 
-  const loadingState = isLoading || data?.results.length === 0 ? "loading" : "idle";
+  const loadingState =
+    isLoading || data?.rankingData.length === 0 ? "loading" : "idle";
 
   // end for table
   return (
@@ -45,48 +68,55 @@ const Ranking = () => {
       <div className={styles.rankingContent}>
         <div className={styles.wrapper}>
           <div className={styles.header}>
-            <div className={styles.headerTitle}>
-              Bảng xếp hạng
-            </div>
+            <div className={styles.headerTitle}>Bảng xếp hạng</div>
             <div className={styles.navWrapper}>
               <div className={styles.nav}>
-                <Link href={'/ranking/book'}>
-                  <div className={styles.navItem}>
-                    Sách
-                  </div>
+                <Link href={"/ranking/book"}>
+                  <div className={styles.navItem}>Sách</div>
                 </Link>
-                <Link href={'/ranking/audio-book'}>
-                  <div className={styles.navItem}>
-                    Sách nói
-                  </div>
+                <Link href={"/ranking/audio-book"}>
+                  <div className={styles.navItem}>Sách nói</div>
                 </Link>
               </div>
               <div className={styles.rankingDropdown}>
                 <Dropdown>
                   <DropdownTrigger>
-                    <Button
-                      color="primary"
-                      variant="flat"
-                    >
+                    <Button color="primary" variant="flat">
                       {selectedValue}
                     </Button>
                   </DropdownTrigger>
-                  <DropdownMenu aria-label="Static Actions" variant="flat"
+                  <DropdownMenu
+                    aria-label="Static Actions"
+                    variant="flat"
                     disallowEmptySelection
                     selectionMode="single"
                     selectedKeys={selectedKeys}
-                    onSelectionChange={setSelectedKeys}>
-                    <DropdownItem key="Ngày">Ngày</DropdownItem>
-                    <DropdownItem key="Tuần">Tuần</DropdownItem>
-                    <DropdownItem key="Tháng">Tháng</DropdownItem>
+                    onSelectionChange={setSelectedKeys}
+                  >
+                    <DropdownItem
+                      key="Ngày"
+                      onClick={() => setSelectedRanking("daily")}
+                    >
+                      Ngày
+                    </DropdownItem>
+                    <DropdownItem
+                      key="Tuần"
+                      onClick={() => setSelectedRanking("weekly")}
+                    >
+                      Tuần
+                    </DropdownItem>
+                    <DropdownItem
+                      key="Tháng"
+                      onClick={() => setSelectedRanking("monthly")}
+                    >
+                      Tháng
+                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>
-
             </div>
             <div className={styles.rankingTable}>
-              <Table
-                hideHeader
+              <Table 
                 bottomContent={
                   pages > 0 ? (
                     <div className="flex w-full justify-center">
@@ -102,22 +132,34 @@ const Ranking = () => {
                     </div>
                   ) : null
                 }
-              // {...args}
               >
-                <TableHeader>
-                  <TableColumn key="name"></TableColumn>
-                  <TableColumn key="height"></TableColumn>
-                  <TableColumn key="mass"></TableColumn>
-                  <TableColumn key="birth_year"></TableColumn>
+                <TableHeader >
+                  <TableColumn key="rank">Số thứ tự</TableColumn>
+                  <TableColumn key="image">Hình ảnh sách</TableColumn>
+                  <TableColumn key="name">Tên sách</TableColumn>
+                  <TableColumn key="author">Tác giả</TableColumn>
+                  <TableColumn key="totalRead">Lượt đọc</TableColumn>
+                  <TableColumn key="totalHearted">Lượt thích</TableColumn>
                 </TableHeader>
                 <TableBody
-                  items={data?.results ?? []}
+                  items={data?.rankingData ?? []}
                   loadingContent={<Spinner />}
                   loadingState={loadingState}
                 >
-                  {(item) => (
-                    <TableRow key={item?.name}>
-                      {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
+                  {(item, index) => (
+                    <TableRow key={item?.book_id}>
+                      <TableCell>{index !== null ? index + 1 : ""}</TableCell>
+                      <TableCell>
+                        <img
+                          src={item?.bookInfo?.image}
+                          alt={item?.bookInfo?.name || "Hình ảnh sách"}
+                          className={styles.responsiveImage}
+                        />
+                      </TableCell>
+                      <TableCell>{item?.bookInfo?.name}</TableCell>
+                      <TableCell>{item?.bookInfo?.author}</TableCell>
+                      <TableCell>{item?.totalRead}</TableCell>
+                      <TableCell>{item?.bookInfo?.totalHearted}</TableCell>
                     </TableRow>
                   )}
                 </TableBody>
@@ -128,7 +170,7 @@ const Ranking = () => {
       </div>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default Ranking
+export default Ranking;

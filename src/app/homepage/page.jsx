@@ -17,11 +17,14 @@ import { toast } from "react-toastify";
 
 const HomePage = (props) => {
   const dispatch = useDispatch();
-  const books = props.books.books;
+  const books = props.books;
+  const tags = props.tags
   const currentAccount = useSelector(state => state.accounts.currentAccount);
   const { user } = UserAuth();
 
   console.log("currentAccount", currentAccount)
+  console.log("books:", books)
+  console.log("tags:", tags)
 
   useEffect(() => {
     if (user != null && currentAccount == null) {
@@ -32,6 +35,8 @@ const HomePage = (props) => {
       };
       dispatch(getCurrentAccount(newAccount));
     }
+
+
   }, [])
 
 
@@ -57,22 +62,14 @@ const HomePage = (props) => {
           </div>
           <div className={styles.sectionBody}>
             <div className={styles.tagList}>
+              {
+                tags.map((tag) => (
+                  <Tag name={tag.description} link={`/theloai/${tag.name}`} />
 
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" /><Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" /><Tag name="Tâm lý" link="tamly" />
+                ))
+              }
+
+
             </div>
           </div>
         </section>

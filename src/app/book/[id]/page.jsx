@@ -143,7 +143,7 @@ function Book() {
                 <Link href={book.pdf}>
                   <button className={styles.read}>Đọc ngay</button>
                 </Link>
-                <button className={styles.save} onClick={() => handleSaveToLibrary()}>Đánh dấu</button>
+                <button className={styles.save} onClick={() => handleSaveToLibrary()}>Thêm vào thư viện</button>
                 {/* <Link href={"/book-category/tamlykynang"}>
                 </Link> */}
               </div>

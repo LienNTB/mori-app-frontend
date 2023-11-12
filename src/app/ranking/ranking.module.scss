@@ -1,32 +1,45 @@
-.rankingContainer {
-  background-color: #f5f5f5;
-}
-.rankingContent {
-  margin: 10px 100px;
-  .wrapper {
-    border-radius: 10px;
-    padding: 20px 20px;
-    display: block;
-    background-color: white;
-    .header {
-      .headerTitle {
-        font-size: x-large;
-        font-weight: 600;
-      }
-      .navWrapper {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        margin-bottom: 10px;
-      }
-      .nav {
-        display: flex;
-        flex-direction: row;
-        margin: 10px 0;
-        .navItem {
-          margin-right: 15px;
-        }
-      }
+    .rankingContainer {
+        background-color: #f5f5f5;
     }
-  }
-}
+    
+    .rankingContent {
+        margin: 10px 100px;
+        .wrapper {
+            border-radius: 10px;
+            padding: 20px 20px;
+            display: block;
+            background-color: white;
+            .header {
+                .headerTitle {
+                    font-size: x-large;
+                    font-weight: 600;
+                }
+                .navWrapper {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                }
+                .nav {
+                    display: flex;
+                    flex-direction: row;
+                    margin: 10px 0;
+                    .navItem {
+                        margin-right: 15px;
+                    }
+                }
+            }
+        }
+    }
+    
+    .rankingTable {
+        td {
+            padding: 10px;
+            .responsiveImage {
+                width: 100px;
+                height: auto;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+                margin-top: 10px;
+            }
+        }
+    }

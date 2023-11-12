@@ -13,8 +13,10 @@ import { UserAuth } from '@/app/context/AuthContext'
 import { redirect } from 'next/navigation'
 import { getAuth, updateProfile } from 'firebase/auth'
 import { useDispatch, useSelector } from 'react-redux'
-import { getBooksFromMyLibrary } from '@/app/redux/actions/myLibrary'
+import { deleteBookFromLibrary, getBooksFromMyLibrary } from '@/app/redux/actions/myLibrary'
 import Loading from '@/components/Loading/Loading'
+import { toast } from "react-toastify";
+import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
 // import {
 //   Table,
 //   Thead,
@@ -26,24 +28,52 @@ import Loading from '@/components/Loading/Loading'
 //   TableCaption,
 //   TableContainer,
 // } from '@chakra-ui/react'
-// import { Tab, Table, Tabs } from '@nextui-org/react'
+import {
+  Tab, Tabs, TableCell, Table, TableHeader, TableColumn,
+  TableBody, TableRow, TableContainer, TableCaption, Thead, Tr, Td, Th, Tbody, Tfoot
+} from '@nextui-org/react'
 import { getCurrentAccount } from '@/app/redux/actions/account'
-import { TableCaption, TableContainer, Tbody, Td, Tfoot, Th, Thead, Tr, Table, TableHeader, TableColumn, TableBody } from '@chakra-ui/react'
 
 const Profile = () => {
   const params = useParams()
   const id = params.slug;
   const [currentTopic, setCurrentTopic] = useState(id)
   const [show, setShow] = useState(false);
-  const booksLibrary = useSelector(state => state.myLibrary)
-  const isLoading = useSelector(state => state.myLibrary)
+  const booksLibrary = useSelector(state => state.myLibrary.bookList)
+  const isLoading = useSelector(state => state.myLibrary.loading)
   const currentAccount = useSelector(state => state.accounts.currentAccount);
+  const deleteBookResult = useSelector(state => state.myLibrary.message);
+  const [click, setClick] = useState(0)
   const dispatch = useDispatch();
   const { user } = UserAuth()
+
+  const handleDeleteBook = (choosenBook) => {
+    var request = {
+      user: currentAccount._id,
+      book: choosenBook
+    }
+    console.log("request:", request)
+    console.log("deleteBookResult:", deleteBookResult)
+    dispatch(deleteBookFromLibrary(request))
+    if (deleteBookResult === 0) {
+      toast("Xoá sách khỏi thư viện thành công!", {
+        autoClose: 2000,
+        type: "success",
+      });
+    }
+    if (deleteBookResult === 1) {
+      toast("Xóa thất bại!", {
+        autoClose: 2000,
+        type: "error",
+      });
+    }
+    setClick(p => p + 1)
+  }
 
   if (!user) {
     redirect("/login")
   }
+
 
   const getCurrentUser = () => {
     if (user != null && currentAccount == null) {
@@ -56,14 +86,14 @@ const Profile = () => {
     }
   }
 
-  console.log("mylib:", booksLibrary)
-
   useEffect(() => {
     getCurrentUser();
   }, [])
   useEffect(() => {
-    dispatch(getBooksFromMyLibrary(currentAccount._id))
-  }, [currentAccount])
+    if (currentAccount) {
+      dispatch(getBooksFromMyLibrary(currentAccount._id))
+    }
+  }, [currentAccount, click])
   return (
     <div className={styles.profileContainer}>
       <Header />
@@ -166,43 +196,37 @@ const Profile = () => {
           </div>
           <div className={styles.libraryBody}>
 
+            <table class="table-auto w-full">
+              <thead class="bg-slate-300">
+                <tr>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Book</th>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Name</th>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Author</th>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  isLoading ? <Loading /> :
+                    booksLibrary.map(book => (
 
-            <TableContainer>
-              <Table variant='simple'>
-                <TableCaption>Imperial to metric conversion factors</TableCaption>
-                <Thead>
-                  <Tr>
-                    <Th>To convert</Th>
-                    <Th>into</Th>
-                    <Th isNumeric>multiply by</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  <Tr>
-                    <Td>inches</Td>
-                    <Td>millimetres (mm)</Td>
-                    <Td isNumeric>25.4</Td>
-                  </Tr>
-                  <Tr>
-                    <Td>feet</Td>
-                    <Td>centimetres (cm)</Td>
-                    <Td isNumeric>30.48</Td>
-                  </Tr>
-                  <Tr>
-                    <Td>yards</Td>
-                    <Td>metres (m)</Td>
-                    <Td isNumeric>0.91444</Td>
-                  </Tr>
-                </Tbody>
-                <Tfoot>
-                  <Tr>
-                    <Th>To convert</Th>
-                    <Th>into</Th>
-                    <Th isNumeric>multiply by</Th>
-                  </Tr>
-                </Tfoot>
-              </Table>
-            </TableContainer>
+                      <tr>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          <img src={book.book.image} alt="image" className={styles.bookLibImg} />
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">{book.book.name}</td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">{book.book.author}</td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          <FontAwesomeIcon icon={faTrashCan} class="cursor-pointer" width={20}
+                            onClick={() => handleDeleteBook(book.book)} />
+                        </td>
+                      </tr>
+                    ))
+                }
+
+              </tbody>
+            </table>
+
 
           </div>
         </section> : <></>}
@@ -214,7 +238,7 @@ const Profile = () => {
 
           </div>
           <div className={styles.libraryBody}>
-            {/* <Table selectionMode="single" color="primary" aria-label="Example static collection table">
+            <Table selectionMode="single" color="primary" aria-label="Example static collection table">
               <TableHeader>
                 <TableColumn>Hình ảnh</TableColumn>
                 <TableColumn>Tiêu đề</TableColumn>
@@ -232,11 +256,12 @@ const Profile = () => {
                   <TableCell>Thứ Bảy, 30/09/2023, 09:07</TableCell>
                 </TableRow>
               </TableBody>
-            </Table> */}
+            </Table>
           </div>
         </section> : <></>}
       </div>
       <Footer />
+      <ToastContainerWrapper />
 
     </div>
 

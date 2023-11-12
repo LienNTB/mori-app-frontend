@@ -6,25 +6,69 @@ import styles from './book.module.scss'
 import { getBookById, getBooks } from '@/app/redux/actions/book';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { useParams } from 'next/navigation'
+import { redirect, useParams } from 'next/navigation'
 import Loading from '@/components/Loading/Loading';
 import BookItem from '@/components/BookItem/BookItem';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { addBookToLibrary } from '@/app/redux/actions/myLibrary';
+import { toast } from 'react-toastify';
+import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
+import { UserAuth } from '@/app/context/AuthContext';
+import { getCurrentAccount } from '@/app/redux/actions/account';
+
+
 function Book() {
+  const { user } = UserAuth()
   const dispatch = useDispatch()
   const isLoading = useSelector(state => state.books.loading)
   const book = useSelector(state => state.books.book);
+  const currentAccount = useSelector(state => state.accounts.currentAccount);
+  const addBookResult = useSelector(state => state.myLibrary.message)
   const params = useParams()
   const id = params.id;
+
+  console.log("currentAccount:", currentAccount)
 
   const handleSaveToLibrary = () => {
     var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
     if (register == true) {
-
+      var request = {
+        user: currentAccount._id,
+        book: book
+      }
+      console.log('request:', request)
+      console.log('addBookResult:', addBookResult)
+      dispatch(addBookToLibrary(request))
+      if (addBookResult === 0) {
+        toast("Thêm sách vào thư viện thành công!", {
+          autoClose: 2000,
+          type: "success",
+        });
+      }
+      if (addBookResult === 1) {
+        toast("Sách đã tồn tại trong thư viện!", {
+          autoClose: 2000,
+          type: "info",
+        });
+      }
     }
   }
+  const getCurrentUser = () => {
+    if (user != null && currentAccount == null) {
+      let newAccount = {
+        email: user.email,
+        displayName: user.displayName,
+        avatar: user.photoURL,
+      };
+      dispatch(getCurrentAccount(newAccount));
+    }
+  }
+
+  useEffect(() => {
+    getCurrentUser();
+  }, [])
 
   useEffect(() => {
     dispatch(getBookById(id))
@@ -34,6 +78,10 @@ function Book() {
   if (isLoading) {
     return <Loading />
   }
+  if (!user) {
+    redirect("/login")
+  }
+
   return (<>
     <div className={styles.bookContainer}>
       <Header />
@@ -162,6 +210,8 @@ function Book() {
         </section>
       </div> : <Loading />}
       <Footer />
+      <ToastContainerWrapper />
+
     </div></>);
 }
 export default Book

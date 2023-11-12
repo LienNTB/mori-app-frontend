@@ -8,3 +8,7 @@ export const addBookToLibrary = (request) => ({
   type: type.ADD_BOOK_TO_LIBRARY_REQUESTED,
   payload: request,
 });
+export const deleteBookFromLibrary = (request) => ({
+  type: type.DELETE_BOOK_FROM_LIBRARY_REQUESTED,
+  payload: request,
+});

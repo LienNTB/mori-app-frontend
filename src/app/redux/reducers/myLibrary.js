@@ -4,6 +4,7 @@ const initialState = {
   bookList: [],
   loading: false,
   error: null,
+  message: "",
 };
 
 export default function myLibrary(state = initialState, action) {
@@ -25,6 +26,15 @@ export default function myLibrary(state = initialState, action) {
         loading: false,
         message: action.payload,
       };
+    case type.ADD_BOOK_TO_LIBRARY_SUCCESS:
+    case type.ADD_BOOK_TO_LIBRARY_FAILED:
+    case type.DELETE_BOOK_FROM_LIBRARY_SUCCESS:
+    case type.DELETE_BOOK_FROM_LIBRARY_FAILED:
+      return {
+        ...state,
+        message: action.payload,
+      };
+
     default:
       return state;
   }

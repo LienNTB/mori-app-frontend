@@ -31,3 +31,20 @@ export const addBookToLibraryRequest = async (bookRequest) => {
       throw error;
     });
 };
+
+export const deleteBookFromLibraryRequest = async (bookRequest) => {
+  return fetch(`${type.BACKEND_URL}/api/myLibrary/book/`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(bookRequest),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};

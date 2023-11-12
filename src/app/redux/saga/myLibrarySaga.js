@@ -11,4 +11,8 @@ export default function* myLibrarySaga() {
     type.ADD_BOOK_TO_LIBRARY_REQUESTED,
     handler.addBookToLibraryHandler
   );
+  yield takeEvery(
+    type.DELETE_BOOK_FROM_LIBRARY_REQUESTED,
+    handler.deleteBookFromLibraryHandler
+  );
 }

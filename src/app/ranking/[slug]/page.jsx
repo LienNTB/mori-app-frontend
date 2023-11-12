@@ -116,7 +116,7 @@ const Ranking = () => {
               </div>
             </div>
             <div className={styles.rankingTable}>
-              <Table 
+              <Table
                 bottomContent={
                   pages > 0 ? (
                     <div className="flex w-full justify-center">

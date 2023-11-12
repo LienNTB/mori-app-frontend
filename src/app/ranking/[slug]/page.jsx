@@ -134,7 +134,7 @@ const Ranking = () => {
                 }
               >
                 <TableHeader >
-                  <TableColumn key="rank">Số thứ tự</TableColumn>
+                  {/* <TableColumn key="rank">Số thứ tự</TableColumn> */}
                   <TableColumn key="image">Hình ảnh sách</TableColumn>
                   <TableColumn key="name">Tên sách</TableColumn>
                   <TableColumn key="author">Tác giả</TableColumn>
@@ -147,8 +147,9 @@ const Ranking = () => {
                   loadingState={loadingState}
                 >
                   {(item, index) => (
+
                     <TableRow key={item?.book_id}>
-                      <TableCell>{index !== null ? index + 1 : ""}</TableCell>
+                      {/* <TableCell>{index ? index : ""}</TableCell> */}
                       <TableCell>
                         <img
                           src={item?.bookInfo?.image}

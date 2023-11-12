@@ -14,23 +14,21 @@ import Footer from '@/components/Footer/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 function Book() {
   const dispatch = useDispatch()
-  const books = useSelector(state => state.books.books)
   const isLoading = useSelector(state => state.books.loading)
   const book = useSelector(state => state.books.book);
   const params = useParams()
   const id = params.id;
 
+  const handleSaveToLibrary = () => {
+    var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
+    if (register == true) {
+
+    }
+  }
+
   useEffect(() => {
-    console.log('dispatch 22')
     dispatch(getBookById(id))
   }, [dispatch])
-
-  // useEffect(() => {
-  //   dispatch(getBooks());
-  // }, [dispatch]);
-
-  console.log("isLoading:", isLoading)
-  console.log("book:", book)
 
 
   if (isLoading) {
@@ -97,9 +95,9 @@ function Book() {
                 <Link href={book.pdf}>
                   <button className={styles.read}>Đọc ngay</button>
                 </Link>
-                <Link href={"/book-category/tamlykynang"}>
-                  <button className={styles.save}>Đánh dấu</button>
-                </Link>
+                <button className={styles.save} onClick={() => handleSaveToLibrary()}>Đánh dấu</button>
+                {/* <Link href={"/book-category/tamlykynang"}>
+                </Link> */}
               </div>
             </div>
           </div>

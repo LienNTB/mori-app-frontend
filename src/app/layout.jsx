@@ -2,6 +2,8 @@
 import "./globals.css";
 import { Inter, Montserrat } from "next/font/google";
 import { NextUIProviders } from "./providers/providers";
+import { CacheProvider } from '@chakra-ui/next-js'
+import { ChakraProvider } from '@chakra-ui/react'
 import { AuthContextProvider } from "./context/AuthContext";
 import { Provider } from 'react-redux';
 import store from './redux/store';
@@ -21,11 +23,13 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <Provider store={store}>
           <AuthContextProvider>
+            {/* <CacheProvider>
+              <ChakraProvider> */}
             <NextUIProviders>
-
               {children}
-
             </NextUIProviders>
+            {/* </ChakraProvider>
+            </CacheProvider> */}
           </AuthContextProvider>
         </Provider>
       </body>

@@ -1,35 +1,69 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from "../profile.module.scss"
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import {
-  Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Table,
-  TableHeader, TableColumn, TableBody, TableRow, TableCell, Checkbox, Tabs, Tab
-} from "@nextui-org/react";
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark, faCoffee, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 import { UserAuth } from '@/app/context/AuthContext'
 import { redirect } from 'next/navigation'
 import { getAuth, updateProfile } from 'firebase/auth'
+import { useDispatch, useSelector } from 'react-redux'
+import { getBooksFromMyLibrary } from '@/app/redux/actions/myLibrary'
+import Loading from '@/components/Loading/Loading'
+// import {
+//   Table,
+//   Thead,
+//   Tbody,
+//   Tfoot,
+//   Tr,
+//   Th,
+//   Td,
+//   TableCaption,
+//   TableContainer,
+// } from '@chakra-ui/react'
+// import { Tab, Table, Tabs } from '@nextui-org/react'
+import { getCurrentAccount } from '@/app/redux/actions/account'
+import { TableCaption, TableContainer, Tbody, Td, Tfoot, Th, Thead, Tr, Table, TableHeader, TableColumn, TableBody } from '@chakra-ui/react'
 
 const Profile = () => {
   const params = useParams()
   const id = params.slug;
   const [currentTopic, setCurrentTopic] = useState(id)
   const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
+  const booksLibrary = useSelector(state => state.myLibrary)
+  const isLoading = useSelector(state => state.myLibrary)
+  const currentAccount = useSelector(state => state.accounts.currentAccount);
+  const dispatch = useDispatch();
   const { user } = UserAuth()
-
 
   if (!user) {
     redirect("/login")
   }
+
+  const getCurrentUser = () => {
+    if (user != null && currentAccount == null) {
+      let newAccount = {
+        email: user.email,
+        displayName: user.displayName,
+        avatar: user.photoURL,
+      };
+      dispatch(getCurrentAccount(newAccount));
+    }
+  }
+
+  console.log("mylib:", booksLibrary)
+
+  useEffect(() => {
+    getCurrentUser();
+  }, [])
+  useEffect(() => {
+    dispatch(getBooksFromMyLibrary(currentAccount._id))
+  }, [currentAccount])
   return (
     <div className={styles.profileContainer}>
       <Header />
@@ -131,25 +165,45 @@ const Profile = () => {
             </div>
           </div>
           <div className={styles.libraryBody}>
-            <Table selectionMode="single" hideHeader color="primary" aria-label="Example static collection table">
-              <TableHeader>
-                <TableColumn></TableColumn>
-                <TableColumn></TableColumn>
-                <TableColumn></TableColumn>
-              </TableHeader>
-              <TableBody>
-                <TableRow key="4">
-                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
-                  <TableCell>Đắc nhân tâm</TableCell>
-                  <TableCell><FontAwesomeIcon icon={faTrashCan} className='cursor-pointer' /></TableCell>
-                </TableRow>
-                <TableRow key="1">
-                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
-                  <TableCell>Đắc nhân tâm</TableCell>
-                  <TableCell><FontAwesomeIcon icon={faTrashCan} className='cursor-pointer' /></TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+
+
+            <TableContainer>
+              <Table variant='simple'>
+                <TableCaption>Imperial to metric conversion factors</TableCaption>
+                <Thead>
+                  <Tr>
+                    <Th>To convert</Th>
+                    <Th>into</Th>
+                    <Th isNumeric>multiply by</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  <Tr>
+                    <Td>inches</Td>
+                    <Td>millimetres (mm)</Td>
+                    <Td isNumeric>25.4</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>feet</Td>
+                    <Td>centimetres (cm)</Td>
+                    <Td isNumeric>30.48</Td>
+                  </Tr>
+                  <Tr>
+                    <Td>yards</Td>
+                    <Td>metres (m)</Td>
+                    <Td isNumeric>0.91444</Td>
+                  </Tr>
+                </Tbody>
+                <Tfoot>
+                  <Tr>
+                    <Th>To convert</Th>
+                    <Th>into</Th>
+                    <Th isNumeric>multiply by</Th>
+                  </Tr>
+                </Tfoot>
+              </Table>
+            </TableContainer>
+
           </div>
         </section> : <></>}
         {/* history section */}
@@ -160,7 +214,7 @@ const Profile = () => {
 
           </div>
           <div className={styles.libraryBody}>
-            <Table selectionMode="single" color="primary" aria-label="Example static collection table">
+            {/* <Table selectionMode="single" color="primary" aria-label="Example static collection table">
               <TableHeader>
                 <TableColumn>Hình ảnh</TableColumn>
                 <TableColumn>Tiêu đề</TableColumn>
@@ -178,13 +232,14 @@ const Profile = () => {
                   <TableCell>Thứ Bảy, 30/09/2023, 09:07</TableCell>
                 </TableRow>
               </TableBody>
-            </Table>
+            </Table> */}
           </div>
         </section> : <></>}
       </div>
       <Footer />
 
     </div>
+
   )
 }
 

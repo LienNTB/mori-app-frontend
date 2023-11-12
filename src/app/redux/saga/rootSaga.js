@@ -3,7 +3,14 @@ import accountSaga from "./accountSaga";
 import bookSaga from "./bookSaga";
 import membershipSaga from "./membershipSaga";
 import tagSaga from "./tagSaga";
+import myLibrarySaga from "./myLibrarySaga";
 
 export default function* rootSaga() {
-  yield all([accountSaga(), bookSaga(), membershipSaga(), tagSaga()]);
+  yield all([
+    accountSaga(),
+    bookSaga(),
+    membershipSaga(),
+    tagSaga(),
+    myLibrarySaga(),
+  ]);
 }

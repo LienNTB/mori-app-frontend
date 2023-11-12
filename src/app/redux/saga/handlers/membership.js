@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import { call, put } from "redux-saga/effects";
 
 export function* registerMembershipHandler({ payload }) {
-  console.log("registerMembershipHandler");
   try {
     const result = yield call(
       membershipRequest.registerMembershipRequest,

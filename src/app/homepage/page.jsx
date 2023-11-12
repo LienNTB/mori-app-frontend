@@ -35,8 +35,6 @@ const HomePage = (props) => {
       };
       dispatch(getCurrentAccount(newAccount));
     }
-
-
   }, [])
 
 

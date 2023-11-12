@@ -17,7 +17,6 @@ export const getAllBooksRequest = async () => {
 };
 
 export const getBookByIdRequest = async (id) => {
-  console.log("get book by id");
   return fetch(`http://localhost:8080/api/book/get-book/${id}`, {
     method: "GET",
     headers: {

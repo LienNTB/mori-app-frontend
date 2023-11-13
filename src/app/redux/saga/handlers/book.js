@@ -29,7 +29,8 @@ export function* getBookByIdHandler({ payload }) {
   }
 }
 
-export function* searchBooksHandler({ type, payload }) {
+export function* searchBooksHandler({ payload }) {
+  console.log("searchBooksHandler");
   let books = store.getState().books.books;
   try {
     let filteredBooks = books.filter((item) => {
@@ -39,12 +40,15 @@ export function* searchBooksHandler({ type, payload }) {
       )
         return item;
     });
+    console.log("filteredBooks", filteredBooks);
+    console.log("books", books);
 
     yield put({
       type: types.SEARCH_BOOKS_SUCCESS,
       filteredBooks: filteredBooks,
     });
   } catch (e) {
+    console.log("err:", e);
     yield put({ type: types.SEARCH_BOOKS_FAILED, message: e.message });
   }
 }

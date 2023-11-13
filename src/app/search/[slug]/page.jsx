@@ -25,6 +25,10 @@ const SearchBook = () => {
     dispatch(searchBooks(decodeURIComponent(params.slug)));
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(getBooks())
+  }, [])
+
   return (
     <div className={styles.homePageContainer}>
       <Header />

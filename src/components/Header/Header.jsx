@@ -57,7 +57,7 @@ const Header = () => {
             <div className={styles.searchBarContainer}>
               <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
                 onChange={(e) => setSearchValue(e.target.value)} />
-              <Link href="/search">
+              <Link href={`/search/${searchValue}`}>
                 <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
                   Tìm kiếm
                 </button>

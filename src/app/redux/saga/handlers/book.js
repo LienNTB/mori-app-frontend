@@ -67,9 +67,12 @@ export function* increaseTotalReadHandler({ payload }) {
   }
 }
 
-export function* increaseTotalSavedHandler({ payload }) {
+export function* increaseTotalSavedHandler(payload) {
+  console.log("increaseTotalSavedHandler");
+  console.log("payload:", payload);
   try {
-    yield call(bookRequest.increaseTotalSavedRequest, payload);
+    const result = yield call(bookRequest.increaseTotalSavedRequest, payload);
+    console.log("result:", result);
     yield put({
       type: types.INCREASE_TOTAL_SAVED_SUCCESS,
     });

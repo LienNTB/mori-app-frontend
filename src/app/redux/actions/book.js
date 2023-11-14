@@ -18,7 +18,9 @@ export const increaseTotalRead = (id) => ({
   type: type.INCREASE_TOTAL_READ_REQUESTED,
   payload: id,
 });
-export const increaseTotalSaved = (id) => ({
+export const increaseTotalSaved = (bookId, accountId) => ({
   type: type.INCREASE_TOTAL_SAVED_REQUESTED,
-  payload: id,
+
+  bookId: bookId,
+  accountId: accountId,
 });

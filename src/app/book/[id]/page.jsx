@@ -3,7 +3,7 @@ import { faEye, faEyeDropper, faHeart, faSave, faStar } from '@fortawesome/free-
 import Link from 'next/link';
 import Tag from '@/components/Tag/Tag';
 import styles from './book.module.scss'
-import { getBookById, getBooks } from '@/app/redux/actions/book';
+import { getBookById, getBooks, increaseTotalSaved } from '@/app/redux/actions/book';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { redirect, useParams } from 'next/navigation'
@@ -41,7 +41,8 @@ function Book() {
       console.log('request:', request)
       console.log('addBookResult:', addBookResult)
       dispatch(addBookToLibrary(request))
-      if (addBookResult === 0) {
+      dispatch(increaseTotalSaved(book._id, currentAccount._id))
+      if (addBookResult === 0 || addBookResult === "") {
         toast("Thêm sách vào thư viện thành công!", {
           autoClose: 2000,
           type: "success",
@@ -127,7 +128,7 @@ function Book() {
                 <div className={styles.statItem}>
                   <small>Đánh dấu</small>
                   <strong>
-                    <FontAwesomeIcon className={styles.icon} icon={faSave} width={20} height={20} />{book.totalSaved}
+                    <FontAwesomeIcon className={styles.icon} icon={faSave} width={20} height={20} />{book.totalSaved.length}
                   </strong>
                 </div>
               </div>

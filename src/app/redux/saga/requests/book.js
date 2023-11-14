@@ -48,18 +48,21 @@ export const increaseTotalReadRequest = async (id) => {
     });
 };
 
-export const increaseTotalSavedRequest = async (id) => {
-  return fetch(`http://localhost:8080/api/book/total-saved/${id}`, {
+export const increaseTotalSavedRequest = async (payload) => {
+  return fetch(`http://localhost:8080/api/book/total-saved/${payload.bookId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      user: payload.accountId,
+    }),
   })
     .then((response) => {
       return response.json();
     })
 
     .catch((error) => {
-      throw error;
+      console.log("error:", error);
     });
 };

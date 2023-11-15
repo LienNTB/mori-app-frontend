@@ -3,6 +3,7 @@ import * as type from "../../types";
 import * as request from "../requests/myLibrary";
 
 export function* getBooksFromMyLibraryHandler({ payload }) {
+  console.log("getBooksFromMyLibraryHandler");
   try {
     const result = yield call(request.getBooksFromMyLibraryRequest, payload);
     console.log("result:", result);

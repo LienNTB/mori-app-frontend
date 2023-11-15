@@ -7,4 +7,8 @@ export default function* membershipSaga() {
     type.REGISTER_MEMBERSHIP_REQUESTED,
     handler.registerMembershipHandler
   );
+  yield takeEvery(
+    type.GET_MEMBERSHIP_BY_ID_REQUESTED,
+    handler.getMembershipByIdHandler
+  );
 }

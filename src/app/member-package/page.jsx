@@ -1,5 +1,5 @@
 "use client"
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styles from './member-package.module.scss'
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
@@ -11,14 +11,15 @@ import { toast } from "react-toastify";
 import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
 import { redirect } from 'next/navigation'
 import { useRouter } from 'next/navigation'
+import Loading from '@/components/Loading/Loading'
+import * as request from "../redux/saga/requests/membership"
 
 const MemberPackage = () => {
   const router = useRouter()
   const [membertype, setMembertype] = useState(null);
   const dispatch = useDispatch()
   const currentAccount = useSelector(state => state.accounts.currentAccount);
-  const registerResult = useSelector(state => state.memberships.message)
-
+  // const registerResult = useSelector(state => state.memberships.message)
   const { user } = UserAuth();
 
   useEffect(() => {
@@ -42,7 +43,6 @@ const MemberPackage = () => {
   const getExpiredDate = () => {
     const currentDate = new Date()
     const expiredDate = new Date(currentDate)
-
     // define when expire date is on and calculate
     if (membertype === "year") expiredDate.setDate(currentDate.getDate() + 365)
     else if (membertype === "3month") expiredDate.setDate(currentDate.getDate() + 90)
@@ -63,34 +63,43 @@ const MemberPackage = () => {
     console.log('The expiration date is still valid.'); // Perform actions for a valid date
   }
 
-  console.log("currentAccount", currentAccount)
+  const [loadingRegister, setLoadingRegister] = useState(false)
+  const [registerResult, setRegisterResult] = useState(null)
+  const toastId = useRef(null)
+  const handleRegisterMembership = async (membership) => {
+    toastId.current = toast.loading("Loading...")
+    await request.registerMembershipRequest(membership).
+      then((res) => {
+        if (res === 0) {
+          toast.update(toastId.current, { render: "Đăng kí gói cước thành công!", type: "success", isLoading: false, autoClose: 2000, });
+        }
+        if (res === 1) {
+          toast.update(toastId.current, { render: "Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!", type: "error", isLoading: false, autoClose: 2000, });
+        }
+      }).catch(err => {
+        toast.update(toastId.current, {
+          render: "Vui lòng thử lại!",
+          autoClose: 2000,
+          type: "info",
+        });
+      });
+  }
+
+  console.log('loadingRegister:', loadingRegister)
+
   const handleMemberRegisterBtnOnlick = () => {
-    console.log("handleMemberRegisterBtnOnlick")
     if (currentAccount === null) {
       router.push("/login")
     }
     else {
-      const membership = {
-        user: currentAccount._id,
-        type: membertype,
-        start_date: getCurrentDate(),
-        outdated_on: getExpiredDate()
-      }
-      var register = confirm("Bạn muốn đăng kí member?");
-      if (register == true) {
-        dispatch(registerMembership(membership));
-        if (registerResult === 0) {
-          toast("Đăng kí gói cước thành công!", {
-            autoClose: 2000,
-            type: "success",
-          });
+      if (membertype) {
+        const membership = {
+          user: currentAccount._id,
+          type: membertype,
+          start_date: getCurrentDate(),
+          outdated_on: getExpiredDate()
         }
-        if (registerResult === 1) {
-          toast("Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!", {
-            autoClose: 2000,
-            type: "error",
-          });
-        }
+        handleRegisterMembership(membership)
       }
 
 
@@ -124,6 +133,7 @@ const MemberPackage = () => {
             </div>
           </div>
         </div>
+
         <div className={styles.packageList}>
           <div className={styles.packageItem}>
             <div className={styles.titleWrapper}>

@@ -16,7 +16,25 @@ export function* registerMembershipHandler({ payload }) {
   } catch (e) {
     yield put({
       type: type.REGISTER_MEMBERSHIP_FAILED,
-      message: result,
+      message: e,
+    });
+  }
+}
+export function* getMembershipByIdHandler({ payload }) {
+  console.log("getMembershipByIdHandler");
+  try {
+    const result = yield call(
+      membershipRequest.getMembershipByIdRequest,
+      payload
+    );
+    yield put({
+      type: type.GET_MEMBERSHIP_BY_ID_SUCCESS,
+      payload: result.membership,
+    });
+  } catch (e) {
+    yield put({
+      type: type.REGISTER_MEMBERSHIP_FAILED,
+      message: e,
     });
   }
 }

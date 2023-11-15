@@ -33,6 +33,7 @@ import {
   TableBody, TableRow, TableContainer, TableCaption, Thead, Tr, Td, Th, Tbody, Tfoot
 } from '@nextui-org/react'
 import { getCurrentAccount } from '@/app/redux/actions/account'
+import { getMembershipById } from '@/app/redux/actions/membership'
 
 const Profile = () => {
   const params = useParams()
@@ -43,17 +44,18 @@ const Profile = () => {
   const isLoading = useSelector(state => state.myLibrary.loading)
   const currentAccount = useSelector(state => state.accounts.currentAccount);
   const deleteBookResult = useSelector(state => state.myLibrary.message);
+  const membership = useSelector(state => state.memberships.membership)
+  const isLoadingMembership = useSelector(state => state.memberships.loading)
   const [click, setClick] = useState(0)
   const dispatch = useDispatch();
   const { user } = UserAuth()
-
+  console.log("membership:", membership)
+  console.log("booksLibrary:", booksLibrary)
   const handleDeleteBook = (choosenBook) => {
     var request = {
       user: currentAccount._id,
       book: choosenBook
     }
-    console.log("request:", request)
-    console.log("deleteBookResult:", deleteBookResult)
     dispatch(deleteBookFromLibrary(request))
     if (deleteBookResult === 0) {
       toast("Xoá sách khỏi thư viện thành công!", {
@@ -89,6 +91,12 @@ const Profile = () => {
   useEffect(() => {
     getCurrentUser();
   }, [])
+  useEffect(() => {
+    if (currentAccount) {
+      console.log("currentAccount._id:", currentAccount._id)
+      dispatch(getMembershipById(currentAccount._id))
+    }
+  }, [currentAccount])
   useEffect(() => {
     if (currentAccount) {
       dispatch(getBooksFromMyLibrary(currentAccount._id))
@@ -153,6 +161,10 @@ const Profile = () => {
               <Link href="/account/history" >
                 Lịch sử đọc             </Link>
             </div>
+            <div className={styles.navItem}>
+              <Link href="/account/membership" >
+                Thông tin hội viên</Link>
+            </div>
           </div>
         </section>
         {/* profile section */}
@@ -187,12 +199,12 @@ const Profile = () => {
             <div className={styles.title}>
               Tiêu đề sách, truyện
             </div>
-            <div className="flex flex-wrap gap-4">
+            {/* <div className="flex flex-wrap gap-4">
               <Tabs variant="solid" color="primary" aria-label="Tabs variants">
                 <Tab key="sachdangdoc" title="Sách đang đọc" />
                 <Tab key="sachyeuthich" title="Sách yêu thích" />
               </Tabs>
-            </div>
+            </div> */}
           </div>
           <div className={styles.libraryBody}>
 
@@ -257,6 +269,43 @@ const Profile = () => {
                 </TableRow>
               </TableBody>
             </Table>
+          </div>
+        </section> : <></>}
+        {/* membership section */}
+        {currentTopic == "membership" ? <section className={styles.profileInfo}>
+          <div className={styles.uHead}>
+            <div className={styles.title}>Thông tin hội viên</div>
+          </div>
+          <div className={styles.uTable}>
+            {isLoadingMembership ? <Loading /> :
+              <Table hideHeader aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn></TableColumn>
+                  <TableColumn></TableColumn>
+                </TableHeader>
+                <TableBody>
+                  <TableRow key="1">
+                    <TableCell>Họ tên</TableCell>
+                    <TableCell>{user.displayName}</TableCell>
+                  </TableRow>
+                  <TableRow key="2">
+                    <TableCell>Gói hội viên</TableCell>
+                    <TableCell>{membership.type === "1month" ? "Gói 1 tháng" : ""}
+                      {membership.type === "year" ? "Gói năm" : ""}
+                      {membership.type === "3month" ? "Gói 3 tháng" : ""}</TableCell>
+                  </TableRow>
+                  <TableRow key="2">
+                    <TableCell>Ngày đăng kí</TableCell>
+                    <TableCell>{membership.start_date}</TableCell>
+                  </TableRow>
+                  <TableRow key="2">
+                    <TableCell>Ngày hết hạn</TableCell>
+                    <TableCell>{membership.outdated_on}</TableCell>
+                  </TableRow>
+
+
+                </TableBody>
+              </Table>}
           </div>
         </section> : <></>}
       </div>

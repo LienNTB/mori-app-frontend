@@ -13,11 +13,11 @@ import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addBookToLibrary } from '@/app/redux/actions/myLibrary';
-import { toast } from 'react-toastify';
-import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
+import { Toaster, toast } from "react-hot-toast";
+
 import { UserAuth } from '@/app/context/AuthContext';
 import { getCurrentAccount } from '@/app/redux/actions/account';
-
+import * as libraryRequest from '../../redux/saga/requests/myLibrary'
 
 function Book() {
   const { user } = UserAuth()
@@ -38,22 +38,27 @@ function Book() {
         user: currentAccount._id,
         book: book
       }
-      console.log('request:', request)
-      console.log('addBookResult:', addBookResult)
-      dispatch(addBookToLibrary(request))
       dispatch(increaseTotalSaved(book._id, currentAccount._id))
-      if (addBookResult === 0 || addBookResult === "") {
-        toast("Thêm sách vào thư viện thành công!", {
-          autoClose: 2000,
-          type: "success",
-        });
-      }
-      if (addBookResult === 1) {
-        toast("Sách đã tồn tại trong thư viện!", {
-          autoClose: 2000,
-          type: "info",
-        });
-      }
+
+      toast.promise(
+        new Promise((resolve, reject) => {
+          libraryRequest.addBookToLibraryRequest(request)
+            .then((resp) => {
+              if (resp === 0) {
+                resolve("Thêm sách vào thư viện thành công!")
+              }
+              if (resp === 1) {
+                reject(new Error("Sách đã tồn tại trong thư viện!"));
+              }
+            })
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+
     }
   }
   const getCurrentUser = () => {
@@ -211,7 +216,7 @@ function Book() {
         </section>
       </div> : <Loading />}
       <Footer />
-      <ToastContainerWrapper />
+      <Toaster />
 
     </div></>);
 }

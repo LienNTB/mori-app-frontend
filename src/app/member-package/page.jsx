@@ -7,12 +7,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { registerMembership } from '../redux/actions/membership'
 import { UserAuth } from '../context/AuthContext'
 import { createNewAccount, getCurrentAccount } from '../redux/actions/account'
-import { toast } from "react-toastify";
-import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
+// import { toast } from "react-toastify";
+// import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
 import { redirect } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import Loading from '@/components/Loading/Loading'
 import * as request from "../redux/saga/requests/membership"
+import { Toaster, toast } from "react-hot-toast";
 
 const MemberPackage = () => {
   const router = useRouter()
@@ -67,25 +68,30 @@ const MemberPackage = () => {
   const [registerResult, setRegisterResult] = useState(null)
   const toastId = useRef(null)
   const handleRegisterMembership = async (membership) => {
-    toastId.current = toast.loading("Loading...")
-    await request.registerMembershipRequest(membership).
-      then((res) => {
-        if (res === 0) {
-          toast.update(toastId.current, { render: "Đăng kí gói cước thành công!", type: "success", isLoading: false, autoClose: 2000, });
-        }
-        if (res === 1) {
-          toast.update(toastId.current, { render: "Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!", type: "error", isLoading: false, autoClose: 2000, });
-        }
-      }).catch(err => {
-        toast.update(toastId.current, {
-          render: "Vui lòng thử lại!",
-          autoClose: 2000,
-          type: "info",
-        });
-      });
+
+    toast.promise(
+      new Promise((resolve, reject) => {
+        request.registerMembershipRequest(membership)
+          .then((resp) => {
+            if (resp === 0) {
+              resolve("Đăng kí gói cước thành công!")
+            }
+            if (resp === 1) {
+              reject(new Error("Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!"));
+            }
+          })
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error.message,
+      }
+    );
+
+
+
   }
 
-  console.log('loadingRegister:', loadingRegister)
 
   const handleMemberRegisterBtnOnlick = () => {
     if (currentAccount === null) {
@@ -199,7 +205,7 @@ const MemberPackage = () => {
         </div>
       </div>
       <Footer />
-      <ToastContainerWrapper />
+      <Toaster />
     </div>
   )
 }

@@ -66,3 +66,22 @@ export const increaseTotalSavedRequest = async (payload) => {
       console.log("error:", error);
     });
 };
+
+export const findBookByCategoryRequest = async (payload) => {
+  return fetch(`http://localhost:8080/api/book/get-book/category`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      searchValue: payload,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      console.log("error:", error);
+    });
+};

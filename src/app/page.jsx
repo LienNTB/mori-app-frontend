@@ -11,8 +11,8 @@ async function generateStaticParams() {
     books: bookRes.books,
     tags: tagRes.allTags
   })
-
 }
+
 export default async function Home() {
   const { books, tags } = await generateStaticParams()
 

@@ -1,43 +1,33 @@
 "use client"
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
-import React, { useCallback, useMemo, useState } from 'react'
-import styles from "./homepage.module.scss"
+import React, { useEffect, useState } from 'react'
+import styles from "./book-category.module.scss"
 import BookItem from '@/components/BookItem/BookItem'
 import Tag from '@/components/Tag/Tag'
-import { UserAuth } from '@/app/context/AuthContext'
-
-import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-
-import { getBooks } from '../redux/actions/book'
+import { getBooks } from '@/app/redux/actions/book'
 import Loading from '@/components/Loading/Loading'
-import { createNewAccount, getCurrentAccount } from '../redux/actions/account'
-import { toast } from "react-toastify";
+import { Pagination } from "@nextui-org/react";
 
-const HomePage = (props) => {
-  const dispatch = useDispatch();
-  const books = props.books;
-  const tags = props.tags
-  const currentAccount = useSelector(state => state.accounts.currentAccount);
-  const { user } = UserAuth();
+const BookCategory = (props) => {
+  console.log("props:", props)
+  // console.log("books:", props.params)
+  const dispatch = useDispatch()
+  const books = props.books
+  // const isLoading = useSelector(state => state.books.loading)
 
+  const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
-    if (user != null && currentAccount == null) {
-      let newAccount = {
-        email: user.email,
-        displayName: user.displayName,
-        avatar: user.photoURL,
-      };
-      dispatch(getCurrentAccount(newAccount));
-    }
-  }, [])
+    dispatch(getBooks());
+  }, [dispatch]);
+
 
 
   return (
-
     <div className={styles.homePageContainer}>
       <Header />
+
       <div className={styles.homePageContent}>
         <div className={styles.headContent} >
           <h1>Sách hay, hot, sách online miễn phí</h1>
@@ -48,30 +38,10 @@ const HomePage = (props) => {
           </div>
         </div>
         <section className={styles.bookSectionContainer}>
-          <div class={styles.sectionHeader}>
-            <h3>Thể loại sách</h3>
-          </div>
-          <div className={styles.ruler}>
-
-          </div>
-          <div className={styles.sectionBody}>
-            <div className={styles.tagList}>
-              {
-                tags.map((tag) => (
-                  <Tag name={tag.description} link={`/book-category/${tag.name}`} />
-
-                ))
-              }
-
-
-            </div>
-          </div>
         </section>
         <section className={styles.bookSectionContainer}>
           <div class={styles.sectionHeader}>
-            <h3>Sách hay nên đọc</h3>
-            <a title="Sách hay nên đọc" href="/book-category/sach-hay"
-              class="getmorebtn" >Xem thêm</a>
+            <h3>Sách theo thể loại</h3>
           </div>
           <div className={styles.ruler}>
 
@@ -87,9 +57,15 @@ const HomePage = (props) => {
                   )
                 })
               }
+
             </div>
           </div>
         </section>
+        <div className={styles.pagination} >
+          <Pagination total={10} initialPage={1}
+            page={currentPage}
+            onChange={setCurrentPage} />
+        </div>
       </div>
 
 
@@ -99,4 +75,4 @@ const HomePage = (props) => {
 }
 
 
-export default HomePage
+export default BookCategory

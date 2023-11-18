@@ -17,6 +17,7 @@
     "@mui/material": "^5.14.12",
     "@nextui-org/react": "^2.1.13",
     "@redux-devtools/extension": "^3.2.5",
+    "@splidejs/react-splide": "^0.7.12",
     "axios": "^1.5.1",
     "boostrap": "^2.0.0",
     "eslint": "8.49.0",

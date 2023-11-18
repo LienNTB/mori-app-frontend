@@ -5,7 +5,7 @@ import Tag from '@/components/Tag/Tag';
 import styles from './book.module.scss'
 import { getBookById, getBooks, increaseTotalSaved } from '@/app/redux/actions/book';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { redirect, useParams } from 'next/navigation'
 import Loading from '@/components/Loading/Loading';
 import BookItem from '@/components/BookItem/BookItem';
@@ -14,10 +14,15 @@ import Footer from '@/components/Footer/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addBookToLibrary } from '@/app/redux/actions/myLibrary';
 import { Toaster, toast } from "react-hot-toast";
-
+import { Splide, SplideSlide } from "@splidejs/react-splide";
+import "@splidejs/react-splide/css";
+import "@splidejs/react-splide/css/sea-green";
+import "@splidejs/react-splide/css/core";
 import { UserAuth } from '@/app/context/AuthContext';
 import { getCurrentAccount } from '@/app/redux/actions/account';
 import * as libraryRequest from '../../redux/saga/requests/myLibrary'
+import { Badge } from "@nextui-org/react";
+
 
 function Book() {
   const { user } = UserAuth()
@@ -26,10 +31,44 @@ function Book() {
   const book = useSelector(state => state.books.book);
   const currentAccount = useSelector(state => state.accounts.currentAccount);
   const addBookResult = useSelector(state => state.myLibrary.message)
+  // const [similarProducts, setSimilarProducts] = useState(similarProductList);
+  const [similarProducts, setSimilarProducts] = useState([]);
+  const [reviewRating, setReviewRating] = useState("5/5");
+  const [email, setEmail] = useState("");
+  const [starHover, setStarHover] = useState(0);
+  const [rating, setRating] = useState(5);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+
   const params = useParams()
   const id = params.id;
 
-  console.log("currentAccount:", currentAccount)
+  const handleSendReview = () => {
+    if (name === "" || email === "" || title === "" || content === "") {
+      toast("Vui lòng nhập đủ thông tin!", {
+        hideProgressBar: true,
+        autoClose: 2000,
+        type: "info",
+        position: "top-right",
+      });
+    } else {
+      const review = {
+        name: name,
+        email: email,
+        rating: reviewRating,
+        title: title,
+        content: content,
+      };
+
+      setName("");
+      setEmail("");
+      setReviewRating("5/5");
+      setRating(5);
+      setTitle("");
+      setContent("");
+    }
+  };
 
   const handleSaveToLibrary = () => {
     var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
@@ -192,27 +231,378 @@ function Book() {
           </div>
 
         </section>
-        <section className={styles.relatedBooks}>
-          <div className={styles.title}>
-            <h1>Sách Tâm Lý - Kỹ Năng Sống hay</h1>
 
+        <section className={styles.productReview}>
+          <div className={styles.reviewHeader}>
+            <div className={styles.writeReviewBtn}>Viết đánh giá</div>
           </div>
-          {/* <div className={styles.bookList}>
-            {isLoading ? <Loading />
-              :
-              <>
-                {
-                  books.map(book => {
-                    return (
-                      <div className={styles.bookItem}>
-                        <BookItem book={book} />
+          <div className={styles.reviewForm}>
+            <div className={styles.header}>Viết đánh giá mới</div>
+            <fieldset>
+              <label className={styles.title}>Đánh giá</label>
+              <div className={styles.reviewStars}>
+                {/* <FontAwesomeIcon icon={faStar} />
+                <FontAwesomeIcon icon={faStar} />
+                <FontAwesomeIcon icon={faStar} />
+                <FontAwesomeIcon icon={faStar} /> */}
+
+                {[...Array(5)].map((star, index) => {
+                  index += 1;
+                  return (
+                    <FontAwesomeIcon
+                      icon={faStar}
+                      className={
+                        index <= (starHover || rating)
+                          ? styles.on
+                          : styles.off
+                      }
+                      onClick={() => {
+                        setRating(index);
+                        setReviewRating(index + "/5");
+                      }}
+                      onMouseEnter={() => setStarHover(index)}
+                      onMouseLeave={() => setStarHover(rating)}
+                    />
+                  );
+                })}
+              </div>
+            </fieldset>
+            <fieldset>
+              <label>Nội dung</label>
+              <textarea
+                type="text"
+                name=""
+                placeholder="Viết nội dung đánh giá ở đây"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+            </fieldset>
+            <div
+              className={styles.sendReviewBtn}
+              onClick={handleSendReview}
+            >
+              Gửi đánh giá
+            </div>
+          </div>
+        </section>
+        <section>
+          <div className={styles.reviewTitleWrapper}>
+            <h1 className={styles.header}>Đánh giá</h1>
+            <div className={styles.ruler}></div>
+          </div>
+          <div className={styles.productReviewWrapper}>
+            <div className={styles.reviewSidebar}>
+              <div className={styles.ratingOverview}>
+                <div className={styles.rating__current}>5</div>
+                <div className={styles.rating__left}>
+                  <div className={styles.ratingStars}>
+                    <div className={styles.rating__star}>
+                      <div className={styles.reviewStars}>
+                        <FontAwesomeIcon icon={faStar} />
+                        <FontAwesomeIcon icon={faStar} />
+                        <FontAwesomeIcon icon={faStar} />
+                        <FontAwesomeIcon icon={faStar} />
+                        <FontAwesomeIcon icon={faStar} />
                       </div>
-                    )
-                  })
-                }
-              </>
-            }
-          </div> */}
+                    </div>
+                    <div className={styles.rating__secondary}>
+                      (Đánh giá: 3)
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.starDetail}>
+                <div className={styles.starLines}>
+                  <div>5</div>
+                  <div>
+                    <FontAwesomeIcon
+                      className={styles.star}
+                      icon={faStar}
+                    />
+                  </div>
+
+                  <progress
+                    className={styles.starLine__line}
+                    max="100"
+                    value="100"
+                  ></progress>
+                  <div className={styles.starLine__percentage}>100%</div>
+                </div>
+                <div className={styles.starLines}>
+                  <div>4</div>
+                  <div>
+                    <FontAwesomeIcon
+                      className={styles.star}
+                      icon={faStar}
+                    />
+                  </div>
+
+                  <progress
+                    className={styles.starLine__line}
+                    max="100"
+                    value="0"
+                  ></progress>
+                  <div className={styles.starLine__percentage}>100%</div>
+                </div>
+                <div className={styles.starLines}>
+                  <div>3</div>
+                  <div>
+                    <FontAwesomeIcon
+                      className={styles.star}
+                      icon={faStar}
+                    />
+                  </div>
+
+                  <progress
+                    className={styles.starLine__line}
+                    max="100"
+                    value="0"
+                  ></progress>
+                  <div className={styles.starLine__percentage}>100%</div>
+                </div>
+                <div className={styles.starLines}>
+                  <div>2</div>
+                  <div>
+                    <FontAwesomeIcon
+                      className={styles.star}
+                      icon={faStar}
+                    />
+                  </div>
+
+                  <progress
+                    className={styles.starLine__line}
+                    max="100"
+                    value="0"
+                  ></progress>
+                  <div className={styles.starLine__percentage}>100%</div>
+                </div>
+                <div className={styles.starLines}>
+                  <div>1</div>
+                  <div>
+                    <FontAwesomeIcon
+                      className={styles.star}
+                      icon={faStar}
+                    />
+                  </div>
+
+                  <progress
+                    className={styles.starLine__line}
+                    max="100"
+                    value="0"
+                  ></progress>
+                  <div className={styles.starLine__percentage}>100%</div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.reviewMainContent}>
+              <div className={styles.reviewNavigation}>
+                <div className={styles.reviewNavigationList}>
+                  <div className={styles.reviewNavigationItemChoosen}>
+                    All review
+                  </div>
+                  <div className={styles.reviewNavigationItem}>
+                    <FontAwesomeIcon
+                      className={styles.star}
+                      icon={faStar}
+                    />
+                    <div
+                      className={styles.reviewNavigationItem__starNumber}
+                    >
+                      5
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.ruler}></div>
+              <div className={styles.reviewPosts}>
+                <div className={styles.productReviewPost}>
+                  <div className={styles.reviewCustomerWrapper}>
+                    <div className={styles.reviewAvatar}>
+                      <img
+                        src="https://i.pinimg.com/564x/ba/8d/3b/ba8d3bdd8e3ba9335d3c28bd351ce183.jpg"
+                        alt=""
+                      />
+                    </div>
+                    <div className={styles.reviewProfileWrapper}>
+                      <div className={styles.reviewCustomerName}>
+                        Nguyễn Thị Dịu Hiền
+                      </div>
+                      <div className={styles.reviewProfile}>
+                        <div className={styles.reviewTimeRating}>
+                          <div className={styles.reviewTime}>
+                            11/10/2021, 13:42
+                          </div>
+                          <div className={styles.reviewRating}>
+                            <div className={styles.reviewStars}>
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.reviewContent}>
+                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
+                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
+                  </div>
+                </div>
+                <div className={styles.productReviewPost}>
+                  <div className={styles.reviewCustomerWrapper}>
+                    <div className={styles.reviewAvatar}>
+                      <img
+                        src="https://i.pinimg.com/564x/ba/8d/3b/ba8d3bdd8e3ba9335d3c28bd351ce183.jpg"
+                        alt=""
+                      />
+                    </div>
+                    <div className={styles.reviewProfileWrapper}>
+                      <div className={styles.reviewCustomerName}>
+                        Nguyễn Thị Dịu Hiền
+                      </div>
+                      <div className={styles.reviewProfile}>
+                        <div className={styles.reviewTimeRating}>
+                          <div className={styles.reviewTime}>
+                            11/10/2021, 13:42
+                          </div>
+                          <div className={styles.reviewRating}>
+                            <div className={styles.reviewStars}>
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.reviewContent}>
+                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
+                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
+                  </div>
+                </div>
+                <div className={styles.productReviewPost}>
+                  <div className={styles.reviewCustomerWrapper}>
+                    <div className={styles.reviewAvatar}>
+                      <img
+                        src="https://i.pinimg.com/564x/ba/8d/3b/ba8d3bdd8e3ba9335d3c28bd351ce183.jpg"
+                        alt=""
+                      />
+                    </div>
+                    <div className={styles.reviewProfileWrapper}>
+                      <div className={styles.reviewCustomerName}>
+                        Nguyễn Thị Dịu Hiền
+                      </div>
+                      <div className={styles.reviewProfile}>
+                        <div className={styles.reviewTimeRating}>
+                          <div className={styles.reviewTime}>
+                            11/10/2021, 13:42
+                          </div>
+                          <div className={styles.reviewRating}>
+                            <div className={styles.reviewStars}>
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.reviewContent}>
+                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
+                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
+                  </div>
+                </div>
+                <div className={styles.productReviewPost}>
+                  <div className={styles.reviewCustomerWrapper}>
+                    <div className={styles.reviewAvatar}>
+                      <img
+                        src="https://i.pinimg.com/564x/ba/8d/3b/ba8d3bdd8e3ba9335d3c28bd351ce183.jpg"
+                        alt=""
+                      />
+                    </div>
+                    <div className={styles.reviewProfileWrapper}>
+                      <div className={styles.reviewCustomerName}>
+                        Nguyễn Thị Dịu Hiền
+                      </div>
+                      <div className={styles.reviewProfile}>
+                        <div className={styles.reviewTimeRating}>
+                          <div className={styles.reviewTime}>
+                            11/10/2021, 13:42
+                          </div>
+                          <div className={styles.reviewRating}>
+                            <div className={styles.reviewStars}>
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                              <FontAwesomeIcon icon={faStar} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.reviewContent}>
+                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
+                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className={styles.moreProducts}>
+          <div className={styles.header}>Sách cùng loại</div>
+          <Splide
+            className={styles.splideType1}
+            options={{
+              type: "loop",
+              perPage: 1,
+              perMove: 1,
+            }}
+            aria-label="My Favorite Images"
+          >
+            {similarProducts.map((productItem) => (
+              <SplideSlide>
+                <ProductItemSplide
+                  itemsPerRow={1}
+                  product={productItem}
+                  id={productItem._id}
+                />
+              </SplideSlide>
+            ))}
+          </Splide>
+          <Splide
+            className={styles.splideType2}
+            options={{
+              type: "loop",
+              perPage: 3,
+              perMove: 1,
+            }}
+            aria-label="My Favorite Images"
+          >
+            {similarProducts.map((productItem) => (
+              <SplideSlide>
+                <ProductItemSplide
+                  itemsPerRow={1}
+                  product={productItem}
+                  id={productItem._id}
+                />
+              </SplideSlide>
+            ))}
+          </Splide>
         </section>
       </div> : <Loading />}
       <Footer />

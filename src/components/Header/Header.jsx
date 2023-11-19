@@ -18,12 +18,15 @@ const Header = () => {
   const [isOpenListbox, setIsOpenListbox] = useState(false)
   const [isOpenMenuList, setIsOpenMenuList] = useState(false)
   const [searchValue, setSearchValue] = useState("")
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
+
   const router = useRouter();
   const { user, logOut } = UserAuth();
 
   const handleSignOut = async () => {
     try {
       await logOut();
+      setAuthenticated(null)
       localStorage.removeItem("authenticated")
     }
     catch (err) {
@@ -65,7 +68,7 @@ const Header = () => {
             </div>
           </div>
 
-          {user ? (<>
+          {authenticated ? (<>
             <Link className={styles.right} href={"/account/profile"}>
               Tài khoản cá nhân
             </Link>
@@ -115,7 +118,7 @@ const Header = () => {
 
           </div>
           {isOpenMenuList ? <div className={styles.menuList}>
-            {user ? <>
+            {authenticated ? <>
               <div className={styles.menuItem}>
                 Danh mục
               </div>

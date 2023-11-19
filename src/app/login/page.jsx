@@ -7,18 +7,22 @@ import { redirect } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { createNewAccount, getCurrentAccount } from "../redux/actions/account"
 import { useSelector } from 'react-redux'
-import { toast } from "react-toastify";
+import { Toaster, toast } from "react-hot-toast";
 import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
 import { Nunito } from 'next/font/google'
 import { fontWeight } from '@mui/system'
 import Link from 'next/link'
+import { loginAccountRequest } from '../redux/saga/requests/account'
 
 
 const Login = () => {
   const { user, googleSignIn } = UserAuth();
-
   const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
   const dispatch = useDispatch()
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("")
+
+
   async function handleSignInGoogle() {
     try {
       const googleLogin = await googleSignIn()
@@ -32,6 +36,44 @@ const Login = () => {
       console.log("err:", err)
     }
 
+  }
+
+  const handleSignIn = () => {
+
+    if (username == "" || password == "") {
+      toast.error("Vui lòng nhập đủ thông tin!", {
+        duration: 2000, position: 'top-center',
+      })
+    }
+    else {
+      const account = {
+        username: username,
+        password: password
+      }
+      toast.promise(
+        new Promise((resolve, reject) => {
+          loginAccountRequest(account)
+            .then((resp) => {
+              if (resp.msg) {
+                resolve("Đăng nhập thành công!");
+                localStorage.setItem("authenticated", true);
+                localStorage.setItem("user", resp.user._id);
+                setAuthenticated(localStorage.getItem("authenticated"))
+              }
+              else {
+                console.log("resp:", resp)
+                reject(new Error(resp));
+              }
+            })
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+
+    }
   }
 
 
@@ -58,26 +100,11 @@ const Login = () => {
   }, [authenticated])
 
   return (
-    // <div className={styles.loginContainer}>
-    //   <div className={styles.main}>
-    //     <p className={styles.sign} align="center">Chào mừng bạn đến với Mori</p>
-    //     <div className={styles.loginButtons}>
-    //       <button onClick={() => handleSignInGoogle()} >
-    //         <Image src="/google.png" width={20}
-    //           height={20} />
-    //         Tiếp tục với Google</button>
-    //       {/* <button onClick={() => handleSignInFacebook()}><Image src="/facebook.png" width={20}
-    //         height={20}
-
-    //       />Tiếp tục với Facebook</button> */}
-    //     </div>
-    //   </div>
-    //   <ToastContainerWrapper />
-
-    // </div>
 
 
     <>
+      <Toaster />
+
       <div className={styles.div}>
         <div className={styles.div2}>
           <div className={styles.column}>
@@ -97,9 +124,11 @@ const Login = () => {
                 </span>
               </div>
               <div className={styles.div6}>Username</div>
-              <input className={styles.div7} />
+              <input className={styles.div7} value={username}
+                onChange={e => setUsername(e.target.value)} />
               <div className={styles.div8}>Password</div>
-              <input className={styles.div9} />
+              <input className={styles.div9} type='password' value={password}
+                onChange={e => setPassword(e.target.value)} />
 
               <div className={styles.div10}>
                 {/* <div className={styles.div11}>
@@ -112,7 +141,7 @@ const Login = () => {
                 </div> */}
                 <div className={styles.div13}>Forget password?</div>
               </div>
-              <div className={styles.div14}>Sign In</div>
+              <div className={styles.div14} onClick={() => handleSignIn()}>Sign In</div>
               <div className={styles.div15}>or continue with</div>
               <div className={styles.div16}>
                 <div className={styles.div17} onClick={() => handleSignInGoogle()}>

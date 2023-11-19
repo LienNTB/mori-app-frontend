@@ -17,17 +17,6 @@ import { deleteBookFromLibrary, getBooksFromMyLibrary } from '@/app/redux/action
 import Loading from '@/components/Loading/Loading'
 import { toast } from "react-toastify";
 import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
-// import {
-//   Table,
-//   Thead,
-//   Tbody,
-//   Tfoot,
-//   Tr,
-//   Th,
-//   Td,
-//   TableCaption,
-//   TableContainer,
-// } from '@chakra-ui/react'
 import {
   Tab, Tabs, TableCell, Table, TableHeader, TableColumn,
   TableBody, TableRow, TableContainer, TableCaption, Thead, Tr, Td, Th, Tbody, Tfoot

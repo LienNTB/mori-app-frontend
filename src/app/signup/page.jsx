@@ -7,17 +7,22 @@ import { redirect } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { createNewAccount, getCurrentAccount } from "../redux/actions/account"
 import { useSelector } from 'react-redux'
-import { toast } from "react-toastify";
 import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
 import { Nunito } from 'next/font/google'
 import { fontWeight } from '@mui/system'
 import Link from 'next/link'
+import { Toaster, toast } from "react-hot-toast";
+
 
 
 const SignUp = () => {
   const { user, googleSignIn } = UserAuth();
-
   const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("")
+  const [retypePassword, setRetypePassword] = useState("")
+  const [displayName, setDisplayName] = useState("")
   const dispatch = useDispatch()
   async function handleSignInGoogle() {
     try {
@@ -31,9 +36,49 @@ const SignUp = () => {
       });
       console.log("err:", err)
     }
-
   }
+  const handleSignup = () => {
+    if (username == "" || password == "" || retypePassword == "" || displayName == "" || email == "") {
+      toast.error("Vui lòng nhập đủ thông tin!", {
+        duration: 2000, position: 'top-center',
+      })
+    }
+    else if (password !== retypePassword) {
+      toast.error("Mật khẩu không khớp!", {
+        duration: 2000, position: 'top-center',
+      })
+    }
+    else {
+      const account = {
+        username: username,
+        password: password
+        // disp
+      }
+      toast.promise(
+        new Promise((resolve, reject) => {
+          loginAccountRequest(account)
+            .then((resp) => {
+              if (resp.msg) {
+                resolve("Đăng nhập thành công!");
+                localStorage.setItem("authenticated", true);
+                localStorage.setItem("user", resp.user._id);
+                setAuthenticated(localStorage.getItem("authenticated"))
+              }
+              else {
+                console.log("resp:", resp)
+                reject(new Error(resp));
+              }
+            })
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
 
+    }
+  }
 
   useEffect(() => {
     if (user) {
@@ -59,6 +104,7 @@ const SignUp = () => {
 
   return (
     <>
+      <Toaster />
       <div className={styles.div}>
         <div className={styles.div2}>
           <div className={styles.column}>
@@ -76,13 +122,24 @@ const SignUp = () => {
                 </Link>
               </div>
               <div className={styles.div6}>Email</div>
-              <input className={styles.div7} />
+              <input className={styles.div7}
+                value={email}
+                onChange={e => setEmail(e.target.value)} />
               <div className={styles.div6}>Username</div>
-              <input className={styles.div7} />
+              <input className={styles.div7}
+                value={username}
+                onChange={e => setUsername(e.target.value)} />
+              <div className={styles.div6}>Display Name</div>
+              <input className={styles.div7}
+                value={displayName}
+                onChange={e => setDisplayName(e.target.value)} />
               <div className={styles.div8}>Password</div>
-              <input type="password" className={styles.div9} />
+              <input type="password" className={styles.div9}
+                value={password}
+                onChange={e => setPassword(e.target.value)} />
               <div className={styles.div8}>Retype password</div>
-              <input type="password" className={styles.div9} />
+              <input type="password" className={styles.div9} value={retypePassword}
+                onChange={e => setRetypePassword(e.target.value)} />
 
               {/* <img
                   loading="lazy"
@@ -97,7 +154,7 @@ const SignUp = () => {
 
 
 
-              <div className={styles.div14}>Sign Up</div>
+              <div className={styles.div14} onClick={() => handleSignup()}>Sign Up</div>
 
 
             </div>

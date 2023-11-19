@@ -1,6 +1,6 @@
 "use client"
 import React, { useCallback, useEffect, useState } from 'react'
-import styles from './login.module.scss'
+import styles from "./signup.module.scss"
 import { UserAuth } from '@/app/context/AuthContext'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
@@ -14,7 +14,7 @@ import { fontWeight } from '@mui/system'
 import Link from 'next/link'
 
 
-const Login = () => {
+const SignUp = () => {
   const { user, googleSignIn } = UserAuth();
 
   const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
@@ -58,25 +58,6 @@ const Login = () => {
   }, [authenticated])
 
   return (
-    // <div className={styles.loginContainer}>
-    //   <div className={styles.main}>
-    //     <p className={styles.sign} align="center">Chào mừng bạn đến với Mori</p>
-    //     <div className={styles.loginButtons}>
-    //       <button onClick={() => handleSignInGoogle()} >
-    //         <Image src="/google.png" width={20}
-    //           height={20} />
-    //         Tiếp tục với Google</button>
-    //       {/* <button onClick={() => handleSignInFacebook()}><Image src="/facebook.png" width={20}
-    //         height={20}
-
-    //       />Tiếp tục với Facebook</button> */}
-    //     </div>
-    //   </div>
-    //   <ToastContainerWrapper />
-
-    // </div>
-
-
     <>
       <div className={styles.div}>
         <div className={styles.div2}>
@@ -84,59 +65,41 @@ const Login = () => {
             <div className={styles.div3}>
               <div className={styles.div4}>WELCOME BACK!</div>
               <div className={styles.div5}>
-                {/* <span style="font-family: Nunito, sans-serif;font-weight: 400;color: rgba(68,75,89,1);"> */}
-                <span style={{ fontWeight: 400 }}>
-                  Don’t have a account,{" "}
-                </span>
-                {/* <span style="font-family: Nunito, sans-serif;font-weight: 700;color: rgba(134,153,218,1);"> */}
-                <span style={{ fontWeight: 700 }}>
 
-                  <Link href="/signup">
-                    Sign up
-                  </Link>
+                <span style={{ fontWeight: 400 }}>
+                  Have an account?{" "}
                 </span>
+                <Link href="/login">
+                  <span style={{ fontWeight: 700 }}>
+                    Sign in
+                  </span>
+                </Link>
               </div>
+              <div className={styles.div6}>Email</div>
+              <input className={styles.div7} />
               <div className={styles.div6}>Username</div>
               <input className={styles.div7} />
               <div className={styles.div8}>Password</div>
-              <input className={styles.div9} />
+              <input type="password" className={styles.div9} />
+              <div className={styles.div8}>Retype password</div>
+              <input type="password" className={styles.div9} />
 
-              <div className={styles.div10}>
-                {/* <div className={styles.div11}>
-                  <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/b4d20115-4868-4942-8cf0-45ffa39454e5?apiKey=169beee3f9a4440abbde404efbae6ea9&"
-                    className="img-3"
-                  />
-                  <div className={styles.div12}>Remember me</div>
-                </div> */}
-                <div className={styles.div13}>Forget password?</div>
-              </div>
-              <div className={styles.div14}>Sign In</div>
-              <div className={styles.div15}>or continue with</div>
-              <div className={styles.div16}>
-                <div className={styles.div17} onClick={() => handleSignInGoogle()}>
-                  <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/20c6afde-fdd2-4e57-8fa6-84b8e4a20add?apiKey=169beee3f9a4440abbde404efbae6ea9&"
-                    className="img-4"
-                  />
-                </div>
-                {/* <div className={styles.div18}>
-                  <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/f224ea88-a67a-4b74-9b27-c5649fbd2eda?apiKey=169beee3f9a4440abbde404efbae6ea9&"
-                    className="img-5"
-                  />
-                </div>
-                <div className={styles.div19}>
-                  <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/c2d4eba2-539e-4ff1-aebb-399bd2f31479?apiKey=169beee3f9a4440abbde404efbae6ea9&"
-                    className="img-6"
-                  />
-                </div> */}
-              </div>
+              {/* <img
+                  loading="lazy"
+                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/b796b018-1d7a-4402-a600-66ab22f052d5?apiKey=169beee3f9a4440abbde404efbae6ea9&"
+                  className="img"
+                />
+                <img
+                  loading="lazy"
+                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/abe45051-4996-4750-9a67-7fe6f0801290?apiKey=169beee3f9a4440abbde404efbae6ea9&"
+                  className="img-2"
+                /> */}
+
+
+
+              <div className={styles.div14}>Sign Up</div>
+
+
             </div>
           </div>
           <div className={styles.column2}>
@@ -154,4 +117,4 @@ const Login = () => {
 }
 
 
-export default Login
+export default SignUp

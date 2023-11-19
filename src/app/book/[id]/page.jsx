@@ -216,7 +216,7 @@ function Book() {
           <div className={styles.content}>
             {book.intro}
           </div>
-          <div className={styles.tagWrapper}>
+          {/* <div className={styles.tagWrapper}>
             <div className={styles.titleWrapper}>
               <h1>Tags</h1>
               <div className={styles.line}>
@@ -239,7 +239,7 @@ function Book() {
               <Tag name="Tâm lý" link="tamly" />
               <Tag name="Tâm lý" link="tamly" /><Tag name="Tâm lý" link="tamly" />
             </div>
-          </div>
+          </div> */}
 
         </section>
 

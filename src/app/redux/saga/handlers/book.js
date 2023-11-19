@@ -17,6 +17,17 @@ export function* getAllBooksHandler() {
   }
 }
 
+export function* getBooksByCategoryHandler({ payload }) {
+  try {
+    const books = yield call(bookRequest.findBookByCategoryRequest, payload);
+    yield put({
+      type: types.GET_BOOKS_BY_CATEGORY_SUCCESS,
+      books: books.books,
+    });
+  } catch (e) {
+    yield put({ type: types.GET_BOOKS_BY_CATEGORY_FAILED, message: e.message });
+  }
+}
 export function* getBookByIdHandler({ payload }) {
   try {
     const result = yield call(bookRequest.getBookByIdRequest, payload);

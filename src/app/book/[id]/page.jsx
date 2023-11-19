@@ -3,7 +3,7 @@ import { faEye, faEyeDropper, faHeart, faSave, faStar } from '@fortawesome/free-
 import Link from 'next/link';
 import Tag from '@/components/Tag/Tag';
 import styles from './book.module.scss'
-import { getBookById, getBooks, increaseTotalSaved } from '@/app/redux/actions/book';
+import { getBookById, getBooks, getBooksByCate, increaseTotalSaved } from '@/app/redux/actions/book';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { redirect, useParams } from 'next/navigation'
@@ -22,6 +22,7 @@ import { UserAuth } from '@/app/context/AuthContext';
 import { getCurrentAccount } from '@/app/redux/actions/account';
 import * as libraryRequest from '../../redux/saga/requests/myLibrary'
 import { Badge } from "@nextui-org/react";
+import BookItemSplide from '@/components/BookItemSplide/BookItemSplide';
 
 
 function Book() {
@@ -29,6 +30,7 @@ function Book() {
   const dispatch = useDispatch()
   const isLoading = useSelector(state => state.books.loading)
   const book = useSelector(state => state.books.book);
+  const booksByCate = useSelector(state => state.books.booksByCate);
   const currentAccount = useSelector(state => state.accounts.currentAccount);
   const addBookResult = useSelector(state => state.myLibrary.message)
   // const [similarProducts, setSimilarProducts] = useState(similarProductList);
@@ -40,6 +42,8 @@ function Book() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
+  // console.log("cate:", book.tags[0])
+  console.log("booksByCate:", booksByCate)
 
   const params = useParams()
   const id = params.id;
@@ -118,6 +122,11 @@ function Book() {
   useEffect(() => {
     dispatch(getBookById(id))
   }, [dispatch])
+  useEffect(() => {
+    if (book) {
+      dispatch(getBooksByCate(book.tags[0]))
+    }
+  }, [book])
 
 
   if (isLoading) {
@@ -126,6 +135,8 @@ function Book() {
   if (!user) {
     redirect("/login")
   }
+
+
 
   return (<>
     <div className={styles.bookContainer}>
@@ -563,47 +574,48 @@ function Book() {
             </div>
           </div>
         </section>
-        <section className={styles.moreProducts}>
-          <div className={styles.header}>Sách cùng loại</div>
-          <Splide
-            className={styles.splideType1}
-            options={{
-              type: "loop",
-              perPage: 1,
-              perMove: 1,
-            }}
-            aria-label="My Favorite Images"
-          >
-            {similarProducts.map((productItem) => (
-              <SplideSlide>
-                <ProductItemSplide
-                  itemsPerRow={1}
-                  product={productItem}
-                  id={productItem._id}
-                />
-              </SplideSlide>
-            ))}
-          </Splide>
-          <Splide
-            className={styles.splideType2}
-            options={{
-              type: "loop",
-              perPage: 3,
-              perMove: 1,
-            }}
-            aria-label="My Favorite Images"
-          >
-            {similarProducts.map((productItem) => (
-              <SplideSlide>
-                <ProductItemSplide
-                  itemsPerRow={1}
-                  product={productItem}
-                  id={productItem._id}
-                />
-              </SplideSlide>
-            ))}
-          </Splide>
-        </section>
+        {!booksByCate ? <Loading /> :
+          <section className={styles.moreProducts}>
+            <div className={styles.header}>Sách cùng loại</div>
+            <Splide
+              className={styles.splideType1}
+              options={{
+                type: "loop",
+                perPage: 1,
+                perMove: 1,
+              }}
+              aria-label="My Favorite Images"
+            >
+              {!booksByCate ? <Loading /> :
+                booksByCate.map((book) => (
+                  <SplideSlide>
+                    <BookItemSplide
+                      itemsPerRow={1}
+                      book={book}
+                    />
+                  </SplideSlide>
+                ))}
+            </Splide>
+            <Splide
+              className={styles.splideType2}
+              options={{
+                type: "loop",
+                perPage: 3,
+                perMove: 1,
+              }}
+              aria-label="My Favorite Images"
+            >
+              {!booksByCate ? <Loading /> :
+                booksByCate.map((book) => (
+                  <SplideSlide>
+                    <BookItemSplide
+                      itemsPerRow={1}
+                      book={book}
+                    />
+                  </SplideSlide>
+                ))}
+            </Splide>
+          </section>}
       </div> : <Loading />}
       <Footer />
       <Toaster />

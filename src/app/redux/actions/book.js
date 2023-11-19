@@ -4,6 +4,11 @@ export const getBooks = () => ({
   type: type.GET_BOOKS_REQUESTED,
 });
 
+export const getBooksByCate = (cate) => ({
+  type: type.GET_BOOKS_BY_CATEGORY_REQUESTED,
+  payload: cate,
+});
+
 export const getBookById = (id) => ({
   type: type.GET_BOOK_REQUESTED,
   payload: id,

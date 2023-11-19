@@ -6,7 +6,7 @@ import styles from './book.module.scss'
 import { getBookById, getBooks, getBooksByCate, increaseTotalSaved } from '@/app/redux/actions/book';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { redirect, useParams } from 'next/navigation'
+import { redirect, useParams, useRouter } from 'next/navigation'
 import Loading from '@/components/Loading/Loading';
 import BookItem from '@/components/BookItem/BookItem';
 import Header from '@/components/Header/Header';
@@ -31,8 +31,8 @@ function Book() {
   const isLoading = useSelector(state => state.books.loading)
   const book = useSelector(state => state.books.book);
   const booksByCate = useSelector(state => state.books.booksByCate);
-  const currentAccount = useSelector(state => state.accounts.currentAccount);
-  const addBookResult = useSelector(state => state.myLibrary.message)
+  // const currentAccount = useSelector(state => state.accounts.currentAccount);
+  let currentAccount = JSON.parse(localStorage.getItem("user"))
   // const [similarProducts, setSimilarProducts] = useState(similarProductList);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [reviewRating, setReviewRating] = useState("5/5");
@@ -41,14 +41,22 @@ function Book() {
   const [rating, setRating] = useState(5);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const router = useRouter()
 
   // console.log("cate:", book.tags[0])
-  console.log("booksByCate:", booksByCate)
+  console.log("currentAccount:", currentAccount)
 
   const params = useParams()
   const id = params.id;
+  const redirectLogin = () => {
+    currentAccount = (JSON.parse(localStorage.getItem("user")))
+    if (!currentAccount) {
+      router.push("/login")
+    }
+  }
 
   const handleSendReview = () => {
+    redirectLogin()
     if (name === "" || email === "" || title === "" || content === "") {
       toast("Vui lòng nhập đủ thông tin!", {
         hideProgressBar: true,
@@ -75,49 +83,55 @@ function Book() {
   };
 
   const handleSaveToLibrary = () => {
-    var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
-    if (register == true) {
-      var request = {
-        user: currentAccount._id,
-        book: book
-      }
-      dispatch(increaseTotalSaved(book._id, currentAccount._id))
-
-      toast.promise(
-        new Promise((resolve, reject) => {
-          libraryRequest.addBookToLibraryRequest(request)
-            .then((resp) => {
-              if (resp === 0) {
-                resolve("Thêm sách vào thư viện thành công!")
-              }
-              if (resp === 1) {
-                reject(new Error("Sách đã tồn tại trong thư viện!"));
-              }
-            })
-        }),
-        {
-          loading: "Processing...",
-          success: (message) => message,
-          error: (error) => error.message,
+    currentAccount = (JSON.parse(localStorage.getItem("user")))
+    if (!currentAccount) {
+      router.push("/login")
+    }
+    else {
+      var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
+      if (register == true) {
+        var request = {
+          user: currentAccount._id,
+          book: book
         }
-      );
+        dispatch(increaseTotalSaved(book._id, currentAccount._id))
+
+        toast.promise(
+          new Promise((resolve, reject) => {
+            libraryRequest.addBookToLibraryRequest(request)
+              .then((resp) => {
+                if (resp === 0) {
+                  resolve("Thêm sách vào thư viện thành công!")
+                }
+                if (resp === 1) {
+                  reject(new Error("Sách đã tồn tại trong thư viện!"));
+                }
+              })
+          }),
+          {
+            loading: "Processing...",
+            success: (message) => message,
+            error: (error) => error.message,
+          }
+        );
+      }
 
     }
   }
-  const getCurrentUser = () => {
-    if (user != null && currentAccount == null) {
-      let newAccount = {
-        email: user.email,
-        displayName: user.displayName,
-        avatar: user.photoURL,
-      };
-      dispatch(getCurrentAccount(newAccount));
-    }
-  }
+  // const getCurrentUser = () => {
+  //   if (user != null && currentAccount == null) {
+  //     let newAccount = {
+  //       email: user.email,
+  //       displayName: user.displayName,
+  //       avatar: user.photoURL,
+  //     };
+  //     dispatch(getCurrentAccount(newAccount));
+  //   }
+  // }
 
-  useEffect(() => {
-    getCurrentUser();
-  }, [])
+  // useEffect(() => {
+  //   getCurrentUser();
+  // }, [])
 
   useEffect(() => {
     dispatch(getBookById(id))
@@ -132,9 +146,9 @@ function Book() {
   if (isLoading) {
     return <Loading />
   }
-  if (!user) {
-    redirect("/login")
-  }
+  // if (!currentAccount) {
+  //   redirect("/login")
+  // }
 
 
 

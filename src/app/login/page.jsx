@@ -57,7 +57,14 @@ const Login = () => {
               if (resp.msg) {
                 resolve("Đăng nhập thành công!");
                 localStorage.setItem("authenticated", true);
-                localStorage.setItem("user", resp.user._id);
+                localStorage.setItem("user", JSON.stringify({
+                  _id: resp.user._id,
+                  username: resp.user.username,
+                  email: resp.user.email,
+                  displayName: resp.user.displayName,
+                  phoneNumber: resp.user.phoneNumber,
+                  avatar: resp.user.avatar
+                }));
                 setAuthenticated(localStorage.getItem("authenticated"))
               }
               else {

@@ -28,6 +28,7 @@ const Header = () => {
       await logOut();
       setAuthenticated(null)
       localStorage.removeItem("authenticated")
+      localStorage.removeItem("user")
     }
     catch (err) {
       console.log(err)

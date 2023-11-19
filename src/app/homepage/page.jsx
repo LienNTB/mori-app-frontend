@@ -19,19 +19,21 @@ const HomePage = (props) => {
   const dispatch = useDispatch();
   const books = props.books;
   const tags = props.tags
-  const currentAccount = useSelector(state => state.accounts.currentAccount);
+  // const currentAccount = useSelector(state => state.accounts.currentAccount);
   const { user } = UserAuth();
+  const currentAccount = JSON.parse(localStorage.getItem("user"))
+  console.log("currentAccount:", currentAccount)
 
-  useEffect(() => {
-    if (user != null && currentAccount == null) {
-      let newAccount = {
-        email: user.email,
-        displayName: user.displayName,
-        avatar: user.photoURL,
-      };
-      dispatch(getCurrentAccount(newAccount));
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (user != null && currentAccount == null) {
+  //     let newAccount = {
+  //       email: user.email,
+  //       displayName: user.displayName,
+  //       avatar: user.photoURL,
+  //     };
+  //     dispatch(getCurrentAccount(newAccount));
+  //   }
+  // }, [])
 
 
   return (

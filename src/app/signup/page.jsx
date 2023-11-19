@@ -12,6 +12,8 @@ import { Nunito } from 'next/font/google'
 import { fontWeight } from '@mui/system'
 import Link from 'next/link'
 import { Toaster, toast } from "react-hot-toast";
+import { registerAccountRequest } from '../redux/saga/requests/account'
+import { useRouter } from 'next/router'
 
 
 
@@ -24,19 +26,8 @@ const SignUp = () => {
   const [retypePassword, setRetypePassword] = useState("")
   const [displayName, setDisplayName] = useState("")
   const dispatch = useDispatch()
-  async function handleSignInGoogle() {
-    try {
-      const googleLogin = await googleSignIn()
-      console.log("googleLogin:", googleLogin)
-    }
-    catch (err) {
-      toast(err, {
-        autoClose: 2000,
-        type: "error",
-      });
-      console.log("err:", err)
-    }
-  }
+  // const router = useRouter()
+
   const handleSignup = () => {
     if (username == "" || password == "" || retypePassword == "" || displayName == "" || email == "") {
       toast.error("Vui lòng nhập đủ thông tin!", {
@@ -51,18 +42,15 @@ const SignUp = () => {
     else {
       const account = {
         username: username,
+        email: email,
         password: password
-        // disp
       }
       toast.promise(
         new Promise((resolve, reject) => {
-          loginAccountRequest(account)
+          registerAccountRequest(account)
             .then((resp) => {
-              if (resp.msg) {
-                resolve("Đăng nhập thành công!");
-                localStorage.setItem("authenticated", true);
-                localStorage.setItem("user", resp.user._id);
-                setAuthenticated(localStorage.getItem("authenticated"))
+              if (resp.message) {
+                resolve("Đăng kí tài khoản thành công!");
               }
               else {
                 console.log("resp:", resp)

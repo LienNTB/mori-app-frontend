@@ -23,6 +23,7 @@ import { getCurrentAccount } from '@/app/redux/actions/account';
 import * as libraryRequest from '../../redux/saga/requests/myLibrary'
 import { Badge } from "@nextui-org/react";
 import BookItemSplide from '@/components/BookItemSplide/BookItemSplide';
+import { addNewReadHistory, increaseTotalReadRequest } from '@/app/redux/saga/requests/book';
 
 
 function Book() {
@@ -43,8 +44,6 @@ function Book() {
   const [content, setContent] = useState("");
   const router = useRouter()
 
-  // console.log("cate:", book.tags[0])
-  console.log("currentAccount:", currentAccount)
 
   const params = useParams()
   const id = params.id;
@@ -53,6 +52,16 @@ function Book() {
     if (!currentAccount) {
       router.push("/login")
     }
+  }
+
+  const handleReadBook = () => {
+    console.log("handleReadBook")
+    increaseTotalReadRequest(book._id)
+    addNewReadHistory({
+      book: book,
+      user: currentAccount._id
+    })
+    router.push(book.pdf)
   }
 
   const handleSendReview = () => {
@@ -118,21 +127,6 @@ function Book() {
 
     }
   }
-  // const getCurrentUser = () => {
-  //   if (user != null && currentAccount == null) {
-  //     let newAccount = {
-  //       email: user.email,
-  //       displayName: user.displayName,
-  //       avatar: user.photoURL,
-  //     };
-  //     dispatch(getCurrentAccount(newAccount));
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   getCurrentUser();
-  // }, [])
-
   useEffect(() => {
     dispatch(getBookById(id))
   }, [dispatch])
@@ -188,12 +182,12 @@ function Book() {
                     <FontAwesomeIcon className={styles.icon} icon={faEye} width={20} height={20} />{book.totalRead}
                   </strong>
                 </div>
-                <div className={styles.statItem}>
+                {/* <div className={styles.statItem}>
                   <small>Lượt thích</small>
                   <strong>
                     <FontAwesomeIcon className={styles.icon} icon={faHeart} width={20} height={20} />{book.totalHearted}
                   </strong>
-                </div>
+                </div> */}
                 <div className={styles.statItem}>
                   <small>Đánh dấu</small>
                   <strong>
@@ -210,9 +204,9 @@ function Book() {
                 </Link>
               </div>
               <div className={styles.nextAction}>
-                <Link href={book.pdf}>
-                  <button className={styles.read}>Đọc ngay</button>
-                </Link>
+
+                <button className={styles.read} onClick={() => handleReadBook()}>Đọc ngay</button>
+
                 <button className={styles.save} onClick={() => handleSaveToLibrary()}>Thêm vào thư viện</button>
                 {/* <Link href={"/book-category/tamlykynang"}>
                 </Link> */}

@@ -40,6 +40,19 @@ export function* getBookByIdHandler({ payload }) {
   }
 }
 
+export function* getReadHistoryHandler({ payload }) {
+  try {
+    const result = yield call(bookRequest.getReadHistoryRequest, payload);
+    console.log("result:", result.readHistory);
+    yield put({
+      type: types.GET_READ_HISTORY_SUCCESS,
+      readHistory: result.readHistory.reverse(),
+    });
+  } catch (e) {
+    yield put({ type: types.GET_READ_HISTORY_FAILED, message: e.message });
+  }
+}
+
 export function* searchBooksHandler({ payload }) {
   console.log("searchBooksHandler");
   let books = store.getState().books.books;

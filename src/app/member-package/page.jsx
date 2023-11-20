@@ -19,20 +19,14 @@ const MemberPackage = () => {
   const router = useRouter()
   const [membertype, setMembertype] = useState(null);
   const dispatch = useDispatch()
-  const currentAccount = useSelector(state => state.accounts.currentAccount);
-  // const registerResult = useSelector(state => state.memberships.message)
-  const { user } = UserAuth();
+  let currentAccount = JSON.parse(localStorage.getItem("user"))
 
-  useEffect(() => {
-    if (user != null && currentAccount == null) {
-      let newAccount = {
-        email: user.email,
-        displayName: user.displayName,
-        avatar: user.photoURL,
-      };
-      dispatch(getCurrentAccount(newAccount));
+  const redirectLogin = () => {
+    currentAccount = (JSON.parse(localStorage.getItem("user")))
+    if (!currentAccount) {
+      router.push("/login")
     }
-  }, [])
+  }
 
   const getCurrentDate = () => {
     const currentDate = new Date()
@@ -64,11 +58,9 @@ const MemberPackage = () => {
     console.log('The expiration date is still valid.'); // Perform actions for a valid date
   }
 
-  const [loadingRegister, setLoadingRegister] = useState(false)
-  const [registerResult, setRegisterResult] = useState(null)
-  const toastId = useRef(null)
-  const handleRegisterMembership = async (membership) => {
 
+  const handleRegisterMembership = async (membership) => {
+    redirectLogin()
     toast.promise(
       new Promise((resolve, reject) => {
         request.registerMembershipRequest(membership)
@@ -87,30 +79,23 @@ const MemberPackage = () => {
         error: (error) => error.message,
       }
     );
-
-
-
   }
+  const handleMemberRegisterBtnOnclick = () => {
+    redirectLogin()
 
-
-  const handleMemberRegisterBtnOnlick = () => {
-    if (currentAccount === null) {
-      router.push("/login")
-    }
-    else {
-      if (membertype) {
-        const membership = {
-          user: currentAccount._id,
-          type: membertype,
-          start_date: getCurrentDate(),
-          outdated_on: getExpiredDate()
-        }
-        handleRegisterMembership(membership)
+    if (membertype) {
+      const membership = {
+        user: currentAccount._id,
+        type: membertype,
+        start_date: getCurrentDate(),
+        outdated_on: getExpiredDate()
       }
-
-
+      handleRegisterMembership(membership)
     }
+
   }
+
+
 
 
   return (
@@ -158,7 +143,7 @@ const MemberPackage = () => {
             </div>
             <div className={styles.registerBtn} onClick={(() => {
               setMembertype("year");
-              handleMemberRegisterBtnOnlick()
+              handleMemberRegisterBtnOnclick()
             })}>
               Mua gói năm
             </div>
@@ -178,7 +163,7 @@ const MemberPackage = () => {
             </div>
             <div className={styles.registerBtn} onClick={(() => {
               setMembertype("3month");
-              handleMemberRegisterBtnOnlick()
+              handleMemberRegisterBtnOnclick()
             })}>
               Mua gói 3 tháng
             </div>
@@ -197,7 +182,7 @@ const MemberPackage = () => {
             </div>
             <div className={styles.registerBtn} onClick={(() => {
               setMembertype("1month");
-              handleMemberRegisterBtnOnlick()
+              handleMemberRegisterBtnOnclick()
             })}>
               Mua gói tháng
             </div>
@@ -209,5 +194,4 @@ const MemberPackage = () => {
     </div>
   )
 }
-
-export default MemberPackage
+export default MemberPackage;

@@ -27,6 +27,7 @@ export function* getMembershipByIdHandler({ payload }) {
       membershipRequest.getMembershipByIdRequest,
       payload
     );
+    console.log("getMembershipByIdHandler:", payload);
     yield put({
       type: type.GET_MEMBERSHIP_BY_ID_SUCCESS,
       payload: result.membership,

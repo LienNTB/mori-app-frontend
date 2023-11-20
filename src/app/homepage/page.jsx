@@ -19,10 +19,7 @@ const HomePage = (props) => {
   const dispatch = useDispatch();
   const books = props.books;
   const tags = props.tags
-  // const currentAccount = useSelector(state => state.accounts.currentAccount);
-  const { user } = UserAuth();
-  const currentAccount = JSON.parse(localStorage.getItem("user"))
-  console.log("currentAccount:", currentAccount)
+
 
   // useEffect(() => {
   //   if (user != null && currentAccount == null) {
@@ -34,6 +31,7 @@ const HomePage = (props) => {
   //     dispatch(getCurrentAccount(newAccount));
   //   }
   // }, [])
+
 
 
   return (

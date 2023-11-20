@@ -19,4 +19,8 @@ export default function* bookSaga() {
     type.INCREASE_TOTAL_SAVED_REQUESTED,
     handler.increaseTotalSavedHandler
   );
+  yield takeEvery(
+    type.GET_READ_HISTORY_REQUESTED,
+    handler.getReadHistoryHandler
+  );
 }

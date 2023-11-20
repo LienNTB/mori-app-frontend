@@ -12,7 +12,7 @@ import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastConta
 import { Nunito } from 'next/font/google'
 import { fontWeight } from '@mui/system'
 import Link from 'next/link'
-import { loginAccountRequest } from '../redux/saga/requests/account'
+import { createAccountRequest, getCurrentAccountRequest, loginAccountRequest } from '../redux/saga/requests/account'
 
 
 const Login = () => {
@@ -26,7 +26,7 @@ const Login = () => {
   async function handleSignInGoogle() {
     try {
       const googleLogin = await googleSignIn()
-      console.log("googleLogin:", googleLogin)
+
     }
     catch (err) {
       toast(err, {
@@ -65,6 +65,7 @@ const Login = () => {
                   phoneNumber: resp.user.phoneNumber,
                   avatar: resp.user.avatar
                 }));
+                localStorage.setItem("authenticated", true);
                 setAuthenticated(localStorage.getItem("authenticated"))
               }
               else {
@@ -84,27 +85,37 @@ const Login = () => {
   }
 
 
-  useEffect(() => {
-    if (user) {
-      let newAccount = {
-        email: user.email,
-        displayName: user.displayName,
-        avatar: user.photoURL,
-        role: 0,
-        is_member: false,
-        is_blocked: false,
-      };
-      dispatch(createNewAccount(newAccount));
-      localStorage.setItem("authenticated", true);
-      setAuthenticated(localStorage.getItem("authenticated"))
-    }
-  }, [user])
+
 
   useEffect(() => {
     if (authenticated) {
       redirect("/")
     }
   }, [authenticated])
+
+  useEffect(() => {
+    getUserInfo()
+  }, [user])
+  const getUserInfo = useCallback(() => {
+    if (user) {
+
+      let newAccount = {
+        email: user.email,
+        displayName: user.displayName,
+        avatar: user.photoURL,
+      };
+      createAccountRequest(newAccount)
+      getCurrentAccountRequest(newAccount)
+        .then(res => {
+          const currentAccount = res.account;
+          console.log("currentAccount", currentAccount)
+          localStorage.setItem("user", JSON.stringify(currentAccount))
+        })
+      localStorage.setItem("authenticated", true);
+      setAuthenticated(localStorage.getItem("authenticated"))
+    }
+  }, [user])
+
 
   return (
 

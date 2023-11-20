@@ -85,3 +85,36 @@ export const findBookByCategoryRequest = async (payload) => {
       console.log("error:", error);
     });
 };
+
+export const getReadHistoryRequest = async (id) => {
+  return fetch(`http://localhost:8080/api/readHistory/get-readHistory/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const addNewReadHistory = async (request) => {
+  return fetch(`http://localhost:8080/api/readHistory/add-readHistory`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      console.log("error:", error);
+    });
+};

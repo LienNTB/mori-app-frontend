@@ -20,20 +20,6 @@ const HomePage = (props) => {
   const books = props.books;
   const tags = props.tags
 
-
-  // useEffect(() => {
-  //   if (user != null && currentAccount == null) {
-  //     let newAccount = {
-  //       email: user.email,
-  //       displayName: user.displayName,
-  //       avatar: user.photoURL,
-  //     };
-  //     dispatch(getCurrentAccount(newAccount));
-  //   }
-  // }, [])
-
-
-
   return (
 
     <div className={styles.homePageContainer}>
@@ -91,8 +77,6 @@ const HomePage = (props) => {
           </div>
         </section>
       </div>
-
-
       <Footer />
     </div>
   )

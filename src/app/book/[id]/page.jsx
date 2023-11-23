@@ -24,6 +24,7 @@ import * as libraryRequest from '../../redux/saga/requests/myLibrary'
 import { Badge } from "@nextui-org/react";
 import BookItemSplide from '@/components/BookItemSplide/BookItemSplide';
 import { addNewReadHistory, increaseTotalReadRequest } from '@/app/redux/saga/requests/book';
+import { getMembershipByIdRequest } from '@/app/redux/saga/requests/membership';
 
 
 function Book() {
@@ -54,14 +55,39 @@ function Book() {
     }
   }
 
-  const handleReadBook = () => {
-    console.log("handleReadBook")
-    increaseTotalReadRequest(book._id)
-    addNewReadHistory({
-      book: book,
-      user: currentAccount._id
-    })
-    router.push(book.pdf)
+  const handleReadBook = async () => {
+    // console.log("handleReadBook")
+
+    if (book.access_level === 0) {
+      increaseTotalReadRequest(book._id)
+      if (currentAccount) {
+        addNewReadHistory({
+          book: book,
+          user: currentAccount._id
+        })
+      }
+      router.push(book.pdf)
+    }
+    else {
+      if (currentAccount == null) {
+        toast.error('Vui lòng đăng kí gói cước người dùng để đọc sách này!', {
+          duration: 2000
+        });
+      }
+      else {
+        const membership = await getMembershipByIdRequest(currentAccount._id)
+        if (!membership) {
+          toast.error('Vui lòng đăng kí gói cước người dùng để đọc sách này!', {
+            duration: 2000
+          });
+        }
+        else {
+          router.push(book.pdf)
+
+        }
+      }
+    }
+
   }
 
   const handleSendReview = () => {

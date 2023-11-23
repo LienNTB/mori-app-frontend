@@ -13,7 +13,7 @@ import { Nunito } from 'next/font/google'
 import { fontWeight } from '@mui/system'
 import Link from 'next/link'
 import { createAccountRequest, getCurrentAccountRequest, loginAccountRequest } from '../redux/saga/requests/account'
-
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
 
 const Login = () => {
   const { user, googleSignIn } = UserAuth();
@@ -21,6 +21,7 @@ const Login = () => {
   const dispatch = useDispatch()
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("")
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
 
   async function handleSignInGoogle() {
@@ -157,7 +158,7 @@ const Login = () => {
                   />
                   <div className={styles.div12}>Remember me</div>
                 </div> */}
-                <div className={styles.div13}>Forget password?</div>
+                <div className={styles.div13} onClick={onOpen}>Forget password?</div>
               </div>
               <div className={styles.div14} onClick={() => handleSignIn()}>Sign In</div>
               <div className={styles.div15}>or continue with</div>
@@ -196,6 +197,26 @@ const Login = () => {
         </div>
       </div >
 
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Tìm email của bạn</ModalHeader>
+              <ModalBody>
+                <Input type="email" label="Email" />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={onClose}>
+                  Reset password
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

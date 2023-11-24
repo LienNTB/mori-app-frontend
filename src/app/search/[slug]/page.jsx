@@ -6,21 +6,28 @@ import styles from "./search.module.scss"
 import BookItem from '@/components/BookItem/BookItem'
 import Tag from '@/components/Tag/Tag'
 import { useDispatch, useSelector } from 'react-redux'
-import { getBooks, searchBooks } from '../redux/actions/book'
+import { getBooks, searchBooks } from '../../redux/actions/book'
 import Loading from '@/components/Loading/Loading'
 import { Pagination } from "@nextui-org/react";
+import { useParams } from 'next/navigation'
 
 const SearchBook = () => {
   const dispatch = useDispatch()
   const filteredBooks = useSelector(state => state.books.filteredBooks)
   const isLoading = useSelector(state => state.books.loading)
 
+  const params = useParams();
+  console.log("params:", decodeURIComponent(params.slug))
 
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    dispatch(getBooks());
+    dispatch(searchBooks(decodeURIComponent(params.slug)));
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getBooks())
+  }, [])
 
   return (
     <div className={styles.homePageContainer}>

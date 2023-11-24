@@ -1,19 +1,23 @@
+import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper';
 import HomePage from './homepage/page';
 import * as bookRequest from "./redux/saga/requests/book"
-
+import * as tagRequest from './redux/saga/requests/tag'
 
 async function generateStaticParams() {
 
-  const res = await bookRequest.getAllBooksRequest()
+  const bookRes = await bookRequest.getAllBooksRequest()
+  const tagRes = await tagRequest.getAllTagsRequest()
   return ({
-    books: res.books
+    books: bookRes.books,
+    tags: tagRes.allTags
   })
-
 }
+
 export default async function Home() {
-  const books = await generateStaticParams()
+  const { books, tags } = await generateStaticParams()
 
   return <div>
-    <HomePage books={books} />
+    <HomePage books={books} tags={tags} />
+    <ToastContainerWrapper />
   </div>;
 }

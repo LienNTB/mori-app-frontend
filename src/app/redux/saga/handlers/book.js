@@ -17,6 +17,17 @@ export function* getAllBooksHandler() {
   }
 }
 
+export function* getBooksByCategoryHandler({ payload }) {
+  try {
+    const books = yield call(bookRequest.findBookByCategoryRequest, payload);
+    yield put({
+      type: types.GET_BOOKS_BY_CATEGORY_SUCCESS,
+      books: books.books,
+    });
+  } catch (e) {
+    yield put({ type: types.GET_BOOKS_BY_CATEGORY_FAILED, message: e.message });
+  }
+}
 export function* getBookByIdHandler({ payload }) {
   try {
     const result = yield call(bookRequest.getBookByIdRequest, payload);
@@ -29,7 +40,21 @@ export function* getBookByIdHandler({ payload }) {
   }
 }
 
-export function* searchBooksHandler({ type, payload }) {
+export function* getReadHistoryHandler({ payload }) {
+  try {
+    const result = yield call(bookRequest.getReadHistoryRequest, payload);
+    console.log("result:", result.readHistory);
+    yield put({
+      type: types.GET_READ_HISTORY_SUCCESS,
+      readHistory: result.readHistory.reverse(),
+    });
+  } catch (e) {
+    yield put({ type: types.GET_READ_HISTORY_FAILED, message: e.message });
+  }
+}
+
+export function* searchBooksHandler({ payload }) {
+  console.log("searchBooksHandler");
   let books = store.getState().books.books;
   try {
     let filteredBooks = books.filter((item) => {
@@ -39,12 +64,15 @@ export function* searchBooksHandler({ type, payload }) {
       )
         return item;
     });
+    console.log("filteredBooks", filteredBooks);
+    console.log("books", books);
 
     yield put({
       type: types.SEARCH_BOOKS_SUCCESS,
       filteredBooks: filteredBooks,
     });
   } catch (e) {
+    console.log("err:", e);
     yield put({ type: types.SEARCH_BOOKS_FAILED, message: e.message });
   }
 }
@@ -63,9 +91,12 @@ export function* increaseTotalReadHandler({ payload }) {
   }
 }
 
-export function* increaseTotalSavedHandler({ payload }) {
+export function* increaseTotalSavedHandler(payload) {
+  console.log("increaseTotalSavedHandler");
+  console.log("payload:", payload);
   try {
-    yield call(bookRequest.increaseTotalSavedRequest, payload);
+    const result = yield call(bookRequest.increaseTotalSavedRequest, payload);
+    console.log("result:", result);
     yield put({
       type: types.INCREASE_TOTAL_SAVED_SUCCESS,
     });

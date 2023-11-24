@@ -18,12 +18,17 @@ const Header = () => {
   const [isOpenListbox, setIsOpenListbox] = useState(false)
   const [isOpenMenuList, setIsOpenMenuList] = useState(false)
   const [searchValue, setSearchValue] = useState("")
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
+
   const router = useRouter();
   const { user, logOut } = UserAuth();
 
   const handleSignOut = async () => {
     try {
       await logOut();
+      setAuthenticated(null)
+      localStorage.removeItem("authenticated")
+      localStorage.removeItem("user")
     }
     catch (err) {
       console.log(err)
@@ -56,7 +61,7 @@ const Header = () => {
             <div className={styles.searchBarContainer}>
               <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
                 onChange={(e) => setSearchValue(e.target.value)} />
-              <Link href="/search">
+              <Link href={`/search/${searchValue}`}>
                 <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
                   Tìm kiếm
                 </button>
@@ -64,17 +69,31 @@ const Header = () => {
             </div>
           </div>
 
-          {user ? (<>
+          {authenticated ? (<>
             <Link className={styles.right} href={"/account/profile"}>
               Tài khoản cá nhân
             </Link>
-            <div className={styles.right} onClick={handleSignOut}>
+            <Link className={styles.right} href={"/member-package"}>
+              <div className={styles.memberRegisterBtn}>
+                Tham gia hội viên
+              </div>
+            </Link>
+            <div className={styles.right} onClick={() => handleSignOut()}>
               Đăng xuất
             </div>
           </>)
-            : (<Link className={styles.right} href={"/login"} >
-              Login
-            </Link>)
+            : (
+              <>
+                <Link className={styles.right} href={"/member-package"}>
+                  <div className={styles.memberRegisterBtn}>
+                    Tham gia hội viên
+                  </div>
+                </Link>
+                <Link className={styles.right} href={"/login"} >
+                  Login
+                </Link>
+              </>
+            )
           }
         </div>
 
@@ -100,7 +119,7 @@ const Header = () => {
 
           </div>
           {isOpenMenuList ? <div className={styles.menuList}>
-            {user ? <>
+            {authenticated ? <>
               <div className={styles.menuItem}>
                 Danh mục
               </div>
@@ -126,6 +145,13 @@ const Header = () => {
               </div>
               <div className={styles.menuItem} onClick={handleSignOut}>
                 Đăng xuất
+              </div>
+              <div className={styles.menuItem} >
+                <Link className={styles.right} href={"/member-package"}>
+                  <div className={styles.memberRegisterBtn}>
+                    Tham gia hội viên
+                  </div>
+                </Link>
               </div>
             </>
               :

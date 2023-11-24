@@ -2,11 +2,13 @@ import * as type from "../types";
 
 const initialState = {
   books: [],
+  booksByCate: null,
   book: null,
   filteredBooks: [],
   searchValue: "",
   loading: false,
   error: null,
+  readHistory: null,
 };
 
 export default function books(state = initialState, action) {
@@ -14,6 +16,8 @@ export default function books(state = initialState, action) {
     // get books
     case type.GET_BOOKS_REQUESTED:
     case type.GET_BOOK_REQUESTED:
+    case type.GET_BOOKS_BY_CATEGORY_REQUESTED:
+    case type.GET_READ_HISTORY_REQUESTED:
       return {
         ...state,
         loading: true,
@@ -24,6 +28,18 @@ export default function books(state = initialState, action) {
         loading: false,
         books: action.books,
       };
+    case type.GET_READ_HISTORY_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        readHistory: action.readHistory,
+      };
+    case type.GET_BOOKS_BY_CATEGORY_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        booksByCate: action.books,
+      };
     case type.GET_BOOK_SUCCESS:
       return {
         ...state,
@@ -33,7 +49,9 @@ export default function books(state = initialState, action) {
 
     case type.GET_BOOKS_FAILED:
     case type.GET_BOOK_FAILED:
+    case type.GET_BOOKS_BY_CATEGORY_FAILED:
     case type.SEARCH_BOOKS_FAILED:
+    case type.GET_READ_HISTORY_FAILED:
       return {
         ...state,
         loading: false,

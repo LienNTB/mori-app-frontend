@@ -11,3 +11,8 @@ export const getCurrentAccount = (accountInfo) => ({
   type: type.GET_CURRENT_ACCOUNT_REQUESTED,
   payload: accountInfo,
 });
+
+export const registerAccount = (account) => ({
+  type: type.REGISTER_REQUESTED,
+  payload: account,
+});

@@ -139,6 +139,18 @@
     }
   }
 }
+
+.memberRegisterBtn {
+  font-size: 13px;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  background: linear-gradient(90deg, #52d0d0 0, #1badad);
+  padding: 10px;
+  border-radius: 50px;
+}
 @media (max-width: 576px) {
   .menuLaptop,
   .bottomMenu {

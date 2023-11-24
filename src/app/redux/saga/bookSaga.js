@@ -5,6 +5,10 @@ import * as type from "../types";
 
 export default function* bookSaga() {
   yield takeEvery(type.GET_BOOKS_REQUESTED, handler.getAllBooksHandler);
+  yield takeEvery(
+    type.GET_BOOKS_BY_CATEGORY_REQUESTED,
+    handler.getBooksByCategoryHandler
+  );
   yield takeEvery(type.SEARCH_BOOKS_REQUESTED, handler.searchBooksHandler);
   yield takeEvery(type.GET_BOOK_REQUESTED, handler.getBookByIdHandler);
   yield takeEvery(
@@ -14,5 +18,9 @@ export default function* bookSaga() {
   yield takeEvery(
     type.INCREASE_TOTAL_SAVED_REQUESTED,
     handler.increaseTotalSavedHandler
+  );
+  yield takeEvery(
+    type.GET_READ_HISTORY_REQUESTED,
+    handler.getReadHistoryHandler
   );
 }

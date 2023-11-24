@@ -1,35 +1,84 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from "../profile.module.scss"
 import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import {
-  Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Table,
-  TableHeader, TableColumn, TableBody, TableRow, TableCell, Checkbox, Tabs, Tab
-} from "@nextui-org/react";
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark, faCoffee, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 import { UserAuth } from '@/app/context/AuthContext'
 import { redirect } from 'next/navigation'
 import { getAuth, updateProfile } from 'firebase/auth'
+import { useDispatch, useSelector } from 'react-redux'
+import { deleteBookFromLibrary, getBooksFromMyLibrary } from '@/app/redux/actions/myLibrary'
+import Loading from '@/components/Loading/Loading'
+import { toast } from "react-toastify";
+import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
+import {
+  Tab, Tabs, TableCell, Table, TableHeader, TableColumn,
+  TableBody, TableRow, TableContainer, TableCaption, Thead, Tr, Td, Th, Tbody, Tfoot
+} from '@nextui-org/react'
+import { getCurrentAccount } from '@/app/redux/actions/account'
+import { getMembershipById } from '@/app/redux/actions/membership'
+import { getReadHistory } from '@/app/redux/actions/book'
 
 const Profile = () => {
   const params = useParams()
   const id = params.slug;
   const [currentTopic, setCurrentTopic] = useState(id)
   const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
+  const booksLibrary = useSelector(state => state.myLibrary.bookList)
+  const bookLoading = useSelector(state => state.books.loading)
+  const readHistory = useSelector(state => state.books.readHistory)
+  const isLoading = useSelector(state => state.myLibrary.loading)
+  const currentAccount = JSON.parse(localStorage.getItem("user"))
+  const deleteBookResult = useSelector(state => state.myLibrary.message);
+  const membership = useSelector(state => state.memberships.membership)
+  const isLoadingMembership = useSelector(state => state.memberships.loading)
+  const [click, setClick] = useState(0)
+  const dispatch = useDispatch();
   const { user } = UserAuth()
 
+  const handleDeleteBook = (choosenBook) => {
+    var request = {
+      user: currentAccount._id,
+      book: choosenBook
+    }
+    dispatch(deleteBookFromLibrary(request))
+    if (deleteBookResult === 0) {
+      toast("Xoá sách khỏi thư viện thành công!", {
+        autoClose: 2000,
+        type: "success",
+      });
+    }
+    if (deleteBookResult === 1) {
+      toast("Xóa thất bại!", {
+        autoClose: 2000,
+        type: "error",
+      });
+    }
+    setClick(p => p + 1)
+  }
 
-  if (!user) {
+  if (!currentAccount) {
     redirect("/login")
   }
+
+  useEffect(() => {
+
+    dispatch(getMembershipById(currentAccount._id))
+    dispatch(getReadHistory(currentAccount._id))
+    console.log("readHistory", readHistory)
+
+  }, [])
+
+  useEffect(() => {
+    dispatch(getBooksFromMyLibrary(currentAccount._id))
+
+  }, [click])
   return (
     <div className={styles.profileContainer}>
       <Header />
@@ -39,14 +88,14 @@ const Profile = () => {
         <section className={styles.accountContainer}>
           <div className={styles.accountBody}>
             <div className={styles.accountAvatar}>
-              {user.photoURL ?
-                <img src={user.photoURL} alt="avt" />
+              {currentAccount.avatar ?
+                <img src={currentAccount.avatar} alt="avt" />
                 : <img src="https://docsachhay.net/frontend/images/default-avatar.jpg" alt="avt" />}
             </div>
             <div className={styles.accountPanel}>
               <div className={styles.accountInfo}>
                 <div className={styles.title}>
-                  {user.displayName}
+                  {currentAccount.displayName}
                 </div>
                 <div className={styles.auth}>
                   <div className={styles.type}>
@@ -65,7 +114,7 @@ const Profile = () => {
                         <path d="M21 5H2.99999C2.69999 5 2.49999 5.10005 2.29999 5.30005L11.2 13.3C11.7 13.7 12.4 13.7 12.8 13.3L21.7 5.30005C21.5 5.10005 21.3 5 21 5Z" fill="black"></path>
                       </svg>
                     </span>
-                    {user.email}
+                    {currentAccount.email}
                   </div>
                 </div>
               </div>
@@ -89,6 +138,10 @@ const Profile = () => {
               <Link href="/account/history" >
                 Lịch sử đọc             </Link>
             </div>
+            <div className={styles.navItem}>
+              <Link href="/account/membership" >
+                Thông tin hội viên</Link>
+            </div>
           </div>
         </section>
         {/* profile section */}
@@ -105,11 +158,11 @@ const Profile = () => {
               <TableBody>
                 <TableRow key="1">
                   <TableCell>Họ tên</TableCell>
-                  <TableCell>{user.displayName}</TableCell>
+                  <TableCell>{currentAccount.displayName}</TableCell>
                 </TableRow>
                 <TableRow key="2">
                   <TableCell>Email</TableCell>
-                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{currentAccount.email}</TableCell>
                 </TableRow>
 
 
@@ -123,33 +176,47 @@ const Profile = () => {
             <div className={styles.title}>
               Tiêu đề sách, truyện
             </div>
-            <div className="flex flex-wrap gap-4">
+            {/* <div className="flex flex-wrap gap-4">
               <Tabs variant="solid" color="primary" aria-label="Tabs variants">
                 <Tab key="sachdangdoc" title="Sách đang đọc" />
                 <Tab key="sachyeuthich" title="Sách yêu thích" />
               </Tabs>
-            </div>
+            </div> */}
           </div>
           <div className={styles.libraryBody}>
-            <Table selectionMode="single" hideHeader color="primary" aria-label="Example static collection table">
-              <TableHeader>
-                <TableColumn></TableColumn>
-                <TableColumn></TableColumn>
-                <TableColumn></TableColumn>
-              </TableHeader>
-              <TableBody>
-                <TableRow key="4">
-                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
-                  <TableCell>Đắc nhân tâm</TableCell>
-                  <TableCell><FontAwesomeIcon icon={faTrashCan} className='cursor-pointer' /></TableCell>
-                </TableRow>
-                <TableRow key="1">
-                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
-                  <TableCell>Đắc nhân tâm</TableCell>
-                  <TableCell><FontAwesomeIcon icon={faTrashCan} className='cursor-pointer' /></TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+
+            <table class="table-auto w-full">
+              <thead class="bg-slate-300">
+                <tr>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Book</th>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Name</th>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Author</th>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  isLoading ? <Loading /> :
+                    booksLibrary.map(book => (
+
+                      <tr>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          <img src={book.book.image} alt="image" className={styles.bookLibImg} />
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">{book.book.name}</td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">{book.book.author}</td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          <FontAwesomeIcon icon={faTrashCan} class="cursor-pointer" width={20}
+                            onClick={() => handleDeleteBook(book.book)} />
+                        </td>
+                      </tr>
+                    ))
+                }
+
+              </tbody>
+            </table>
+
+
           </div>
         </section> : <></>}
         {/* history section */}
@@ -159,32 +226,85 @@ const Profile = () => {
               Danh sách sách, truyện bạn đã đọc            </div>
 
           </div>
+
           <div className={styles.libraryBody}>
-            <Table selectionMode="single" color="primary" aria-label="Example static collection table">
-              <TableHeader>
-                <TableColumn>Hình ảnh</TableColumn>
-                <TableColumn>Tiêu đề</TableColumn>
-                <TableColumn>Lần đọc gần nhất</TableColumn>
-              </TableHeader>
-              <TableBody>
-                <TableRow key="4">
-                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
-                  <TableCell>Đắc nhân tâm</TableCell>
-                  <TableCell>Thứ Bảy, 30/09/2023, 09:07</TableCell>
-                </TableRow>
-                <TableRow key="1">
-                  <TableCell><img src="https://docsachhay.net/images/e-book/chinh-phuc-muc-tieu-goals.jpg" alt="img" width="34" height="34" /></TableCell>
-                  <TableCell>Đắc nhân tâm</TableCell>
-                  <TableCell>Thứ Bảy, 30/09/2023, 09:07</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <table class="table-auto w-full">
+              <thead class="bg-slate-300">
+                <tr>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Book</th>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Name</th>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Author</th>
+                  <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  !readHistory ? <Loading /> :
+                    readHistory.map(book => (
+
+                      <tr>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          <img src={book.book.image} alt="image" className={styles.bookLibImg} />
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">{book.book.name}</td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">{book.book.author}</td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          {book.time}
+                        </td>
+                      </tr>
+                    ))
+                }
+
+              </tbody>
+            </table>
           </div>
+        </section> : <></>}
+        {/* membership section */}
+        {currentTopic == "membership" ? <section className={styles.profileInfo}>
+          <div className={styles.uHead}>
+            <div className={styles.title}>Thông tin hội viên</div>
+          </div>
+          {!membership ? <>Người dùng chưa đăng kí gói hội viên!</> :
+            <div className={styles.uTable}>
+              {isLoadingMembership ? <Loading /> :
+                <Table hideHeader aria-label="Example static collection table">
+                  <TableHeader>
+                    <TableColumn></TableColumn>
+                    <TableColumn></TableColumn>
+                  </TableHeader>
+
+
+                  <TableBody>
+                    <TableRow key="1">
+                      <TableCell>Họ tên</TableCell>
+                      <TableCell>{currentAccount.displayName}</TableCell>
+                    </TableRow>
+                    <TableRow key="2">
+                      <TableCell>Gói hội viên</TableCell>
+                      <TableCell>{membership.type === "1month" ? "Gói 1 tháng" : ""}
+                        {membership.type === "year" ? "Gói năm" : ""}
+                        {membership.type === "3month" ? "Gói 3 tháng" : ""}</TableCell>
+                    </TableRow>
+                    <TableRow key="2">
+                      <TableCell>Ngày đăng kí</TableCell>
+                      <TableCell>{membership.start_date}</TableCell>
+                    </TableRow>
+                    <TableRow key="2">
+                      <TableCell>Ngày hết hạn</TableCell>
+                      <TableCell>{membership.outdated_on}</TableCell>
+                    </TableRow>
+
+
+                  </TableBody>
+                </Table>}
+            </div>}
         </section> : <></>}
       </div>
       <Footer />
+      <ToastContainerWrapper />
 
     </div>
+
   )
 }
 

@@ -17,16 +17,16 @@ export function* createAccountHandler({ payload }) {
   try {
     const account = payload;
     const result = yield call(accountRequest.createAccountRequest, account);
-    console.log("result:", result);
+
     if (result == 0) {
       yield put({
         type: types.CREATE_ACCOUNT_SUCCESS,
-        message: "Account added successfully",
+        message: 0,
       });
     } else {
       yield put({
         type: types.CREATE_ACCOUNT_FAILED,
-        message: "Account already exist!",
+        message: 1,
       });
     }
   } catch (e) {

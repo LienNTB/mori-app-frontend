@@ -17,7 +17,6 @@ export const getAllBooksRequest = async () => {
 };
 
 export const getBookByIdRequest = async (id) => {
-  console.log("get book by id");
   return fetch(`http://localhost:8080/api/book/get-book/${id}`, {
     method: "GET",
     headers: {
@@ -49,9 +48,47 @@ export const increaseTotalReadRequest = async (id) => {
     });
 };
 
-export const increaseTotalSavedRequest = async (id) => {
-  return fetch(`http://localhost:8080/api/book/total-saved/${id}`, {
+export const increaseTotalSavedRequest = async (payload) => {
+  return fetch(`http://localhost:8080/api/book/total-saved/${payload.bookId}`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user: payload.accountId,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      console.log("error:", error);
+    });
+};
+
+export const findBookByCategoryRequest = async (payload) => {
+  return fetch(`http://localhost:8080/api/book/get-book/category`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      searchValue: payload,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      console.log("error:", error);
+    });
+};
+
+export const getReadHistoryRequest = async (id) => {
+  return fetch(`http://localhost:8080/api/readHistory/get-readHistory/${id}`, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
@@ -62,5 +99,22 @@ export const increaseTotalSavedRequest = async (id) => {
 
     .catch((error) => {
       throw error;
+    });
+};
+
+export const addNewReadHistory = async (request) => {
+  return fetch(`http://localhost:8080/api/readHistory/add-readHistory`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      console.log("error:", error);
     });
 };

@@ -99,21 +99,23 @@ const Login = () => {
   }, [user])
   const getUserInfo = useCallback(() => {
     if (user) {
-
+      console.log("dong 102")
       let newAccount = {
         email: user.email,
         displayName: user.displayName,
         avatar: user.photoURL,
       };
       createAccountRequest(newAccount)
-      getCurrentAccountRequest(newAccount)
-        .then(res => {
-          const currentAccount = res.account;
-          console.log("currentAccount", currentAccount)
-          localStorage.setItem("user", JSON.stringify(currentAccount))
+        .then(() => {
+          getCurrentAccountRequest(newAccount)
+            .then(res => {
+              const currentAccount = res.account;
+              console.log("currentAccount", currentAccount)
+              localStorage.setItem("user", JSON.stringify(currentAccount))
+            })
+          localStorage.setItem("authenticated", true);
+          setAuthenticated(localStorage.getItem("authenticated"))
         })
-      localStorage.setItem("authenticated", true);
-      setAuthenticated(localStorage.getItem("authenticated"))
     }
   }, [user])
 

@@ -5,26 +5,23 @@ import React, { useCallback, useMemo, useState } from 'react'
 import styles from "./homepage.module.scss"
 import BookItem from '@/components/BookItem/BookItem'
 import Tag from '@/components/Tag/Tag'
-import { UserAuth } from '@/app/context/AuthContext'
-
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-
-import { getBooks } from '../redux/actions/book'
-import Loading from '@/components/Loading/Loading'
-import { createNewAccount, getCurrentAccount } from '../redux/actions/account'
-import { toast } from "react-toastify";
+import { useDispatch } from 'react-redux'
+import { Pagination } from '@nextui-org/react'
 
 const HomePage = (props) => {
-  const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
   const books = props.books;
   const tags = props.tags
-  const categories = props.categories
+  const itemsPerPage = 10;
+  const totalPages = (Math.ceil(books.length / itemsPerPage));
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedItems = books.slice(startIndex, endIndex);
 
   return (
 
     <div className={styles.homePageContainer}>
-      <Header categories={categories} />
+      <Header />
       <div className={styles.homePageContent}>
         <div className={styles.headContent} >
           <h1>Sách hay, hot, sách online miễn phí</h1>
@@ -53,6 +50,7 @@ const HomePage = (props) => {
 
             </div>
           </div>
+
         </section>
         <section className={styles.bookSectionContainer}>
           <div class={styles.sectionHeader}>
@@ -66,7 +64,7 @@ const HomePage = (props) => {
           <div className={styles.sectionBody}>
             <div className={styles.bookList}>
               {
-                books.map(book => {
+                displayedItems.map(book => {
                   return (
                     <div className={styles.bookItem}>
                       <BookItem book={book} key={book._id} />
@@ -77,6 +75,12 @@ const HomePage = (props) => {
             </div>
           </div>
         </section>
+      </div>
+      <div className={styles.pagination} >
+
+        <Pagination total={totalPages} initialPage={1}
+          page={currentPage}
+          onChange={setCurrentPage} />
       </div>
       <Footer />
     </div>

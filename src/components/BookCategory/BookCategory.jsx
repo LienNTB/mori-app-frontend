@@ -15,7 +15,6 @@ const BookCategory = (props) => {
   // console.log("books:", props.params)
   const dispatch = useDispatch()
   const books = props.books
-  // const isLoading = useSelector(state => state.books.loading)
 
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {

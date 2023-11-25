@@ -25,17 +25,18 @@ import { Badge } from "@nextui-org/react";
 import BookItemSplide from '@/components/BookItemSplide/BookItemSplide';
 import { addNewReadHistory, increaseTotalReadRequest } from '@/app/redux/saga/requests/book';
 import { getMembershipByIdRequest } from '@/app/redux/saga/requests/membership';
+import { getReviewsById } from '@/app/redux/actions/review';
+import { reviewBookRequest } from '@/app/redux/saga/requests/review';
 
 
 function Book() {
-  const { user } = UserAuth()
   const dispatch = useDispatch()
   const isLoading = useSelector(state => state.books.loading)
   const book = useSelector(state => state.books.book);
   const booksByCate = useSelector(state => state.books.booksByCate);
-  // const currentAccount = useSelector(state => state.accounts.currentAccount);
+  const isLoadingReview = useSelector(state => state.reviews.loading)
+  const reviews = useSelector(state => state.reviews.reviews)
   let currentAccount = JSON.parse(localStorage.getItem("user"))
-  // const [similarProducts, setSimilarProducts] = useState(similarProductList);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [reviewRating, setReviewRating] = useState("5/5");
   const [email, setEmail] = useState("");
@@ -45,7 +46,7 @@ function Book() {
   const [content, setContent] = useState("");
   const router = useRouter()
 
-
+  console.log("reviews:", reviews)
   const params = useParams()
   const id = params.id;
   const redirectLogin = () => {
@@ -83,7 +84,6 @@ function Book() {
         }
         else {
           router.push(book.pdf)
-
         }
       }
     }
@@ -92,30 +92,33 @@ function Book() {
 
   const handleSendReview = () => {
     redirectLogin()
-    if (name === "" || email === "" || title === "" || content === "") {
-      toast("Vui lòng nhập đủ thông tin!", {
-        hideProgressBar: true,
-        autoClose: 2000,
-        type: "info",
-        position: "top-right",
-      });
-    } else {
-      const review = {
-        name: name,
-        email: email,
-        rating: reviewRating,
-        title: title,
-        content: content,
-      };
-
-      setName("");
-      setEmail("");
-      setReviewRating("5/5");
-      setRating(5);
-      setTitle("");
-      setContent("");
+    const request = {
+      user_id: currentAccount._id,
+      book_id: id,
+      rating: "5",
+      content: content
     }
-  };
+    toast.promise(
+      new Promise((resolve, reject) => {
+        reviewBookRequest(request)
+          .then((resp) => {
+            if (resp.message) {
+              resolve("Thêm review thành công!")
+            }
+            else {
+              reject(new Error("Thêm review thất bại!"));
+            }
+          })
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error.message,
+      }
+    );
+    setContent("")
+  }
+
 
   const handleSaveToLibrary = () => {
     currentAccount = (JSON.parse(localStorage.getItem("user")))
@@ -154,7 +157,9 @@ function Book() {
     }
   }
   useEffect(() => {
+
     dispatch(getBookById(id))
+    dispatch(getReviewsById(id))
   }, [dispatch])
   useEffect(() => {
     if (book) {
@@ -324,7 +329,7 @@ function Book() {
             </fieldset>
             <div
               className={styles.sendReviewBtn}
-              onClick={handleSendReview}
+              onClick={() => handleSendReview()}
             >
               Gửi đánh giá
             </div>
@@ -459,152 +464,48 @@ function Book() {
                 </div>
               </div>
               <div className={styles.ruler}></div>
-              <div className={styles.reviewPosts}>
-                <div className={styles.productReviewPost}>
-                  <div className={styles.reviewCustomerWrapper}>
-                    <div className={styles.reviewAvatar}>
-                      <img
-                        src="https://i.pinimg.com/564x/ba/8d/3b/ba8d3bdd8e3ba9335d3c28bd351ce183.jpg"
-                        alt=""
-                      />
-                    </div>
-                    <div className={styles.reviewProfileWrapper}>
-                      <div className={styles.reviewCustomerName}>
-                        Nguyễn Thị Dịu Hiền
-                      </div>
-                      <div className={styles.reviewProfile}>
-                        <div className={styles.reviewTimeRating}>
-                          <div className={styles.reviewTime}>
-                            11/10/2021, 13:42
+              {isLoadingReview ? <Loading /> :
+                <div className={styles.reviewPosts}>
+                  {reviews.map(review => (
+                    <div className={styles.productReviewPost}>
+                      <div className={styles.reviewCustomerWrapper}>
+                        <div className={styles.reviewAvatar}>
+                          <img
+                            src={review.user.avatar}
+                            alt="avatar"
+                          />
+                        </div>
+                        <div className={styles.reviewProfileWrapper}>
+                          <div className={styles.reviewCustomerName}>
+                            {review.user.displayName}
                           </div>
-                          <div className={styles.reviewRating}>
-                            <div className={styles.reviewStars}>
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
+                          <div className={styles.reviewProfile}>
+                            <div className={styles.reviewTimeRating}>
+                              <div className={styles.reviewTime}>
+                                {review.postedDate}
+                              </div>
+                              <div className={styles.reviewRating}>
+                                <div className={styles.reviewStars}>
+                                  <FontAwesomeIcon icon={faStar} />
+                                  <FontAwesomeIcon icon={faStar} />
+                                  <FontAwesomeIcon icon={faStar} />
+                                  <FontAwesomeIcon icon={faStar} />
+                                  <FontAwesomeIcon icon={faStar} />
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className={styles.reviewContent}>
-                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
-                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
-                  </div>
-                </div>
-                <div className={styles.productReviewPost}>
-                  <div className={styles.reviewCustomerWrapper}>
-                    <div className={styles.reviewAvatar}>
-                      <img
-                        src="https://i.pinimg.com/564x/ba/8d/3b/ba8d3bdd8e3ba9335d3c28bd351ce183.jpg"
-                        alt=""
-                      />
-                    </div>
-                    <div className={styles.reviewProfileWrapper}>
-                      <div className={styles.reviewCustomerName}>
-                        Nguyễn Thị Dịu Hiền
-                      </div>
-                      <div className={styles.reviewProfile}>
-                        <div className={styles.reviewTimeRating}>
-                          <div className={styles.reviewTime}>
-                            11/10/2021, 13:42
-                          </div>
-                          <div className={styles.reviewRating}>
-                            <div className={styles.reviewStars}>
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                            </div>
-                          </div>
-                        </div>
+                      <div className={styles.reviewContent}>
+                        {review.content}
                       </div>
                     </div>
-                  </div>
+                  ))
+                  }
 
-                  <div className={styles.reviewContent}>
-                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
-                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
-                  </div>
-                </div>
-                <div className={styles.productReviewPost}>
-                  <div className={styles.reviewCustomerWrapper}>
-                    <div className={styles.reviewAvatar}>
-                      <img
-                        src="https://i.pinimg.com/564x/ba/8d/3b/ba8d3bdd8e3ba9335d3c28bd351ce183.jpg"
-                        alt=""
-                      />
-                    </div>
-                    <div className={styles.reviewProfileWrapper}>
-                      <div className={styles.reviewCustomerName}>
-                        Nguyễn Thị Dịu Hiền
-                      </div>
-                      <div className={styles.reviewProfile}>
-                        <div className={styles.reviewTimeRating}>
-                          <div className={styles.reviewTime}>
-                            11/10/2021, 13:42
-                          </div>
-                          <div className={styles.reviewRating}>
-                            <div className={styles.reviewStars}>
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.reviewContent}>
-                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
-                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
-                  </div>
-                </div>
-                <div className={styles.productReviewPost}>
-                  <div className={styles.reviewCustomerWrapper}>
-                    <div className={styles.reviewAvatar}>
-                      <img
-                        src="https://i.pinimg.com/564x/ba/8d/3b/ba8d3bdd8e3ba9335d3c28bd351ce183.jpg"
-                        alt=""
-                      />
-                    </div>
-                    <div className={styles.reviewProfileWrapper}>
-                      <div className={styles.reviewCustomerName}>
-                        Nguyễn Thị Dịu Hiền
-                      </div>
-                      <div className={styles.reviewProfile}>
-                        <div className={styles.reviewTimeRating}>
-                          <div className={styles.reviewTime}>
-                            11/10/2021, 13:42
-                          </div>
-                          <div className={styles.reviewRating}>
-                            <div className={styles.reviewStars}>
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                              <FontAwesomeIcon icon={faStar} />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.reviewContent}>
-                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
-                    Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon Ngon
-                  </div>
-                </div>
-              </div>
+                </div>}
             </div>
           </div>
         </section>

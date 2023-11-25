@@ -12,7 +12,6 @@ import noImg from "../../../public/noImg.jpg";
 import Loading from "../Loading/Loading";
 
 function BookItemSplide(props) {
-  console.log("props:", props.book);
   const router = useRouter();
 
   return (

@@ -95,9 +95,6 @@ const MemberPackage = () => {
 
   }
 
-
-
-
   return (
     <div className={styles.memberPackContainer}>
       <Header />

@@ -19,11 +19,12 @@ const HomePage = (props) => {
   const dispatch = useDispatch();
   const books = props.books;
   const tags = props.tags
+  const categories = props.categories
 
   return (
 
     <div className={styles.homePageContainer}>
-      <Header />
+      <Header categories={categories} />
       <div className={styles.homePageContent}>
         <div className={styles.headContent} >
           <h1>Sách hay, hot, sách online miễn phí</h1>

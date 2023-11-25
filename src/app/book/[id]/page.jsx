@@ -1,3 +1,4 @@
+
 "use client"
 import { faEye, faEyeDropper, faHeart, faSave, faStar } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
@@ -27,6 +28,7 @@ import { addNewReadHistory, increaseTotalReadRequest } from '@/app/redux/saga/re
 import { getMembershipByIdRequest } from '@/app/redux/saga/requests/membership';
 import { getReviewsById } from '@/app/redux/actions/review';
 import { reviewBookRequest } from '@/app/redux/saga/requests/review';
+import RatingStars from '@/components/RatingStars/RatingStars';
 
 
 function Book() {
@@ -95,7 +97,7 @@ function Book() {
     const request = {
       user_id: currentAccount._id,
       book_id: id,
-      rating: "5",
+      rating: rating.toString(),
       content: content
     }
     toast.promise(
@@ -155,6 +157,10 @@ function Book() {
       }
 
     }
+  }
+
+  const handleSetBookRating = (ratingData) => {
+    setRating(ratingData)
   }
   useEffect(() => {
 
@@ -290,32 +296,8 @@ function Book() {
             <div className={styles.header}>Viết đánh giá mới</div>
             <fieldset>
               <label className={styles.title}>Đánh giá</label>
-              <div className={styles.reviewStars}>
-                {/* <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} /> */}
 
-                {[...Array(5)].map((star, index) => {
-                  index += 1;
-                  return (
-                    <FontAwesomeIcon
-                      icon={faStar}
-                      className={
-                        index <= (starHover || rating)
-                          ? styles.on
-                          : styles.off
-                      }
-                      onClick={() => {
-                        setRating(index);
-                        setReviewRating(index + "/5");
-                      }}
-                      onMouseEnter={() => setStarHover(index)}
-                      onMouseLeave={() => setStarHover(rating)}
-                    />
-                  );
-                })}
-              </div>
+              <RatingStars setRatingData={handleSetBookRating} currentRating={5} />
             </fieldset>
             <fieldset>
               <label>Nội dung</label>
@@ -485,13 +467,7 @@ function Book() {
                                 {review.postedDate}
                               </div>
                               <div className={styles.reviewRating}>
-                                <div className={styles.reviewStars}>
-                                  <FontAwesomeIcon icon={faStar} />
-                                  <FontAwesomeIcon icon={faStar} />
-                                  <FontAwesomeIcon icon={faStar} />
-                                  <FontAwesomeIcon icon={faStar} />
-                                  <FontAwesomeIcon icon={faStar} />
-                                </div>
+                                <RatingStars setRatingData={handleSetBookRating} currentRating={review.rating} lockStar={true} />
                               </div>
                             </div>
                           </div>

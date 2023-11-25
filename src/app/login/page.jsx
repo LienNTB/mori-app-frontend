@@ -14,6 +14,7 @@ import { fontWeight } from '@mui/system'
 import Link from 'next/link'
 import { createAccountRequest, getCurrentAccountRequest, loginAccountRequest } from '../redux/saga/requests/account'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
+import { forgetPasswordRequest } from '../redux/saga/requests/auth'
 
 const Login = () => {
   const { user, googleSignIn } = UserAuth();
@@ -22,7 +23,35 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("")
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [email, setEmail] = useState("")
+  const handleForgetPassword = () => {
+    if (email === "") {
+      toast.error("Vui lòng nhập email!", {
+        duration: 2000, position: 'top-center',
+      })
+    }
+    else {
+      toast.promise(
+        new Promise((resolve, reject) => {
+          forgetPasswordRequest(email)
+            .then((resp) => {
+              if (resp.message) {
+                resolve("Password reset email sent!");
+              }
+              if (resp.error) {
+                reject(new Error(resp.error));
+              }
+            })
 
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+    }
+  }
 
   async function handleSignInGoogle() {
     try {
@@ -205,13 +234,13 @@ const Login = () => {
             <>
               <ModalHeader className="flex flex-col gap-1">Tìm email của bạn</ModalHeader>
               <ModalBody>
-                <Input type="email" label="Email" />
+                <Input type="text" value={email} onChange={e => setEmail(e.target.value)} />
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" onPress={onClose} onClick={handleForgetPassword}>
                   Reset password
                 </Button>
               </ModalFooter>

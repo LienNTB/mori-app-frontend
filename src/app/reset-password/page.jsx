@@ -1,19 +1,12 @@
 "use client"
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import styles from "./reset-password.module.scss"
-import { UserAuth } from '@/app/context/AuthContext'
-import Image from 'next/image'
-import { redirect } from 'next/navigation'
 import { useDispatch } from 'react-redux'
-import { createNewAccount, getCurrentAccount } from "../redux/actions/account"
-import { useSelector } from 'react-redux'
-import { Toaster, toast } from "react-hot-toast";
-import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
-import { Nunito } from 'next/font/google'
-import { fontWeight } from '@mui/system'
-import Link from 'next/link'
-import { createAccountRequest, getCurrentAccountRequest, loginAccountRequest } from '../redux/saga/requests/account'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
+import { useSearchParams } from 'next/navigation';
+import { resetPasswordRequest } from '../redux/saga/requests/auth'
+import { Toaster, toast } from "react-hot-toast";
+
 
 const ResetPassword = () => {
   const dispatch = useDispatch()
@@ -21,7 +14,42 @@ const ResetPassword = () => {
   const [retypePassword, setRetypePassword] = useState("")
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  const searchParams = useSearchParams()
+  const token = searchParams.get("token")
 
+  const handleResetPassword = async () => {
+    if (password === "" || retypePassword == "") {
+      toast.error("Vui lòng nhập đủ thông tin!", {
+        duration: 2000, position: 'top-center',
+      })
+    }
+    else if (password !== retypePassword) {
+      toast.error("Mật khẩu không khớp!", {
+        duration: 2000, position: 'top-center',
+      })
+    }
+    else {
+      toast.promise(
+        new Promise((resolve, reject) => {
+          resetPasswordRequest(token, password)
+            .then((resp) => {
+              if (resp.message) {
+                resolve("Reset mật khẩu thành công!");
+              }
+              if (resp.error) {
+                reject(new Error(resp.error));
+              }
+            })
+
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+    }
+  }
   return (
     <>
       <Toaster />
@@ -38,7 +66,7 @@ const ResetPassword = () => {
               <div className={styles.div8}>Retype password</div>
               <input className={styles.div9} type='password' value={retypePassword}
                 onChange={e => setRetypePassword(e.target.value)} />
-              <div className={styles.div14} onClick={() => handleSignIn()}>Reset password</div>
+              <div className={styles.div14} onClick={() => handleResetPassword()}>Reset password</div>
             </div>
           </div>
           <div className={styles.column2}>
@@ -71,6 +99,7 @@ const ResetPassword = () => {
           )}
         </ModalContent>
       </Modal>
+      <Toaster />
     </>
   );
 }

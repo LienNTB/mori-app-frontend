@@ -84,23 +84,28 @@ const Login = () => {
         new Promise((resolve, reject) => {
           loginAccountRequest(account)
             .then((resp) => {
-              if (resp.msg) {
-                resolve("Đăng nhập thành công!");
-                localStorage.setItem("authenticated", true);
-                localStorage.setItem("user", JSON.stringify({
-                  _id: resp.user._id,
-                  username: resp.user.username,
-                  email: resp.user.email,
-                  displayName: resp.user.displayName,
-                  phoneNumber: resp.user.phoneNumber,
-                  avatar: resp.user.avatar
-                }));
-                localStorage.setItem("authenticated", true);
-                setAuthenticated(localStorage.getItem("authenticated"))
+              if (resp.user.is_blocked) {
+                reject("Tài khoản này đã bị khóa!");
               }
               else {
-                console.log("resp:", resp)
-                reject(new Error(resp));
+                if (resp.msg) {
+                  resolve("Đăng nhập thành công!");
+                  localStorage.setItem("authenticated", true);
+                  localStorage.setItem("user", JSON.stringify({
+                    _id: resp.user._id,
+                    username: resp.user.username,
+                    email: resp.user.email,
+                    displayName: resp.user.displayName,
+                    phoneNumber: resp.user.phoneNumber,
+                    avatar: resp.user.avatar
+                  }));
+                  localStorage.setItem("authenticated", true);
+                  setAuthenticated(localStorage.getItem("authenticated"))
+                }
+                else {
+                  console.log("resp:", resp)
+                  reject(new Error(resp));
+                }
               }
             })
         }),
@@ -139,11 +144,16 @@ const Login = () => {
           getCurrentAccountRequest(newAccount)
             .then(res => {
               const currentAccount = res.account;
-              console.log("currentAccount", currentAccount)
-              localStorage.setItem("user", JSON.stringify(currentAccount))
+              if (currentAccount.is_blocked) {
+                alert("Tài khoản này đã bị khóa!")
+              }
+              else {
+                console.log("currentAccount", currentAccount)
+                localStorage.setItem("user", JSON.stringify(currentAccount))
+                localStorage.setItem("authenticated", true);
+                setAuthenticated(localStorage.getItem("authenticated"))
+              }
             })
-          localStorage.setItem("authenticated", true);
-          setAuthenticated(localStorage.getItem("authenticated"))
         })
     }
   }, [user])

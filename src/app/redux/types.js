@@ -1,10 +1,4 @@
-let BACKEND_URL = "http://localhost:8080";
-
-if (process.env.NODE_ENV === "development") {
-  BACKEND_URL = "http://localhost:8080";
-} else {
-  BACKEND_URL = "...";
-}
+let BACKEND_URL = process.env.BACKEND_URL;
 
 export { BACKEND_URL };
 

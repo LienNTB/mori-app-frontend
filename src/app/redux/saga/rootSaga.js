@@ -4,6 +4,7 @@ import bookSaga from "./bookSaga";
 import membershipSaga from "./membershipSaga";
 import tagSaga from "./tagSaga";
 import myLibrarySaga from "./myLibrarySaga";
+import reviewSaga from "./reviewSaga";
 
 export default function* rootSaga() {
   yield all([
@@ -12,5 +13,6 @@ export default function* rootSaga() {
     membershipSaga(),
     tagSaga(),
     myLibrarySaga(),
+    reviewSaga(),
   ]);
 }

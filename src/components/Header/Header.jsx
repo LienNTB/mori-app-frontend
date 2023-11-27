@@ -12,6 +12,8 @@ import { searchBooks } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
+import { getBookCategoryRequest } from '@/app/redux/saga/requests/category'
+import Loading from '../Loading/Loading'
 
 const Header = () => {
   const dispatch = useDispatch()
@@ -19,10 +21,18 @@ const Header = () => {
   const [isOpenMenuList, setIsOpenMenuList] = useState(false)
   const [searchValue, setSearchValue] = useState("")
   const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
-
+  const [categories, setCategories] = useState(null)
   const router = useRouter();
   const { user, logOut } = UserAuth();
 
+  const handleOpenMenu = async () => {
+    setIsOpenListbox(p => !p)
+    await getBookCategoryRequest()
+      .then(res => {
+        setCategories(res.bookCategories)
+        console.log("res:", res.bookCategories)
+      })
+  }
   const handleSignOut = async () => {
     try {
       await logOut();
@@ -188,27 +198,48 @@ const Header = () => {
       </div>
       <div className={styles.bottomMenu}>
         <ul>
-          <li className={styles.danhmuc} onClick={() => setIsOpenListbox(p => !p)}>Danh mục
-            {isOpenListbox ? <div className={`${styles.listbox} w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100`}>
-              <Listbox
-                items={items}
-                aria-label="Dynamic Actions"
-                onAction={(key) => alert(key)}
-                className={styles.listboxContent}
-              >
-                {
+          <li className={styles.danhmuc} onClick={() => handleOpenMenu()}>Danh mục
+            {isOpenListbox ?
+              <div className={`${styles.listbox} w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100`}>
+                {!categories ? <>...</> :
+                  <Listbox
+                    items={items}
+                    aria-label="Dynamic Actions"
+                    // onAction={(key) => alert(key)}
+                    className={styles.listboxContent}
+                  >
+                    {/* {
                   items.map(item => (
+
                     <ListboxItem
                       key={item.key}
                       color={"default"}
                     >
-                      {item.label}
+                      <a href={`/book-category/${item.key}`}>
+                        {item.label}
+                      </a>
                     </ListboxItem>
-                  ))
-                }
-              </Listbox>
 
-            </div> : <></>}
+                  ))
+                } */}
+
+                    {
+                      categories.map(item => (
+
+                        <ListboxItem
+                          key={item.name}
+                          color={"default"}
+                        >
+                          <a href={`/book-category/${item.name}`}>
+                            {item.description}
+                          </a>
+                        </ListboxItem>
+
+                      ))
+                    }
+                  </Listbox>}
+
+              </div> : <></>}
           </li>
           <li className={styles.bottomMenuItem}>Sách đọc</li>
           <li className={styles.bottomMenuItem}>Sách nói</li>

@@ -1,5 +1,7 @@
+import * as type from "../../types";
+
 export const getBookCategoryRequest = async () => {
-  return fetch(`http://localhost:8080/api/bookCategory/bookCategories`, {
+  return fetch(`${type.BACKEND_URL}/api/bookCategory/bookCategories`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

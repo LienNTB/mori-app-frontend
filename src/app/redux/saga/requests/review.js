@@ -1,6 +1,6 @@
 import * as type from "../../types";
 export const getReviewsByIdRequest = async (id) => {
-  return fetch(`http://localhost:8080/api/review/getReviews/${id}`, {
+  return fetch(`${type.BACKEND_URL}/api/review/getReviews/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

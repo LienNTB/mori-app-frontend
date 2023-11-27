@@ -14,6 +14,7 @@ import { fontWeight } from '@mui/system'
 import Link from 'next/link'
 import { createAccountRequest, getCurrentAccountRequest, loginAccountRequest } from '../redux/saga/requests/account'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
+import { forgetPasswordRequest } from '../redux/saga/requests/auth'
 
 const Login = () => {
   const { user, googleSignIn } = UserAuth();
@@ -22,7 +23,35 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("")
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [email, setEmail] = useState("")
+  const handleForgetPassword = () => {
+    if (email === "") {
+      toast.error("Vui lòng nhập email!", {
+        duration: 2000, position: 'top-center',
+      })
+    }
+    else {
+      toast.promise(
+        new Promise((resolve, reject) => {
+          forgetPasswordRequest(email)
+            .then((resp) => {
+              if (resp.message) {
+                resolve("Password reset email sent!");
+              }
+              if (resp.error) {
+                reject(new Error(resp.error));
+              }
+            })
 
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+    }
+  }
 
   async function handleSignInGoogle() {
     try {
@@ -55,23 +84,28 @@ const Login = () => {
         new Promise((resolve, reject) => {
           loginAccountRequest(account)
             .then((resp) => {
-              if (resp.msg) {
-                resolve("Đăng nhập thành công!");
-                localStorage.setItem("authenticated", true);
-                localStorage.setItem("user", JSON.stringify({
-                  _id: resp.user._id,
-                  username: resp.user.username,
-                  email: resp.user.email,
-                  displayName: resp.user.displayName,
-                  phoneNumber: resp.user.phoneNumber,
-                  avatar: resp.user.avatar
-                }));
-                localStorage.setItem("authenticated", true);
-                setAuthenticated(localStorage.getItem("authenticated"))
+              if (resp.user.is_blocked) {
+                reject("Tài khoản này đã bị khóa!");
               }
               else {
-                console.log("resp:", resp)
-                reject(new Error(resp));
+                if (resp.msg) {
+                  resolve("Đăng nhập thành công!");
+                  localStorage.setItem("authenticated", true);
+                  localStorage.setItem("user", JSON.stringify({
+                    _id: resp.user._id,
+                    username: resp.user.username,
+                    email: resp.user.email,
+                    displayName: resp.user.displayName,
+                    phoneNumber: resp.user.phoneNumber,
+                    avatar: resp.user.avatar
+                  }));
+                  localStorage.setItem("authenticated", true);
+                  setAuthenticated(localStorage.getItem("authenticated"))
+                }
+                else {
+                  console.log("resp:", resp)
+                  reject(new Error(resp));
+                }
               }
             })
         }),
@@ -99,21 +133,28 @@ const Login = () => {
   }, [user])
   const getUserInfo = useCallback(() => {
     if (user) {
-
+      console.log("dong 102")
       let newAccount = {
         email: user.email,
         displayName: user.displayName,
         avatar: user.photoURL,
       };
       createAccountRequest(newAccount)
-      getCurrentAccountRequest(newAccount)
-        .then(res => {
-          const currentAccount = res.account;
-          console.log("currentAccount", currentAccount)
-          localStorage.setItem("user", JSON.stringify(currentAccount))
+        .then(() => {
+          getCurrentAccountRequest(newAccount)
+            .then(res => {
+              const currentAccount = res.account;
+              if (currentAccount.is_blocked) {
+                alert("Tài khoản này đã bị khóa!")
+              }
+              else {
+                console.log("currentAccount", currentAccount)
+                localStorage.setItem("user", JSON.stringify(currentAccount))
+                localStorage.setItem("authenticated", true);
+                setAuthenticated(localStorage.getItem("authenticated"))
+              }
+            })
         })
-      localStorage.setItem("authenticated", true);
-      setAuthenticated(localStorage.getItem("authenticated"))
     }
   }, [user])
 
@@ -203,13 +244,13 @@ const Login = () => {
             <>
               <ModalHeader className="flex flex-col gap-1">Tìm email của bạn</ModalHeader>
               <ModalBody>
-                <Input type="email" label="Email" />
+                <Input type="text" value={email} onChange={e => setEmail(e.target.value)} />
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" onPress={onClose} onClick={handleForgetPassword}>
                   Reset password
                 </Button>
               </ModalFooter>

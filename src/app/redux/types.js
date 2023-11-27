@@ -1,10 +1,4 @@
-let BACKEND_URL = "http://localhost:8080";
-
-if (process.env.NODE_ENV === "development") {
-  BACKEND_URL = "http://localhost:8080";
-} else {
-  BACKEND_URL = "...";
-}
+let BACKEND_URL = process.env.BACKEND_URL;
 
 export { BACKEND_URL };
 
@@ -95,3 +89,8 @@ export const DELETE_BOOK_FROM_LIBRARY_FAILED =
 export const GET_MEMBERSHIP_BY_ID_REQUESTED = "GET_MEMBERSHIP_BY_ID_REQUESTED";
 export const GET_MEMBERSHIP_BY_ID_SUCCESS = "GET_MEMBERSHIP_BY_ID_SUCCESS";
 export const GET_MEMBERSHIP_BY_ID_FAILED = "GET_MEMBERSHIP_BY_ID_FAILED";
+
+// * REVIEWS
+export const GET_REVIEWS_BY_ID_REQUESTED = "GET_REVIEWS_BY_ID_REQUESTED";
+export const GET_REVIEWS_BY_ID_SUCCESS = "GET_REVIEWS_BY_ID_SUCCESS";
+export const GET_REVIEWS_BY_ID_FAILED = "GET_REVIEWS_BY_ID_FAILED";

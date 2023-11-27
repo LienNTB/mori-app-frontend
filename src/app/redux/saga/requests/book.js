@@ -1,7 +1,8 @@
 import { useSelector } from "react-redux";
+import * as type from "../../types";
 
 export const getAllBooksRequest = async () => {
-  return fetch(`http://localhost:8080/api/book/get-book`, {
+  return fetch(`${type.BACKEND_URL}/api/book/get-book`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -17,7 +18,7 @@ export const getAllBooksRequest = async () => {
 };
 
 export const getBookByIdRequest = async (id) => {
-  return fetch(`http://localhost:8080/api/book/get-book/${id}`, {
+  return fetch(`${type.BACKEND_URL}/api/book/get-book/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -33,7 +34,7 @@ export const getBookByIdRequest = async (id) => {
 };
 
 export const increaseTotalReadRequest = async (id) => {
-  return fetch(`http://localhost:8080/api/book/total-read/${id}`, {
+  return fetch(`${type.BACKEND_URL}/api/book/total-read/${id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -49,7 +50,7 @@ export const increaseTotalReadRequest = async (id) => {
 };
 
 export const increaseTotalSavedRequest = async (payload) => {
-  return fetch(`http://localhost:8080/api/book/total-saved/${payload.bookId}`, {
+  return fetch(`${type.BACKEND_URL}/api/book/total-saved/${payload.bookId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -68,7 +69,7 @@ export const increaseTotalSavedRequest = async (payload) => {
 };
 
 export const findBookByCategoryRequest = async (payload) => {
-  return fetch(`http://localhost:8080/api/book/get-book/category`, {
+  return fetch(`${type.BACKEND_URL}/api/book/get-book/category`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -87,7 +88,7 @@ export const findBookByCategoryRequest = async (payload) => {
 };
 
 export const getReadHistoryRequest = async (id) => {
-  return fetch(`http://localhost:8080/api/readHistory/get-readHistory/${id}`, {
+  return fetch(`${type.BACKEND_URL}/api/readHistory/get-readHistory/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -103,7 +104,7 @@ export const getReadHistoryRequest = async (id) => {
 };
 
 export const addNewReadHistory = async (request) => {
-  return fetch(`http://localhost:8080/api/readHistory/add-readHistory`, {
+  return fetch(`${type.BACKEND_URL}/api/readHistory/add-readHistory`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

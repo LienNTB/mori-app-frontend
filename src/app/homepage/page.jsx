@@ -12,7 +12,7 @@ const HomePage = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const books = props.books;
   const tags = props.tags
-  const itemsPerPage = 10;
+  const itemsPerPage = 18;
   const totalPages = (Math.ceil(books.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;

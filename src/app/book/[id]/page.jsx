@@ -62,6 +62,7 @@ function Book() {
   const router = useRouter();
 
   console.log("reviews:", reviews);
+  console.log(book);
   const params = useParams();
   const id = params.id;
   const redirectLogin = () => {
@@ -75,7 +76,7 @@ function Book() {
     // console.log("handleReadBook")
 
     if (book.access_level === 0) {
-      increaseTotalReadRequest(book._id);
+      // increaseTotalReadRequest(book._id);
       increaseTotalReadDaily(book._id);
       if (currentAccount) {
         addNewReadHistory({

@@ -133,7 +133,7 @@ const Ranking = () => {
                   ) : null
                 }
               >
-                <TableHeader >
+                <TableHeader>
                   {/* <TableColumn key="rank">Số thứ tự</TableColumn> */}
                   <TableColumn key="image">Hình ảnh sách</TableColumn>
                   <TableColumn key="name">Tên sách</TableColumn>
@@ -147,18 +147,27 @@ const Ranking = () => {
                   loadingState={loadingState}
                 >
                   {(item, index) => (
-
                     <TableRow key={item?.book_id}>
                       {/* <TableCell>{index ? index : ""}</TableCell> */}
                       <TableCell>
-                        <img
-                          src={item?.bookInfo?.image}
-                          alt={item?.bookInfo?.name || "Hình ảnh sách"}
-                          className={styles.responsiveImage}
-                        />
+                        <Link href={`/book/${item?.book_id}`}>
+                          <img
+                            src={item?.bookInfo?.image}
+                            alt={item?.bookInfo?.name || "Hình ảnh sách"}
+                            className={styles.responsiveImage}
+                          />
+                        </Link>
                       </TableCell>
-                      <TableCell>{item?.bookInfo?.name}</TableCell>
-                      <TableCell>{item?.bookInfo?.author}</TableCell>
+                      <TableCell>
+                        <Link href={`/book/${item?.book_id}`}>
+                          {item?.bookInfo?.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link href={`/book/${item?.book_id}`}>
+                          {item?.bookInfo?.author}
+                        </Link>
+                      </TableCell>
                       <TableCell>{item?.totalRead}</TableCell>
                       <TableCell>{item?.bookInfo?.totalHearted}</TableCell>
                     </TableRow>

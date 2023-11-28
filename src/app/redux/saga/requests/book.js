@@ -49,6 +49,22 @@ export const increaseTotalReadRequest = async (id) => {
     });
 };
 
+export const increaseTotalReadDaily = async (id) => {
+  return fetch(`${type.BACKEND_URL}/api/bookRanking/increase/${id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
 export const increaseTotalSavedRequest = async (payload) => {
   return fetch(`${type.BACKEND_URL}/api/book/total-saved/${payload.bookId}`, {
     method: "POST",

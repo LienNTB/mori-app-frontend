@@ -1,67 +1,77 @@
-"use client";
-import React, { useCallback, useEffect, useState } from "react";
-import styles from "./signup.module.scss";
-import { UserAuth } from "@/app/context/AuthContext";
-import Image from "next/image";
-import { redirect } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { createNewAccount, getCurrentAccount } from "../redux/actions/account";
-import { useSelector } from "react-redux";
-import ToastContainerWrapper from "@/components/ToastContainerWrapper/ToastContainerWrapper";
-import { Nunito } from "next/font/google";
-import { fontWeight } from "@mui/system";
-import Link from "next/link";
+"use client"
+import React, { useCallback, useEffect, useState } from 'react'
+import styles from "./signup.module.scss"
+import { UserAuth } from '@/app/context/AuthContext'
+import Image from 'next/image'
+import { redirect } from 'next/navigation'
+import { useDispatch } from 'react-redux'
+import { createNewAccount, getCurrentAccount } from "../redux/actions/account"
+import { useSelector } from 'react-redux'
+import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
+import { Nunito } from 'next/font/google'
+import { fontWeight } from '@mui/system'
+import Link from 'next/link'
 import { Toaster, toast } from "react-hot-toast";
-import { registerAccountRequest } from "../redux/saga/requests/account";
-import { useRouter } from "next/router";
+import { registerAccountRequest } from '../redux/saga/requests/account'
+import { useRouter } from 'next/navigation'
+
+
 
 const SignUp = () => {
   const { user, googleSignIn } = UserAuth();
-  const [authenticated, setAuthenticated] = useState(
-    localStorage.getItem("authenticated")
-  );
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [retypePassword, setRetypePassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const dispatch = useDispatch();
-  // const router = useRouter()
+  const [password, setPassword] = useState("")
+  const [retypePassword, setRetypePassword] = useState("")
+  const [displayName, setDisplayName] = useState("")
+  const dispatch = useDispatch()
+  const router = useRouter()
 
+  const handleSignupKeyPressed = (e) => {
+    if (e.key === "Enter") {
+      handleSignup()
+    }
+  }
   const handleSignup = () => {
-    if (
-      username == "" ||
-      password == "" ||
-      retypePassword == "" ||
-      displayName == "" ||
-      email == ""
-    ) {
+    if (username == "" || password == "" || retypePassword == "" || displayName == "") {
       toast.error("Vui lòng nhập đủ thông tin!", {
-        duration: 2000,
-        position: "top-center",
-      });
-    } else if (password !== retypePassword) {
+        duration: 2000, position: 'top-center',
+      })
+    }
+    else if (password !== retypePassword) {
       toast.error("Mật khẩu không khớp!", {
-        duration: 2000,
-        position: "top-center",
-      });
-    } else {
+        duration: 2000, position: 'top-center',
+      })
+    }
+    else {
       const account = {
         username: username,
         email: email,
         displayName: displayName,
-        password: password,
-      };
+        password: password
+      }
       toast.promise(
         new Promise((resolve, reject) => {
-          registerAccountRequest(account).then((resp) => {
-            if (resp.error) {
-              console.log("resp:", resp);
-              reject(new Error(resp.message));
-            } else {
-              resolve("Đăng kí tài khoản thành công!");
-            }
-          });
+          registerAccountRequest(account)
+            .then((resp) => {
+              if (resp.error === "error") {
+                reject(new Error(resp.message));
+                console.log("resp:", resp)
+
+              }
+              else {
+                resolve("Đăng kí tài khoản thành công!");
+                console.log("resp:", resp)
+
+                // router.replace("/login")
+              }
+
+            })
+            .catch((err) => {
+              reject(new Error(err));
+
+            })
         }),
         {
           loading: "Processing...",
@@ -69,8 +79,9 @@ const SignUp = () => {
           error: (error) => error.message,
         }
       );
+
     }
-  };
+  }
 
   useEffect(() => {
     if (user) {
@@ -84,15 +95,15 @@ const SignUp = () => {
       };
       dispatch(createNewAccount(newAccount));
       localStorage.setItem("authenticated", true);
-      setAuthenticated(localStorage.getItem("authenticated"));
+      setAuthenticated(localStorage.getItem("authenticated"))
     }
-  }, [user]);
+  }, [user])
 
   useEffect(() => {
     if (authenticated) {
-      redirect("/");
+      redirect("/")
     }
-  }, [authenticated]);
+  }, [authenticated])
 
   return (
     <>
@@ -103,43 +114,35 @@ const SignUp = () => {
             <div className={styles.div3}>
               <div className={styles.div4}>WELCOME BACK!</div>
               <div className={styles.div5}>
-                <span style={{ fontWeight: 400 }}>Have an account? </span>
+
+                <span style={{ fontWeight: 400 }}>
+                  Have an account?{" "}
+                </span>
                 <Link href="/login">
-                  <span style={{ fontWeight: 700 }}>Sign in</span>
+                  <span style={{ fontWeight: 700 }}>
+                    Sign in
+                  </span>
                 </Link>
               </div>
               <div className={styles.div6}>Email</div>
-              <input
-                className={styles.div7}
+              <input className={styles.div7}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+                onChange={e => setEmail(e.target.value)} />
               <div className={styles.div6}>Username</div>
-              <input
-                className={styles.div7}
+              <input className={styles.div7}
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
+                onChange={e => setUsername(e.target.value)} />
               <div className={styles.div6}>Display Name</div>
-              <input
-                className={styles.div7}
+              <input className={styles.div7}
                 value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-              />
+                onChange={e => setDisplayName(e.target.value)} />
               <div className={styles.div8}>Password</div>
-              <input
-                type="password"
-                className={styles.div9}
+              <input type="password" className={styles.div9}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+                onChange={e => setPassword(e.target.value)} onKeyPress={e => handleSignupKeyPressed(e)} />
               <div className={styles.div8}>Retype password</div>
-              <input
-                type="password"
-                className={styles.div9}
-                value={retypePassword}
-                onChange={(e) => setRetypePassword(e.target.value)}
-              />
+              <input type="password" className={styles.div9} value={retypePassword}
+                onChange={e => setRetypePassword(e.target.value)} />
 
               {/* <img
                   loading="lazy"
@@ -152,9 +155,11 @@ const SignUp = () => {
                   className="img-2"
                 /> */}
 
-              <div className={styles.div14} onClick={() => handleSignup()}>
-                Sign Up
-              </div>
+
+
+              <div className={styles.div14} onClick={() => handleSignup()}>Sign Up</div>
+
+
             </div>
           </div>
           <div className={styles.column2}>
@@ -165,9 +170,11 @@ const SignUp = () => {
             />
           </div>
         </div>
-      </div>
+      </div >
+
     </>
   );
-};
+}
 
-export default SignUp;
+
+export default SignUp

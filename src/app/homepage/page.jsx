@@ -7,6 +7,7 @@ import BookItem from '@/components/BookItem/BookItem'
 import Tag from '@/components/Tag/Tag'
 import { useDispatch } from 'react-redux'
 import { Pagination } from '@nextui-org/react'
+import * as type from '../redux/types'
 
 const HomePage = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,7 +18,7 @@ const HomePage = (props) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedItems = books.slice(startIndex, endIndex);
-
+  console.log("type", type)
   return (
 
     <div className={styles.homePageContainer}>

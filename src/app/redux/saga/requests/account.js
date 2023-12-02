@@ -15,6 +15,7 @@ export const getAccountsRequest = async (searchValue) => {
     });
 };
 export const createAccountRequest = async (account) => {
+  console.log("type", type);
   return fetch(`${type.BACKEND_URL}/api/account/add-account`, {
     method: "POST",
     headers: {

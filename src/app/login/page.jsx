@@ -112,7 +112,7 @@ const Login = () => {
         {
           loading: "Processing...",
           success: (message) => message,
-          error: (error) => error.message,
+          error: (error) => error,
         }
       );
 

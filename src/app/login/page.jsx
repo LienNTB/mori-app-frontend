@@ -15,6 +15,8 @@ import Link from 'next/link'
 import { createAccountRequest, getCurrentAccountRequest, loginAccountRequest } from '../redux/saga/requests/account'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
 import { forgetPasswordRequest } from '../redux/saga/requests/auth'
+import { useRouter } from 'next/navigation'
+import * as type from '../redux/types'
 
 const Login = () => {
   const { user, googleSignIn } = UserAuth();
@@ -118,13 +120,19 @@ const Login = () => {
 
     }
   }
-
-
+  const router = useRouter();
 
 
   useEffect(() => {
     if (authenticated) {
-      redirect("/")
+      const currentAccount = JSON.parse(localStorage.getItem("user"))
+      console.log("role:", currentAccount.role)
+      if (currentAccount.role === 1) {
+        router.push(type.ADMIN_URL_DEV)
+      }
+      else {
+        redirect("/")
+      }
     }
   }, [authenticated])
 
@@ -132,8 +140,9 @@ const Login = () => {
     getUserInfo()
   }, [user])
   const getUserInfo = useCallback(() => {
+    console.log("callback")
     if (user) {
-      console.log("dong 102")
+      console.log("callback has user")
       let newAccount = {
         email: user.email,
         displayName: user.displayName,

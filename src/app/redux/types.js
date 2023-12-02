@@ -1,7 +1,5 @@
-let BACKEND_URL = process.env.BACKEND_URL_DEV;
-
-export { BACKEND_URL };
-
+export const BACKEND_URL = process.env.BACKEND_URL_DEV;
+export const ADMIN_URL_DEV = process.env.ADMIN_URL_DEV;
 // * AUTH
 export const LOGIN_REQUESTED = "LOGIN_REQUESTED";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";

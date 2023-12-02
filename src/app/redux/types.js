@@ -1,4 +1,4 @@
-let BACKEND_URL = process.env.BACKEND_URL;
+let BACKEND_URL = process.env.BACKEND_URL_DEV;
 
 export { BACKEND_URL };
 

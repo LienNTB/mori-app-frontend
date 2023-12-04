@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev",
+        "dev": "next dev -H 0.0.0.0",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"
@@ -59,6 +59,7 @@
         "sass": "^1.69.5",
         "tailwindcss": "^3.3.5",
         "typescript": "^5.3.2",
-        "vite": "^5.0.4"
+        "vite": "^5.0.4",
+        "swr": "^2.2.4"
     }
 }

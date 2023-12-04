@@ -20,7 +20,7 @@ import * as type from '../redux/types'
 
 const Login = () => {
   const { user, googleSignIn } = UserAuth();
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
+  const [authenticated, setAuthenticated] = useState(null)
   const dispatch = useDispatch()
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("")
@@ -101,22 +101,8 @@ const Login = () => {
                 }
                 // trường hợp account không bị khóa
                 else {
-                  // trường hợp account là admin
-                  if (resp.user.role === 1) {
-                    resolve("Đăng nhập thành công!");
-                    localStorage.setItem("authenticated", true);
-                    localStorage.setItem("user", JSON.stringify({
-                      _id: resp.user._id,
-                      username: resp.user.username,
-                      email: resp.user.email,
-                      displayName: resp.user.displayName,
-                      phoneNumber: resp.user.phoneNumber,
-                      avatar: resp.user.avatar
-                    }));
-                    window.location.replace(type.ADMIN_URL_DEV);
-                  }
                   // trường hợp account là user
-                  else {
+                  if (resp.user.role === 0) {
                     resolve("Đăng nhập thành công!");
                     localStorage.setItem("authenticated", true);
                     localStorage.setItem("user", JSON.stringify({
@@ -127,7 +113,6 @@ const Login = () => {
                       phoneNumber: resp.user.phoneNumber,
                       avatar: resp.user.avatar
                     }));
-                    setAuthenticated(true)
                     window.location.replace(type.FRONTEND_URL_DEV);
                   }
                 }
@@ -149,13 +134,15 @@ const Login = () => {
   }
   const router = useRouter();
 
-
+  useEffect(() => {
+    setAuthenticated(localStorage.getItem("authenticated"))
+  }, [])
   useEffect(() => {
     if (authenticated) {
       const currentAccount = JSON.parse(localStorage.getItem("user"))
       console.log("role:", currentAccount.role)
       if (currentAccount.role === 1) {
-        router.push(type.ADMIN_URL_DEV)
+        window.location.replace(type.ADMIN_URL_DEV)
       }
       else {
         redirect("/")

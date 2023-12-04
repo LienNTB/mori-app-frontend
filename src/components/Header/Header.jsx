@@ -134,12 +134,12 @@ const Header = () => {
                 Danh mục
               </div>
               <div className={styles.menuItem}>
-                <Link href="/ranking/sachdoc">
+                <Link href="/book">
                   Sách đọc
                 </Link>
               </div>
               <div className={styles.menuItem}>
-                <Link href="/ranking/sachnoi">
+                <Link href="/audio-book">
                   Sách nói
                 </Link>
               </div>
@@ -170,12 +170,12 @@ const Header = () => {
                   Danh mục
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/ranking/sachdoc">
+                  <Link href="/book">
                     Sách đọc
                   </Link>
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/ranking/sachnoi">
+                  <Link href="/audio-book">
                     Sách nói
                   </Link>
                 </div>
@@ -241,8 +241,12 @@ const Header = () => {
 
               </div> : <></>}
           </li>
+          <Link href="/book">
           <li className={styles.bottomMenuItem}>Sách đọc</li>
+          </Link>
+          <Link href="/audio-book">
           <li className={styles.bottomMenuItem}>Sách nói</li>
+          </Link>
           <Link href="/ranking/sachdoc">
             <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
           </Link>

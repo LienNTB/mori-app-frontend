@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from "./Header.module.scss"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -20,7 +20,7 @@ const Header = () => {
   const [isOpenListbox, setIsOpenListbox] = useState(false)
   const [isOpenMenuList, setIsOpenMenuList] = useState(false)
   const [searchValue, setSearchValue] = useState("")
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
+  const [authenticated, setAuthenticated] = useState(false)
   const [categories, setCategories] = useState(null)
   const router = useRouter();
   const { user, logOut } = UserAuth();
@@ -60,6 +60,10 @@ const Header = () => {
     },
 
   ];
+
+  useEffect(() => {
+    setAuthenticated(localStorage.getItem("authenticated"))
+  }, [])
   return (
     <div className={styles.container}>
       <div className={styles.topMenu}>

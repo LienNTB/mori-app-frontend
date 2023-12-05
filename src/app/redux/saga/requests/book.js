@@ -16,6 +16,37 @@ export const getAllBooksRequest = async () => {
       throw error;
     });
 };
+export const getAllEBookRequest = async () => {
+  return fetch(`${type.BACKEND_URL}/api/book/get-book/ebook`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const getAllAudioBookRequest = async () => {
+  return fetch(`${type.BACKEND_URL}/api/book/get-book/audio-book`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
 
 export const getBookByIdRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/${id}`, {

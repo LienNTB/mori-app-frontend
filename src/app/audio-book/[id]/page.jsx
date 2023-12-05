@@ -42,6 +42,7 @@ import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import ReactHlsPlayer from "react-hls-player";
 import ReactDOM from "react-dom";
+import ChapterAudioPlayer from "@/components/ChapterAudioPlayer/ChapterAudioPlayer";
 
 // ReactDOM.render(
 //   <React.StrictMode>
@@ -68,8 +69,9 @@ function AudioBookPage() {
   const [content, setContent] = useState("");
   const router = useRouter();
   const [selectedChapter, setSelectedChapter] = useState("");
+  const [audioPlaying, setAudioPlaying] = useState(false)
 
-  console.log("reviews:", reviews);
+  console.log("selectedChapter:", selectedChapter);
   console.log("book", book);
   const params = useParams();
   const id = params.id;
@@ -195,7 +197,8 @@ function AudioBookPage() {
   return (
     <>
       <div className={styles.bookContainer}>
-        <Header />
+        <Header />\
+        <AudioPlayer className={styles.audioPlayerWrapper} src={selectedChapter.audio} onPlay={e => console.log("onPlay")} />
 
         {book ? (
           <div className={styles.bookContent}>
@@ -322,21 +325,11 @@ function AudioBookPage() {
                   chapters={book.chapters}
                   onChapterClicked={(c) => setSelectedChapter(c)}
                 />
-                {selectedChapter && (
-              <ChapterAudioPlayer chapter={selectedChapter} book={book} />
-            )}
+                {/* {selectedChapter && (
+                  <ChapterAudioPlayer chapter={selectedChapter} book={book} />
+                )} */}
               </div>
             </section>
-            
-
-
-
-
-
-
-
-
-
             <section className={styles.productReview}>
               <div className={styles.reviewHeader}>
                 <div className={styles.writeReviewBtn}>Viết đánh giá</div>
@@ -596,6 +589,7 @@ function AudioBookPage() {
         )}
         <Footer />
         <Toaster />
+
       </div>
     </>
   );
@@ -611,7 +605,7 @@ function ChapterItem(props) {
       <div>{props.chapter.id}</div>
       <div className="flex-grow">{props.chapter.name}</div>
       <div>
-        <button className="bg-orange-500 px-3 py-2 font-bold">Nghe</button>
+        <button className={styles.listenBtn}>Nghe</button>
       </div>
     </div>
   );
@@ -629,34 +623,6 @@ function ListChapters({ chapters, onChapterClicked }) {
           chapter={chapter}
         />
       ))}
-    </div>
-  );
-}
-function ChapterAudioPlayer({ chapter, book }) {
-  const playRef = useRef(null);
-
-  return (
-    <div className={styles.chapterAudioPlayer}>
-      <div className={styles.audioPlayerHeader}>
-        <div className={styles.bookInfo}>
-          <img className={styles.circleImage} src={book.img} alt="cover" />
-          <div className={styles.bookDetails}>
-            <span>{chapter.name}</span>
-          </div>
-        </div>
-      </div>
-      <div className={styles.audioPayerContainer}>
-        <div className={styles.AudioPlayer}>
-          <ReactHlsPlayer
-            src={chapter.audio}
-            autoPlay={false}
-            controls={true}
-            width="100%"
-            height="auto"
-            playerRef={playRef}
-          />
-        </div>
-      </div>
     </div>
   );
 }

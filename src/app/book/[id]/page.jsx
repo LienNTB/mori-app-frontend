@@ -38,6 +38,7 @@ import {
   addNewReadHistory,
   increaseTotalReadRequest,
   increaseTotalReadDaily,
+  increaseTotalHeartRequest,
 } from "@/app/redux/saga/requests/book";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
@@ -76,7 +77,6 @@ function Book() {
     // console.log("handleReadBook")
 
     if (book.access_level === 0) {
-      // increaseTotalReadRequest(book._id);
       increaseTotalReadDaily(book._id);
       if (currentAccount) {
         addNewReadHistory({
@@ -102,6 +102,31 @@ function Book() {
       }
     }
   };
+  const handleIncreaseTotalHearted = async () => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        increaseTotalHeartRequest(id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve("Hearted!")
+              console.log("resp", resp)
+            }
+            else {
+              reject("Error!");
+            }
+          })
+          .catch(err => {
+            console.log("err", err)
+          })
+
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error.message,
+      }
+    );
+  }
 
   const handleSendReview = () => {
     redirectLogin();
@@ -256,12 +281,12 @@ function Book() {
                         {book.totalRead}
                       </strong>
                     </div>
-                    {/* <div className={styles.statItem}>
-                  <small>Lượt thích</small>
-                  <strong>
-                    <FontAwesomeIcon className={styles.icon} icon={faHeart} width={20} height={20} />{book.totalHearted}
-                  </strong>
-                </div> */}
+                    <div className={styles.statItem}>
+                      <small>Lượt yêu thích</small>
+                      <strong>
+                        <FontAwesomeIcon className={styles.icon} icon={faHeart} width={20} height={20} />{book.totalHearted}
+                      </strong>
+                    </div>
                     <div className={styles.statItem}>
                       <small>Đánh dấu</small>
                       <strong>
@@ -283,6 +308,7 @@ function Book() {
                       </button>
                     </Link>
                   </div>
+
                   <div className={styles.nextAction}>
                     <button
                       className={styles.read}
@@ -296,6 +322,17 @@ function Book() {
                       onClick={() => handleSaveToLibrary()}
                     >
                       Thêm vào thư viện
+                    </button>
+                    <button
+                      className={styles.save}
+                      onClick={() => handleIncreaseTotalHearted()}
+                    >
+                      <FontAwesomeIcon
+                        className={styles.icon}
+                        icon={faHeart}
+                        width={20}
+                        height={20}
+                      />
                     </button>
                     {/* <Link href={"/book-category/tamlykynang"}>
                 </Link> */}

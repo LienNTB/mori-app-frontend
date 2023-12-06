@@ -87,16 +87,17 @@ function Book() {
       router.push(book.pdf);
     } else {
       if (currentAccount == null) {
-        toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
+        toast.error("Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!", {
           duration: 2000,
         });
       } else {
-        const membership = await getMembershipByIdRequest(currentAccount._id);
-        if (!membership) {
+        const membershipRequest = await getMembershipByIdRequest(currentAccount._id);
+        if (!membershipRequest.membership) {
           toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
             duration: 2000,
           });
         } else {
+          increaseTotalReadDaily(book._id);
           router.push(book.pdf);
         }
       }
@@ -346,30 +347,6 @@ function Book() {
                 <div className={styles.line}></div>
               </div>
               <div className={styles.content}>{book.intro}</div>
-              {/* <div className={styles.tagWrapper}>
-            <div className={styles.titleWrapper}>
-              <h1>Tags</h1>
-              <div className={styles.line}>
-              </div>
-            </div>
-            <div className={styles.tagList}>
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" /><Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" />
-              <Tag name="Tâm lý" link="tamly" /><Tag name="Tâm lý" link="tamly" />
-            </div>
-          </div> */}
             </section>
 
             <section className={styles.productReview}>

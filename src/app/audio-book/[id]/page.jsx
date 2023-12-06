@@ -40,17 +40,6 @@ import RatingStars from "@/components/RatingStars/RatingStars";
 
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
-import ReactHlsPlayer from "react-hls-player";
-import ReactDOM from "react-dom";
-import ChapterAudioPlayer from "@/components/ChapterAudioPlayer/ChapterAudioPlayer";
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <AudioBookPage />
-//     <ChapterAudioPlayer /> {/* Đưa component này ra khỏi App */}
-//   </React.StrictMode>,
-//   document.getElementById('root')
-// );
 
 function AudioBookPage() {
   const dispatch = useDispatch();
@@ -69,7 +58,7 @@ function AudioBookPage() {
   const [content, setContent] = useState("");
   const router = useRouter();
   const [selectedChapter, setSelectedChapter] = useState("");
-  const [audioPlaying, setAudioPlaying] = useState(false)
+  const [audioPlaying, setAudioPlaying] = useState(false);
 
   console.log("selectedChapter:", selectedChapter);
   console.log("book", book);
@@ -82,32 +71,39 @@ function AudioBookPage() {
     }
   };
 
-  const handleReadBook = async () => {
+  const handleReadBook = async (chapter) => {
     // console.log("handleReadBook")
 
     if (book.access_level === 0) {
       // increaseTotalReadRequest(book._id);
       increaseTotalReadDaily(book._id);
+      setSelectedChapter(chapter);
       if (currentAccount) {
         addNewReadHistory({
           book: book,
           user: currentAccount._id,
         });
       }
-      router.push(book.pdf);
     } else {
       if (currentAccount == null) {
-        toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
-          duration: 2000,
-        });
+        toast.error(
+          "Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!",
+          {
+            duration: 2000,
+          }
+        );
       } else {
-        const membership = await getMembershipByIdRequest(currentAccount._id);
-        if (!membership) {
+        const membershipRequest = await getMembershipByIdRequest(
+          currentAccount._id
+        );
+        console.log("membership", membershipRequest.membership);
+        if (!membershipRequest.membership) {
           toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
             duration: 2000,
           });
         } else {
-          router.push(book.pdf);
+          increaseTotalReadDaily(book._id);
+          setSelectedChapter(chapter);
         }
       }
     }
@@ -198,8 +194,11 @@ function AudioBookPage() {
     <>
       <div className={styles.bookContainer}>
         <Header />\
-        <AudioPlayer className={styles.audioPlayerWrapper} src={selectedChapter.audio} onPlay={e => console.log("onPlay")} />
-
+        <AudioPlayer
+          className={styles.audioPlayerWrapper}
+          src={selectedChapter.audio}
+          onPlay={(e) => console.log("onPlay")}
+        />
         {book ? (
           <div className={styles.bookContent}>
             <section className={styles.novelHeader}>
@@ -323,7 +322,9 @@ function AudioBookPage() {
                 </div>
                 <ListChapters
                   chapters={book.chapters}
-                  onChapterClicked={(c) => setSelectedChapter(c)}
+                  onChapterClicked={(c) => {
+                    handleReadBook(c);
+                  }}
                 />
                 {/* {selectedChapter && (
                   <ChapterAudioPlayer chapter={selectedChapter} book={book} />
@@ -589,7 +590,6 @@ function AudioBookPage() {
         )}
         <Footer />
         <Toaster />
-
       </div>
     </>
   );

@@ -141,12 +141,7 @@ const Login = () => {
     if (authenticated) {
       const currentAccount = JSON.parse(localStorage.getItem("user"))
       console.log("role:", currentAccount.role)
-      if (currentAccount.role === 1) {
-        window.location.replace(type.ADMIN_URL_DEV)
-      }
-      else {
-        redirect("/")
-      }
+      redirect("/")
     }
   }, [authenticated])
 

@@ -70,3 +70,22 @@ export const loginAccountRequest = async (account) => {
       throw error;
     });
 };
+
+export const changePasswordRequest = async (username, currentPassword, newPassword) => {
+  const request = {
+    username: username,
+    currentPassword: currentPassword,
+    newPassword: newPassword
+  };
+  return fetch(`${type.BACKEND_URL}/api/account/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  })
+    .then((response) => response.json())
+    .catch((error) => {
+      throw error;
+    });
+};

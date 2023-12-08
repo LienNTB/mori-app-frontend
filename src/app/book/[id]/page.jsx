@@ -44,6 +44,7 @@ import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
 import { reviewBookRequest } from "@/app/redux/saga/requests/review";
 import RatingStars from "@/components/RatingStars/RatingStars";
+import PdfViewer from "@/components/PdfViewer/PdfViewer";
 
 function Book() {
   const dispatch = useDispatch();
@@ -61,6 +62,7 @@ function Book() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const router = useRouter();
+  const [showPdfViewer, setShowPdfViewer] = useState(false);
 
   console.log("reviews:", reviews);
   console.log(book);
@@ -84,21 +86,28 @@ function Book() {
           user: currentAccount._id,
         });
       }
-      router.push(book.pdf);
+      // router.push(book.pdf);
+      setShowPdfViewer(true);
     } else {
       if (currentAccount == null) {
-        toast.error("Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!", {
-          duration: 2000,
-        });
+        toast.error(
+          "Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!",
+          {
+            duration: 2000,
+          }
+        );
       } else {
-        const membershipRequest = await getMembershipByIdRequest(currentAccount._id);
+        const membershipRequest = await getMembershipByIdRequest(
+          currentAccount._id
+        );
         if (!membershipRequest.membership) {
           toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
             duration: 2000,
           });
         } else {
           increaseTotalReadDaily(book._id);
-          router.push(book.pdf);
+          // router.push(book.pdf);
+          setShowPdfViewer(true);
         }
       }
     }
@@ -109,17 +118,15 @@ function Book() {
         increaseTotalHeartRequest(id)
           .then((resp) => {
             if (resp.message) {
-              resolve("Hearted!")
-              console.log("resp", resp)
-            }
-            else {
+              resolve("Hearted!");
+              console.log("resp", resp);
+            } else {
               reject("Error!");
             }
           })
-          .catch(err => {
-            console.log("err", err)
-          })
-
+          .catch((err) => {
+            console.log("err", err);
+          });
       }),
       {
         loading: "Processing...",
@@ -127,7 +134,7 @@ function Book() {
         error: (error) => error.message,
       }
     );
-  }
+  };
 
   const handleSendReview = () => {
     redirectLogin();
@@ -285,7 +292,13 @@ function Book() {
                     <div className={styles.statItem}>
                       <small>Lượt yêu thích</small>
                       <strong>
-                        <FontAwesomeIcon className={styles.icon} icon={faHeart} width={20} height={20} />{book.totalHearted}
+                        <FontAwesomeIcon
+                          className={styles.icon}
+                          icon={faHeart}
+                          width={20}
+                          height={20}
+                        />
+                        {book.totalHearted}
                       </strong>
                     </div>
                     <div className={styles.statItem}>
@@ -602,6 +615,10 @@ function Book() {
                 </Splide>
               </section>
             )}
+            {/* Hiển thị PDF Viewer nếu showPdfViewer là true */}
+            {showPdfViewer && <PdfViewer pdfUrl={book.pdf} />}
+
+            {/* ... (các phần khác) */}
           </div>
         ) : (
           <Loading />
@@ -612,4 +629,5 @@ function Book() {
     </>
   );
 }
+
 export default Book;

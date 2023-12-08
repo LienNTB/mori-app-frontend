@@ -33,6 +33,7 @@ import { UserAuth } from "@/app/context/AuthContext";
 import { getCurrentAccount } from "@/app/redux/actions/account";
 import * as libraryRequest from "../../redux/saga/requests/myLibrary";
 import { Badge } from "@nextui-org/react";
+import * as type from "../../redux/types"
 import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
 import {
   addNewReadHistory,
@@ -86,8 +87,8 @@ function Book() {
           user: currentAccount._id,
         });
       }
-      // router.push(book.pdf);
-      setShowPdfViewer(true);
+      router.push(book.pdf);
+      // setShowPdfViewer(true);
     } else {
       if (currentAccount == null) {
         toast.error(
@@ -106,8 +107,8 @@ function Book() {
           });
         } else {
           increaseTotalReadDaily(book._id);
-          // router.push(book.pdf);
-          setShowPdfViewer(true);
+          router.push(book.pdf);
+          // setShowPdfViewer(true);
         }
       }
     }
@@ -354,6 +355,12 @@ function Book() {
                 </div>
               </div>
             </section>
+
+<div>
+{showPdfViewer && <PdfViewer pdfUrl={book.pdf}/>}
+</div>
+
+
             <section className={styles.novelContent}>
               <div className={styles.title}>
                 <h1>Giới thiệu</h1>
@@ -615,10 +622,8 @@ function Book() {
                 </Splide>
               </section>
             )}
-            {/* Hiển thị PDF Viewer nếu showPdfViewer là true */}
-            {showPdfViewer && <PdfViewer pdfUrl={book.pdf} />}
+            
 
-            {/* ... (các phần khác) */}
           </div>
         ) : (
           <Loading />

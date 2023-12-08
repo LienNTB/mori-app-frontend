@@ -80,15 +80,14 @@ function Book() {
 
     if (book.access_level === 0) {
       increaseTotalReadDaily(book._id);
-      increaseTotalReadRequest(book._id)
       if (currentAccount) {
         addNewReadHistory({
           book: book,
           user: currentAccount._id,
         });
       }
-      // router.push(book.pdf);
-      setShowPdfViewer(true);
+      router.push(book.pdf);
+      // setShowPdfViewer(true);
     } else {
       if (currentAccount == null) {
         toast.error(
@@ -107,9 +106,8 @@ function Book() {
           });
         } else {
           increaseTotalReadDaily(book._id);
-          increaseTotalReadRequest(book._id)
           router.push(book.pdf);
-          setShowPdfViewer(true);
+          // setShowPdfViewer(true);
         }
       }
     }
@@ -330,9 +328,7 @@ function Book() {
                       className={styles.read}
                       onClick={() => handleReadBook()}
                     >
-
                       Đọc ngay
-
                     </button>
 
                     <button

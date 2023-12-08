@@ -33,7 +33,6 @@ import { UserAuth } from "@/app/context/AuthContext";
 import { getCurrentAccount } from "@/app/redux/actions/account";
 import * as libraryRequest from "../../redux/saga/requests/myLibrary";
 import { Badge } from "@nextui-org/react";
-import * as type from "../../redux/types"
 import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
 import {
   addNewReadHistory,
@@ -45,7 +44,7 @@ import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
 import { reviewBookRequest } from "@/app/redux/saga/requests/review";
 import RatingStars from "@/components/RatingStars/RatingStars";
-import PdfViewer from "@/components/PdfViewer/PdfViewer";
+// import PdfViewer from "@/components/PdfViewer/PdfViewer";
 
 function Book() {
   const dispatch = useDispatch();
@@ -81,6 +80,7 @@ function Book() {
 
     if (book.access_level === 0) {
       increaseTotalReadDaily(book._id);
+      // increaseTotalReadRequest(book._id)
       if (currentAccount) {
         addNewReadHistory({
           book: book,
@@ -107,6 +107,7 @@ function Book() {
           });
         } else {
           increaseTotalReadDaily(book._id);
+          // increaseTotalReadRequest(book._id)
           router.push(book.pdf);
           // setShowPdfViewer(true);
         }
@@ -329,7 +330,9 @@ function Book() {
                       className={styles.read}
                       onClick={() => handleReadBook()}
                     >
+
                       Đọc ngay
+
                     </button>
 
                     <button
@@ -355,12 +358,6 @@ function Book() {
                 </div>
               </div>
             </section>
-
-<div>
-{showPdfViewer && <PdfViewer pdfUrl={book.pdf}/>}
-</div>
-
-
             <section className={styles.novelContent}>
               <div className={styles.title}>
                 <h1>Giới thiệu</h1>
@@ -407,7 +404,7 @@ function Book() {
                 <div className={styles.ruler}></div>
               </div>
               <div className={styles.productReviewWrapper}>
-                <div className={styles.reviewSidebar}>
+                {/* <div className={styles.reviewSidebar}>
                   <div className={styles.ratingOverview}>
                     <div className={styles.rating__current}>5</div>
                     <div className={styles.rating__left}>
@@ -509,11 +506,11 @@ function Book() {
                       <div className={styles.starLine__percentage}>100%</div>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className={styles.reviewMainContent}>
                   <div className={styles.reviewNavigation}>
                     <div className={styles.reviewNavigationList}>
-                      <div className={styles.reviewNavigationItemChoosen}>
+                      {/* <div className={styles.reviewNavigationItemChoosen}>
                         All review
                       </div>
                       <div className={styles.reviewNavigationItem}>
@@ -526,7 +523,7 @@ function Book() {
                         >
                           5
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   <div className={styles.ruler}></div>
@@ -622,8 +619,10 @@ function Book() {
                 </Splide>
               </section>
             )}
-            
+            {/* Hiển thị PDF Viewer nếu showPdfViewer là true */}
+            {/* {showPdfViewer && <PdfViewer pdfUrl={book.pdf} />} */}
 
+            {/* ... (các phần khác) */}
           </div>
         ) : (
           <Loading />

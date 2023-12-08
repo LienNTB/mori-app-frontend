@@ -14,10 +14,11 @@ const MemberPackage = () => {
   const router = useRouter()
   const [membertype, setMembertype] = useState(null);
   const dispatch = useDispatch()
-  let currentAccount = JSON.parse(localStorage.getItem("user"))
+  const [user, setUser] = useState("")
+  let currentAccount = user
 
   const redirectLogin = () => {
-    currentAccount = (JSON.parse(localStorage.getItem("user")))
+    currentAccount = (user)
     if (!currentAccount) {
       router.push("/login")
     }
@@ -89,6 +90,9 @@ const MemberPackage = () => {
     }
 
   }
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")))
+  }, [])
 
   return (
     <div className={styles.memberPackContainer}>

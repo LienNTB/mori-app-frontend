@@ -14,10 +14,10 @@ const HomePage = (props) => {
   const books = props.books;
   const tags = props.tags
   const itemsPerPage = 18;
-  const totalPages = (Math.ceil(books.length / itemsPerPage));
+  const totalPages = (Math.ceil(books?.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayedItems = books.slice(startIndex, endIndex);
+  const displayedItems = books?.slice(startIndex, endIndex);
   console.log("type", type)
   return (
 
@@ -42,7 +42,7 @@ const HomePage = (props) => {
           <div className={styles.sectionBody}>
             <div className={styles.tagList}>
               {
-                tags.map((tag) => (
+                tags?.map((tag) => (
                   <Tag name={tag.description} link={`/book-category/${tag.name}`} />
 
                 ))
@@ -65,7 +65,7 @@ const HomePage = (props) => {
           <div className={styles.sectionBody}>
             <div className={styles.bookList}>
               {
-                displayedItems.map(book => {
+                displayedItems?.map(book => {
                   return (
                     <div className={styles.bookItem}>
                       <BookItem book={book} key={book._id} />

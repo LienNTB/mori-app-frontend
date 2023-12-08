@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation'
 
 const SignUp = () => {
   const { user, googleSignIn } = UserAuth();
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
+  const [authenticated, setAuthenticated] = useState(false)
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("")
@@ -82,6 +82,7 @@ const SignUp = () => {
 
     }
   }
+
 
   useEffect(() => {
     if (user) {

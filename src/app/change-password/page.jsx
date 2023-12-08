@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from "./change-password.module.scss"
 import { useDispatch } from 'react-redux'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
@@ -14,12 +14,13 @@ const ResetPassword = () => {
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setPassword] = useState("")
   const [retypePassword, setRetypePassword] = useState("")
-  const currentAccount = JSON.parse(localStorage.getItem("user"))
+  const [user, setUser] = useState("")
+  const currentAccount = user
   const username = currentAccount.username;
   console.log(username);
 
   const handleResetPassword = async () => {
-    if (currentPassword===""|| newPassword === "" || retypePassword == "") {
+    if (currentPassword === "" || newPassword === "" || retypePassword == "") {
       toast.error("Vui lòng nhập đủ thông tin!", {
         duration: 2000, position: 'top-center',
       })
@@ -52,6 +53,10 @@ const ResetPassword = () => {
       );
     }
   }
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")))
+  }, [])
   return (
     <>
       <Toaster />

@@ -26,6 +26,7 @@ const Header = () => {
   const { user, logOut } = UserAuth();
 
   const handleOpenMenu = async () => {
+    console.log("handleOpenMenu")
     setIsOpenListbox(p => !p)
     await getBookCategoryRequest()
       .then(res => {
@@ -234,8 +235,8 @@ const Header = () => {
                           key={item.name}
                           color={"default"}
                         >
-                          <a href={`/book-category/${item.name}`}>
-                            {item.description}
+                          <a href={`/book-category/${item.tag}`}>
+                            {item.name}
                           </a>
                         </ListboxItem>
 
@@ -246,10 +247,10 @@ const Header = () => {
               </div> : <></>}
           </li>
           <Link href="/book">
-          <li className={styles.bottomMenuItem}>Sách đọc</li>
+            <li className={styles.bottomMenuItem}>Sách đọc</li>
           </Link>
           <Link href="/audio-book">
-          <li className={styles.bottomMenuItem}>Sách nói</li>
+            <li className={styles.bottomMenuItem}>Sách nói</li>
           </Link>
           <Link href="/ranking/sachdoc">
             <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>

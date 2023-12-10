@@ -213,9 +213,6 @@ function Book() {
   if (isLoading) {
     return <Loading />;
   }
-  // if (!currentAccount) {
-  //   redirect("/login")
-  // }
 
   return (
     <>

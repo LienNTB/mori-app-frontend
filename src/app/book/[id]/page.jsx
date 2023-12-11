@@ -64,8 +64,6 @@ function Book() {
   const router = useRouter();
   const [showPdfViewer, setShowPdfViewer] = useState(false);
 
-  console.log("reviews:", reviews);
-  console.log(book);
   const params = useParams();
   const id = params.id;
   const redirectLogin = () => {
@@ -86,7 +84,8 @@ function Book() {
           user: currentAccount._id,
         });
       }
-      router.push(book.pdf);
+      router.replace(`/reader/${book._id}`);
+
       // setShowPdfViewer(true);
     } else {
       if (currentAccount == null) {
@@ -106,7 +105,7 @@ function Book() {
           });
         } else {
           increaseTotalReadDaily(book._id);
-          router.push(book.pdf);
+          router.replace(`/reader/${book._id}`);
           // setShowPdfViewer(true);
         }
       }

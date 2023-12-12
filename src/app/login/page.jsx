@@ -15,7 +15,7 @@ import Link from 'next/link'
 import { createAccountRequest, getCurrentAccountRequest, loginAccountRequest } from '../redux/saga/requests/account'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
 import { forgetPasswordRequest } from '../redux/saga/requests/auth'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 import * as type from '../redux/types'
 
 const Login = () => {
@@ -26,6 +26,7 @@ const Login = () => {
   const [password, setPassword] = useState("")
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [email, setEmail] = useState("")
+
   const handleForgetPassword = () => {
     if (email === "") {
       toast.error("Vui lòng nhập email!", {
@@ -79,6 +80,7 @@ const Login = () => {
   const handleSignIn = () => {
 
 
+    const router = useRouter();
     if (username == "" || password == "") {
       toast.error("Vui lòng nhập đủ thông tin!", {
         duration: 2000, position: 'top-center',
@@ -113,7 +115,8 @@ const Login = () => {
                       phoneNumber: resp.user.phoneNumber,
                       avatar: resp.user.avatar
                     }));
-                    window.location.replace(type.FRONTEND_URL_DEV);
+                    // window.location.replace(type.FRONTEND_URL_DEV);
+                    router.push('/');
                   }
                 }
               }
@@ -132,7 +135,6 @@ const Login = () => {
 
     }
   }
-  const router = useRouter();
 
   useEffect(() => {
     setAuthenticated(localStorage.getItem("authenticated"))

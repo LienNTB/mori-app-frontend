@@ -22,6 +22,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   webpack(config) {
+    config.resolve.alias.canvas = false;
     config.resolve.fallback = {
       ...config.resolve.fallback,
       child_process: false,
@@ -29,6 +30,7 @@ const nextConfig = {
       net: false,
       tls: false,
     };
+
     return config;
   },
   images: {

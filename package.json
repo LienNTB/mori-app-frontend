@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev -H 0.0.0.0",
+        "dev": "next dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"
@@ -31,7 +31,6 @@
         "react": "18.2.0",
         "react-dom": "^18.2.0",
         "react-h5-audio-player": "^3.9.0",
-        "react-hls-player": "^3.0.7",
         "react-hot-toast": "^2.4.1",
         "react-reader": "^2.0.4",
         "react-redux": "^8.1.3",

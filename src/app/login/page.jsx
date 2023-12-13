@@ -113,7 +113,8 @@ const Login = () => {
                       phoneNumber: resp.user.phoneNumber,
                       avatar: resp.user.avatar
                     }));
-                    window.location.replace(type.FRONTEND_URL_DEV);
+                    redirect("/")
+
                   }
                 }
               }

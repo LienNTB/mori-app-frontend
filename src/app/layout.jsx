@@ -18,6 +18,11 @@ const inter = Montserrat({ subsets: ['latin'] })
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+
+        <link href="/favicon.ico" rel="icon" />
+      </head>
       <body className={inter.className}>
         <Provider store={store}>
           <AuthContextProvider>

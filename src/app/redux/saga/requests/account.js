@@ -15,6 +15,7 @@ export const getAccountsRequest = async (searchValue) => {
     });
 };
 export const createAccountRequest = async (account) => {
+  console.log("type", type);
   return fetch(`${type.BACKEND_URL}/api/account/add-account`, {
     method: "POST",
     headers: {
@@ -63,6 +64,25 @@ export const loginAccountRequest = async (account) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(account),
+  })
+    .then((response) => response.json())
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const changePasswordRequest = async (username, currentPassword, newPassword) => {
+  const request = {
+    username: username,
+    currentPassword: currentPassword,
+    newPassword: newPassword
+  };
+  return fetch(`${type.BACKEND_URL}/api/account/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
   })
     .then((response) => response.json())
     .catch((error) => {

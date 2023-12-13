@@ -7,17 +7,18 @@ import BookItem from '@/components/BookItem/BookItem'
 import Tag from '@/components/Tag/Tag'
 import { useDispatch } from 'react-redux'
 import { Pagination } from '@nextui-org/react'
+import * as type from '../redux/types'
 
 const HomePage = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const books = props.books;
   const tags = props.tags
-  const itemsPerPage = 10;
-  const totalPages = (Math.ceil(books.length / itemsPerPage));
+  const itemsPerPage = 18;
+  const totalPages = (Math.ceil(books?.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayedItems = books.slice(startIndex, endIndex);
-
+  const displayedItems = books?.slice(startIndex, endIndex);
+  console.log("type", type)
   return (
 
     <div className={styles.homePageContainer}>
@@ -41,7 +42,7 @@ const HomePage = (props) => {
           <div className={styles.sectionBody}>
             <div className={styles.tagList}>
               {
-                tags.map((tag) => (
+                tags?.map((tag) => (
                   <Tag name={tag.description} link={`/book-category/${tag.name}`} />
 
                 ))
@@ -64,7 +65,7 @@ const HomePage = (props) => {
           <div className={styles.sectionBody}>
             <div className={styles.bookList}>
               {
-                displayedItems.map(book => {
+                displayedItems?.map(book => {
                   return (
                     <div className={styles.bookItem}>
                       <BookItem book={book} key={book._id} />

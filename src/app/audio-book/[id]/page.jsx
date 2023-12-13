@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import Tag from "@/components/Tag/Tag";
-import styles from "./book.module.scss";
+import styles from "./audiobook.module.scss";
 import {
   getBookById,
   getBooks,
@@ -16,37 +16,32 @@ import {
   increaseTotalSaved,
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { redirect, useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
-import BookItem from "@/components/BookItem/BookItem";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addBookToLibrary } from "@/app/redux/actions/myLibrary";
 import { Toaster, toast } from "react-hot-toast";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import "@splidejs/react-splide/css/sea-green";
 import "@splidejs/react-splide/css/core";
-import { UserAuth } from "@/app/context/AuthContext";
-import { getCurrentAccount } from "@/app/redux/actions/account";
 import * as libraryRequest from "../../redux/saga/requests/myLibrary";
-import { Badge } from "@nextui-org/react";
 import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
 import {
   addNewReadHistory,
-  increaseTotalReadRequest,
   increaseTotalReadDaily,
-  increaseTotalHeartRequest,
 } from "@/app/redux/saga/requests/book";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
 import { reviewBookRequest } from "@/app/redux/saga/requests/review";
 import RatingStars from "@/components/RatingStars/RatingStars";
-// import PdfViewer from "@/components/PdfViewer/PdfViewer";
 
-function Book() {
+import AudioPlayer from "react-h5-audio-player";
+import "react-h5-audio-player/lib/styles.css";
+
+function AudioBookPage() {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.books.loading);
   const book = useSelector((state) => state.books.book);
@@ -62,8 +57,11 @@ function Book() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const router = useRouter();
-  const [showPdfViewer, setShowPdfViewer] = useState(false);
+  const [selectedChapter, setSelectedChapter] = useState("");
+  const [audioPlaying, setAudioPlaying] = useState(false);
 
+  console.log("selectedChapter:", selectedChapter);
+  console.log("book", book);
   const params = useParams();
   const id = params.id;
   const redirectLogin = () => {
@@ -73,20 +71,19 @@ function Book() {
     }
   };
 
-  const handleReadBook = async () => {
+  const handleReadBook = async (chapter) => {
     // console.log("handleReadBook")
 
     if (book.access_level === 0) {
+      // increaseTotalReadRequest(book._id);
       increaseTotalReadDaily(book._id);
+      setSelectedChapter(chapter);
       if (currentAccount) {
         addNewReadHistory({
           book: book,
           user: currentAccount._id,
         });
       }
-      router.replace(`/reader/${book._id}`);
-
-      // setShowPdfViewer(true);
     } else {
       if (currentAccount == null) {
         toast.error(
@@ -99,40 +96,17 @@ function Book() {
         const membershipRequest = await getMembershipByIdRequest(
           currentAccount._id
         );
+        console.log("membership", membershipRequest.membership);
         if (!membershipRequest.membership) {
           toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
             duration: 2000,
           });
         } else {
           increaseTotalReadDaily(book._id);
-          router.replace(`/reader/${book._id}`);
-          // setShowPdfViewer(true);
+          setSelectedChapter(chapter);
         }
       }
     }
-  };
-  const handleIncreaseTotalHearted = async () => {
-    toast.promise(
-      new Promise((resolve, reject) => {
-        increaseTotalHeartRequest(id)
-          .then((resp) => {
-            if (resp.message) {
-              resolve("Hearted!");
-              console.log("resp", resp);
-            } else {
-              reject("Error!");
-            }
-          })
-          .catch((err) => {
-            console.log("err", err);
-          });
-      }),
-      {
-        loading: "Processing...",
-        success: (message) => message,
-        error: (error) => error.message,
-      }
-    );
   };
 
   const handleSendReview = () => {
@@ -212,12 +186,19 @@ function Book() {
   if (isLoading) {
     return <Loading />;
   }
+  // if (!currentAccount) {
+  //   redirect("/login")
+  // }
 
   return (
     <>
       <div className={styles.bookContainer}>
-        <Header />
-
+        <Header />\
+        <AudioPlayer
+          className={styles.audioPlayerWrapper}
+          src={selectedChapter.audio}
+          onPlay={(e) => console.log("onPlay")}
+        />
         {book ? (
           <div className={styles.bookContent}>
             <section className={styles.novelHeader}>
@@ -285,18 +266,12 @@ function Book() {
                         {book.totalRead}
                       </strong>
                     </div>
-                    <div className={styles.statItem}>
-                      <small>Lượt yêu thích</small>
-                      <strong>
-                        <FontAwesomeIcon
-                          className={styles.icon}
-                          icon={faHeart}
-                          width={20}
-                          height={20}
-                        />
-                        {book.totalHearted}
-                      </strong>
-                    </div>
+                    {/* <div className={styles.statItem}>
+                  <small>Lượt thích</small>
+                  <strong>
+                    <FontAwesomeIcon className={styles.icon} icon={faHeart} width={20} height={20} />{book.totalHearted}
+                  </strong>
+                </div> */}
                     <div className={styles.statItem}>
                       <small>Đánh dấu</small>
                       <strong>
@@ -318,31 +293,12 @@ function Book() {
                       </button>
                     </Link>
                   </div>
-
                   <div className={styles.nextAction}>
-                    <button
-                      className={styles.read}
-                      onClick={() => handleReadBook()}
-                    >
-                      Đọc ngay
-                    </button>
-
                     <button
                       className={styles.save}
                       onClick={() => handleSaveToLibrary()}
                     >
                       Thêm vào thư viện
-                    </button>
-                    <button
-                      className={styles.save}
-                      onClick={() => handleIncreaseTotalHearted()}
-                    >
-                      <FontAwesomeIcon
-                        className={styles.icon}
-                        icon={faHeart}
-                        width={20}
-                        height={20}
-                      />
                     </button>
                     {/* <Link href={"/book-category/tamlykynang"}>
                 </Link> */}
@@ -358,6 +314,23 @@ function Book() {
               <div className={styles.content}>{book.intro}</div>
             </section>
 
+            <section>
+              <div className={styles.novelContent}>
+                <div className={styles.title}>
+                  <h1>Danh sách chương</h1>
+                  <div className={styles.line}></div>
+                </div>
+                <ListChapters
+                  chapters={book.chapters}
+                  onChapterClicked={(c) => {
+                    handleReadBook(c);
+                  }}
+                />
+                {/* {selectedChapter && (
+                  <ChapterAudioPlayer chapter={selectedChapter} book={book} />
+                )} */}
+              </div>
+            </section>
             <section className={styles.productReview}>
               <div className={styles.reviewHeader}>
                 <div className={styles.writeReviewBtn}>Viết đánh giá</div>
@@ -396,7 +369,7 @@ function Book() {
                 <div className={styles.ruler}></div>
               </div>
               <div className={styles.productReviewWrapper}>
-                {/* <div className={styles.reviewSidebar}>
+                <div className={styles.reviewSidebar}>
                   <div className={styles.ratingOverview}>
                     <div className={styles.rating__current}>5</div>
                     <div className={styles.rating__left}>
@@ -498,11 +471,11 @@ function Book() {
                       <div className={styles.starLine__percentage}>100%</div>
                     </div>
                   </div>
-                </div> */}
+                </div>
                 <div className={styles.reviewMainContent}>
                   <div className={styles.reviewNavigation}>
                     <div className={styles.reviewNavigationList}>
-                      {/* <div className={styles.reviewNavigationItemChoosen}>
+                      <div className={styles.reviewNavigationItemChoosen}>
                         All review
                       </div>
                       <div className={styles.reviewNavigationItem}>
@@ -515,7 +488,7 @@ function Book() {
                         >
                           5
                         </div>
-                      </div> */}
+                      </div>
                     </div>
                   </div>
                   <div className={styles.ruler}></div>
@@ -611,10 +584,6 @@ function Book() {
                 </Splide>
               </section>
             )}
-            {/* Hiển thị PDF Viewer nếu showPdfViewer là true */}
-            {/* {showPdfViewer && <PdfViewer pdfUrl={book.pdf} />} */}
-
-            {/* ... (các phần khác) */}
           </div>
         ) : (
           <Loading />
@@ -626,4 +595,36 @@ function Book() {
   );
 }
 
-export default Book;
+// ChapterItem component
+function ChapterItem(props) {
+  return (
+    <div
+      className="flex flex-row py-3 px-3 items-center gap-x-3 bg-gray-200 rounded-lg overflow-hidden cursor-pointer"
+      onClick={props.onClick}
+    >
+      <div>{props.chapter.id}</div>
+      <div className="flex-grow">{props.chapter.name}</div>
+      <div>
+        <button className={styles.listenBtn}>Nghe</button>
+      </div>
+    </div>
+  );
+}
+
+// ListChapters component
+function ListChapters({ chapters, onChapterClicked }) {
+  console.log(chapters);
+  return (
+    <div className="flex flex-col gap-y-2">
+      {chapters.map((chapter) => (
+        <ChapterItem
+          key={chapter.id}
+          onClick={() => onChapterClicked?.(chapter)}
+          chapter={chapter}
+        />
+      ))}
+    </div>
+  );
+}
+
+export default AudioBookPage;

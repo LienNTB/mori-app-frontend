@@ -13,23 +13,28 @@ import { fontWeight } from '@mui/system'
 import Link from 'next/link'
 import { Toaster, toast } from "react-hot-toast";
 import { registerAccountRequest } from '../redux/saga/requests/account'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 
 
 const SignUp = () => {
   const { user, googleSignIn } = UserAuth();
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
+  const [authenticated, setAuthenticated] = useState(false)
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("")
   const [retypePassword, setRetypePassword] = useState("")
   const [displayName, setDisplayName] = useState("")
   const dispatch = useDispatch()
-  // const router = useRouter()
+  const router = useRouter()
 
+  const handleSignupKeyPressed = (e) => {
+    if (e.key === "Enter") {
+      handleSignup()
+    }
+  }
   const handleSignup = () => {
-    if (username == "" || password == "" || retypePassword == "" || displayName == "" || email == "") {
+    if (username == "" || password == "" || retypePassword == "" || displayName == "") {
       toast.error("Vui lòng nhập đủ thông tin!", {
         duration: 2000, position: 'top-center',
       })
@@ -43,19 +48,29 @@ const SignUp = () => {
       const account = {
         username: username,
         email: email,
+        displayName: displayName,
         password: password
       }
       toast.promise(
         new Promise((resolve, reject) => {
           registerAccountRequest(account)
             .then((resp) => {
-              if (resp.message) {
-                resolve("Đăng kí tài khoản thành công!");
+              if (resp.error === "error") {
+                reject(new Error(resp.message));
+                console.log("resp:", resp)
+
               }
               else {
+                resolve("Đăng kí tài khoản thành công!");
                 console.log("resp:", resp)
-                reject(new Error(resp));
+
+                // router.replace("/login")
               }
+
+            })
+            .catch((err) => {
+              reject(new Error(err));
+
             })
         }),
         {
@@ -67,6 +82,7 @@ const SignUp = () => {
 
     }
   }
+
 
   useEffect(() => {
     if (user) {
@@ -124,7 +140,7 @@ const SignUp = () => {
               <div className={styles.div8}>Password</div>
               <input type="password" className={styles.div9}
                 value={password}
-                onChange={e => setPassword(e.target.value)} />
+                onChange={e => setPassword(e.target.value)} onKeyPress={e => handleSignupKeyPressed(e)} />
               <div className={styles.div8}>Retype password</div>
               <input type="password" className={styles.div9} value={retypePassword}
                 onChange={e => setRetypePassword(e.target.value)} />

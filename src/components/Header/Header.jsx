@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from "./Header.module.scss"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -20,12 +20,13 @@ const Header = () => {
   const [isOpenListbox, setIsOpenListbox] = useState(false)
   const [isOpenMenuList, setIsOpenMenuList] = useState(false)
   const [searchValue, setSearchValue] = useState("")
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
+  const [authenticated, setAuthenticated] = useState(false)
   const [categories, setCategories] = useState(null)
   const router = useRouter();
   const { user, logOut } = UserAuth();
 
   const handleOpenMenu = async () => {
+    console.log("handleOpenMenu")
     setIsOpenListbox(p => !p)
     await getBookCategoryRequest()
       .then(res => {
@@ -60,6 +61,10 @@ const Header = () => {
     },
 
   ];
+
+  useEffect(() => {
+    setAuthenticated(localStorage.getItem("authenticated"))
+  }, [])
   return (
     <div className={styles.container}>
       <div className={styles.topMenu}>
@@ -134,12 +139,12 @@ const Header = () => {
                 Danh mục
               </div>
               <div className={styles.menuItem}>
-                <Link href="/ranking/sachdoc">
+                <Link href="/book">
                   Sách đọc
                 </Link>
               </div>
               <div className={styles.menuItem}>
-                <Link href="/ranking/sachnoi">
+                <Link href="/audio-book">
                   Sách nói
                 </Link>
               </div>
@@ -170,12 +175,12 @@ const Header = () => {
                   Danh mục
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/ranking/sachdoc">
+                  <Link href="/book">
                     Sách đọc
                   </Link>
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/ranking/sachnoi">
+                  <Link href="/audio-book">
                     Sách nói
                   </Link>
                 </div>
@@ -230,8 +235,8 @@ const Header = () => {
                           key={item.name}
                           color={"default"}
                         >
-                          <a href={`/book-category/${item.name}`}>
-                            {item.description}
+                          <a href={`/book-category/${item.tag}`}>
+                            {item.name}
                           </a>
                         </ListboxItem>
 
@@ -241,8 +246,12 @@ const Header = () => {
 
               </div> : <></>}
           </li>
-          <li className={styles.bottomMenuItem}>Sách đọc</li>
-          <li className={styles.bottomMenuItem}>Sách nói</li>
+          <Link href="/book">
+            <li className={styles.bottomMenuItem}>Sách đọc</li>
+          </Link>
+          <Link href="/audio-book">
+            <li className={styles.bottomMenuItem}>Sách nói</li>
+          </Link>
           <Link href="/ranking/sachdoc">
             <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
           </Link>

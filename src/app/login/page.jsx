@@ -15,10 +15,12 @@ import Link from 'next/link'
 import { createAccountRequest, getCurrentAccountRequest, loginAccountRequest } from '../redux/saga/requests/account'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
 import { forgetPasswordRequest } from '../redux/saga/requests/auth'
+import { useRouter } from 'next/navigation'
+import * as type from '../redux/types'
 
 const Login = () => {
   const { user, googleSignIn } = UserAuth();
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated"))
+  const [authenticated, setAuthenticated] = useState(null)
   const dispatch = useDispatch()
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("")
@@ -68,7 +70,14 @@ const Login = () => {
 
   }
 
+  const handleSignInKeyPressed = (e) => {
+    if (e.key === "Enter") {
+      handleSignIn()
+    }
+  }
+
   const handleSignIn = () => {
+
 
     if (username == "" || password == "") {
       toast.error("Vui lòng nhập đủ thông tin!", {
@@ -84,46 +93,55 @@ const Login = () => {
         new Promise((resolve, reject) => {
           loginAccountRequest(account)
             .then((resp) => {
-              if (resp.user.is_blocked) {
-                reject("Tài khoản này đã bị khóa!");
+              if (resp.msg) {
+                // Kiểm tra account có bị khóa không
+                if (resp.user.is_blocked) {
+                  reject(new Error("Tài khoản này đã bị khóa!"));
+
+                }
+                // trường hợp account không bị khóa
+                else {
+                  // trường hợp account là user
+                  if (resp.user.role === 0) {
+                    resolve("Đăng nhập thành công!");
+                    localStorage.setItem("authenticated", true);
+                    localStorage.setItem("user", JSON.stringify({
+                      _id: resp.user._id,
+                      username: resp.user.username,
+                      email: resp.user.email,
+                      displayName: resp.user.displayName,
+                      phoneNumber: resp.user.phoneNumber,
+                      avatar: resp.user.avatar
+                    }));
+                    redirect("/")
+
+                  }
+                }
               }
               else {
-                if (resp.msg) {
-                  resolve("Đăng nhập thành công!");
-                  localStorage.setItem("authenticated", true);
-                  localStorage.setItem("user", JSON.stringify({
-                    _id: resp.user._id,
-                    username: resp.user.username,
-                    email: resp.user.email,
-                    displayName: resp.user.displayName,
-                    phoneNumber: resp.user.phoneNumber,
-                    avatar: resp.user.avatar
-                  }));
-                  localStorage.setItem("authenticated", true);
-                  setAuthenticated(localStorage.getItem("authenticated"))
-                }
-                else {
-                  console.log("resp:", resp)
-                  reject(new Error(resp));
-                }
+                console.log("resp:", resp)
+                reject(new Error(resp));
               }
             })
         }),
         {
           loading: "Processing...",
           success: (message) => message,
-          error: (error) => error.message,
+          error: (error) => error,
         }
       );
 
     }
   }
-
-
-
+  const router = useRouter();
 
   useEffect(() => {
+    setAuthenticated(localStorage.getItem("authenticated"))
+  }, [])
+  useEffect(() => {
     if (authenticated) {
+      const currentAccount = JSON.parse(localStorage.getItem("user"))
+      console.log("role:", currentAccount.role)
       redirect("/")
     }
   }, [authenticated])
@@ -132,8 +150,9 @@ const Login = () => {
     getUserInfo()
   }, [user])
   const getUserInfo = useCallback(() => {
+    console.log("callback")
     if (user) {
-      console.log("dong 102")
+      console.log("callback has user")
       let newAccount = {
         email: user.email,
         displayName: user.displayName,
@@ -143,16 +162,10 @@ const Login = () => {
         .then(() => {
           getCurrentAccountRequest(newAccount)
             .then(res => {
-              const currentAccount = res.account;
-              if (currentAccount.is_blocked) {
-                alert("Tài khoản này đã bị khóa!")
-              }
-              else {
-                console.log("currentAccount", currentAccount)
-                localStorage.setItem("user", JSON.stringify(currentAccount))
-                localStorage.setItem("authenticated", true);
-                setAuthenticated(localStorage.getItem("authenticated"))
-              }
+              console.log("currentAccount", res.account)
+              localStorage.setItem("user", JSON.stringify(res.account))
+              localStorage.setItem("authenticated", true);
+              setAuthenticated(localStorage.getItem("authenticated"))
             })
         })
     }
@@ -188,7 +201,7 @@ const Login = () => {
                 onChange={e => setUsername(e.target.value)} />
               <div className={styles.div8}>Password</div>
               <input className={styles.div9} type='password' value={password}
-                onChange={e => setPassword(e.target.value)} />
+                onChange={e => setPassword(e.target.value)} onKeyPress={(e) => handleSignInKeyPressed(e)} />
 
               <div className={styles.div10}>
                 {/* <div className={styles.div11}>

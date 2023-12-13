@@ -1,0 +1,35 @@
+.chapterAudioPlayer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  // background-color: #f2f2f2;
+  background-color: red;
+
+  .audioPlayerHeader {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    .bookInfo {
+      display: flex;
+      align-items: center;
+      .circleImage {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .bookDetails {
+        margin-left: 8px;
+      }
+    }
+  }
+  .audioPayerContainer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px;
+    .audioPlayer {
+      width: 80%;
+    }
+  }
+}

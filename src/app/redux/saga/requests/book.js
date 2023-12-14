@@ -165,7 +165,7 @@ export const getReadHistoryRequest = async (id) => {
     });
 };
 
-export const addNewReadHistory = async (request) => {
+export const addNewOrUpdateReadHistory = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/readHistory/add-readHistory`, {
     method: "POST",
     headers: {
@@ -179,5 +179,21 @@ export const addNewReadHistory = async (request) => {
 
     .catch((error) => {
       console.log("error:", error);
+    });
+};
+
+export const findOneReadHistoryRequest = async (book_id, user_id) => {
+  return fetch(`${type.BACKEND_URL}/api/readHistory/get-readHistory/${book_id}/${user_id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
     });
 };

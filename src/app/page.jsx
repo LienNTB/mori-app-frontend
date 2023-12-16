@@ -4,7 +4,7 @@ import * as bookRequest from "./redux/saga/requests/book"
 import * as tagRequest from './redux/saga/requests/tag'
 import { getBookCategoryRequest } from './redux/saga/requests/category';
 
-async function generateStaticParams() {
+export async function getStaticProps() {
 
   const bookRes = await bookRequest.getAllBooksRequest()
   const tagRes = await tagRequest.getAllTagsRequest()
@@ -14,8 +14,8 @@ async function generateStaticParams() {
   })
 }
 
-export default async function Home() {
-  const { books, tags, categories } = await generateStaticParams()
+export default async function Home(props) {
+  const { books, tags } = props;
 
   return <div>
     <HomePage books={books} tags={tags} />

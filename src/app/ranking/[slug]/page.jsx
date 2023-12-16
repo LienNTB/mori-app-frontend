@@ -3,6 +3,7 @@ import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
 import React, { useMemo } from "react";
 import styles from "../ranking.module.scss";
+import * as type from "../../redux/types";
 import Link from "next/link";
 import {
   Button,
@@ -45,7 +46,7 @@ const Ranking = () => {
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useSWR(
-    `http://localhost:8080/api/bookRanking/getRanking/${selectedRanking}`,
+    `${type.BACKEND_URL}/api/bookRanking/getRanking/${selectedRanking}`,
     fetcher,
     {
       keepPreviousData: true,

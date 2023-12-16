@@ -16,7 +16,7 @@ import {
   increaseTotalSaved,
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, createRef } from "react";
 import { redirect, useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
 import Header from "@/components/Header/Header";
@@ -41,6 +41,7 @@ import RatingStars from "@/components/RatingStars/RatingStars";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 
+
 function AudioBookPage() {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.books.loading);
@@ -59,11 +60,13 @@ function AudioBookPage() {
   const router = useRouter();
   const [selectedChapter, setSelectedChapter] = useState("");
   const [audioPlaying, setAudioPlaying] = useState(false);
-
-  console.log("selectedChapter:", selectedChapter);
-  console.log("book", book);
+  const [curTime, setCurTime] = useState(0);
   const params = useParams();
   const id = params.id;
+
+  const onListenHandler = (e) => {
+    setCurTime(e.target.currentTime);
+  };
   const redirectLogin = () => {
     currentAccount = JSON.parse(localStorage.getItem("user"));
     if (!currentAccount) {
@@ -72,10 +75,8 @@ function AudioBookPage() {
   };
 
   const handleReadBook = async (chapter) => {
-    // console.log("handleReadBook")
 
     if (book.access_level === 0) {
-      // increaseTotalReadRequest(book._id);
       increaseTotalReadDaily(book._id);
       setSelectedChapter(chapter);
       if (currentAccount) {
@@ -190,15 +191,23 @@ function AudioBookPage() {
   //   redirect("/login")
   // }
 
+  console.log("render")
+  let player = createRef()
   return (
     <>
       <div className={styles.bookContainer}>
-        <Header />\
         <AudioPlayer
           className={styles.audioPlayerWrapper}
           src={selectedChapter.audio}
-          onPlay={(e) => console.log("onPlay")}
+          ref={player}
+
         />
+        {/* <ReactAudioPlayer
+          src={selectedChapter.audio}
+          autoPlay
+          controls
+        /> */}
+        <Header />
         {book ? (
           <div className={styles.bookContent}>
             <section className={styles.novelHeader}>

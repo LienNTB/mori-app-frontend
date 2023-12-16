@@ -35,7 +35,7 @@ import * as libraryRequest from "../../redux/saga/requests/myLibrary";
 import { Badge } from "@nextui-org/react";
 import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
 import {
-  addNewReadHistory,
+  addNewOrUpdateReadHistory,
   increaseTotalReadRequest,
   increaseTotalReadDaily,
   increaseTotalHeartRequest,
@@ -79,7 +79,7 @@ function Book() {
     if (book.access_level === 0) {
       increaseTotalReadDaily(book._id);
       if (currentAccount) {
-        addNewReadHistory({
+        addNewOrUpdateReadHistory({
           book: book,
           user: currentAccount._id,
         });

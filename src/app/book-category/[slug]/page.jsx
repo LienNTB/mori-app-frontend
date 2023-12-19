@@ -8,7 +8,6 @@ import { useParams } from 'next/navigation'
 const Page = () => {
   const dispatch = useDispatch()
   const booksByCate = useSelector(state => state.books.booksByCate);
-  console.log("aaaaaaaaaaaaaaaaaaaaaaa", booksByCate);
   const params = useParams();
 
   useEffect(() => {

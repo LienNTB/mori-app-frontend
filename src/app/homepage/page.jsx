@@ -22,8 +22,6 @@ const HomePage = () => {
   const endIndex = startIndex + itemsPerPage;
   const displayedItems = books?.slice(startIndex, endIndex);
 
-  console.log("books", books)
-  console.log("tags", tags)
   useEffect(() => {
     getAllBooksRequest().then(res => {
       setBooks(res.books)

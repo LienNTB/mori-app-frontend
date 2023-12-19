@@ -2,7 +2,7 @@ import * as type from "../types";
 
 const initialState = {
   books: [],
-  booksByCate: null,
+  booksByCate: [],
   book: null,
   filteredBooks: [],
   searchValue: "",

@@ -42,15 +42,27 @@ const SearchBook = () => {
             </div>
             <div className={styles.ruler}></div>
             <div className={styles.sectionBody}>
-              <div className={styles.bookList}>
-                {filteredBooks.map((book) => {
-                  return (
-                    <div className={styles.bookItem}>
-                      <BookItem book={book} key={book._id} />
-                    </div>
-                  );
-                })}
-              </div>
+              {books && books.length > 0 ? (
+                <div className={styles.bookList}>
+                  {filteredBooks.map((book) => {
+                    return (
+                      <div className={styles.bookItem}>
+                        <BookItem book={book} key={book._id} />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p
+                  style={{
+                    fontSize: "1.8em",
+                    textAlign: "center",
+                    marginTop: "40px",
+                  }}
+                >
+                  Không tìm thấy quyển sách.
+                </p>
+              )}
             </div>
           </section>
         </div>

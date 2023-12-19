@@ -93,7 +93,6 @@ const Profile = () => {
   useEffect(() => {
     dispatch(getMembershipById(currentAccount._id));
     dispatch(getReadHistory(currentAccount._id));
-    console.log("readHistory", readHistory);
   }, []);
 
   useEffect(() => {
@@ -331,7 +330,9 @@ const Profile = () => {
                           />
                         </td>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
-                          {book.book.name}
+                          <Link href={`/book/${book.book._id}`}>
+                            {book.book.name}
+                          </Link>
                         </td>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
                           {book.book.author}

@@ -1,23 +1,28 @@
+"use client";
 import BookCategory from '@/components/BookCategory/BookCategory'
-import * as bookRequest from "../../redux/saga/requests/book"
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux'
+import { getBooks, getBooksByCate } from '../../redux/actions/book'
+import { useParams } from 'next/navigation'
 
-async function generateStaticParams(category) {
-  const bookRes = await bookRequest.findBookByCategoryRequest(category)
+const Page = () => {
+  const dispatch = useDispatch()
+  const booksByCate = useSelector(state => state.books.booksByCate);
+  console.log("aaaaaaaaaaaaaaaaaaaaaaa", booksByCate);
+  const params = useParams();
 
-  return ({
-    books: bookRes,
-  })
-}
+  useEffect(() => {
+    dispatch(getBooks());
+  }, [dispatch]);
 
-
-
-const Page = async (params) => {
-
-  const { books } = await generateStaticParams(params.params.slug)
-
+  useEffect(() => {
+    if (params.slug) {
+      dispatch(getBooksByCate(params.slug));
+    }
+  }, [params.slug]);
   return (
     <>
-      <BookCategory params={params.params.slug} books={books.books} />
+      <BookCategory books={booksByCate} />
     </>
   )
 }

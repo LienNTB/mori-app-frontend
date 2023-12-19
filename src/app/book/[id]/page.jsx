@@ -118,7 +118,6 @@ function Book() {
           .then((resp) => {
             if (resp.message) {
               resolve("Hearted!");
-              console.log("resp", resp);
             } else {
               reject("Error!");
             }

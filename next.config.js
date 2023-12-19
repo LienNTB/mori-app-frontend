@@ -2,7 +2,10 @@
 const nextConfig = {
   env: {
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    BACKEND_URL_DEV: process.env.BACKEND_URL_DEV,
+    BACKEND_URL_DEV:
+      process.env.BACKEND_URL_DEV ??
+      process.env.NEXT_PUBLIC_BACKEND_URL_DEV ??
+      "",
     ADMIN_URL_DEV: process.env.ADMIN_URL_DEV,
     FRONTEND_URL_DEV: process.env.FRONTEND_URL_DEV,
   },

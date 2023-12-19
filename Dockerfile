@@ -13,4 +13,4 @@ COPY . .
 
 RUN yarn build
 
-CMD yarn dev
+CMD yarn start

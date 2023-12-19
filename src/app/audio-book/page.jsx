@@ -21,7 +21,6 @@ const AudioHomePage = () => {
   const displayedItems = books.slice(startIndex, endIndex);
 
   useEffect(() => {
-    console.log("fd")
     getAllAudioBookRequest().then(res => {
       setBooks(res.books)
     })

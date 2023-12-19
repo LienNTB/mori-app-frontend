@@ -16,8 +16,8 @@ const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [books, setBooks] = useState(null)
   const [tags, setTags] = useState(null)
-  const itemsPerPage = 18;
-  const totalPages = Math.ceil(books?.length / itemsPerPage);
+  const itemsPerPage = 20;
+  const totalPages = Math.ceil((books?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedItems = books?.slice(startIndex, endIndex);
@@ -41,13 +41,13 @@ const HomePage = () => {
           </h2>
           <div className={styles.description}>
             <p>
-              Đọc Sách Hay được xây dựng nhằm chia sẻ sách ebook miễn phí cho
+              Đọc Sách Mori được xây dựng nhằm chia sẻ sách ebook miễn phí cho
               những ai khó khăn, chưa có điều kiện mua sách. Hãy để sách trải
               đường trên hành trình đưa bạn đi đến sự khôn ngoan và hiểu biết
               hơn.
             </p>
             <p>
-              Bản quyền sách thuộc về Tác giả &amp; Nhà xuất bản. Đọc Sách Hay
+              Bản quyền sách thuộc về Tác giả &amp; Nhà xuất bản. Đọc Sách Mori
               khuyến khích các bạn nếu có khả năng hãy mua sách để ủng hộ Tác
               giả và Nhà xuất bản.
             </p>

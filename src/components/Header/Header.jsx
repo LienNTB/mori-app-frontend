@@ -8,7 +8,7 @@ import Image from "next/image";
 import logo from '../../../public/logo-nobg.png'
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useState } from 'react'
-import { searchBooks } from '@/app/redux/actions/book'
+import { searchBooks, getBooksByCate } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
@@ -25,14 +25,23 @@ const Header = () => {
   const router = useRouter();
   const { user, logOut } = UserAuth();
 
+  
   const handleOpenMenu = async () => {
     console.log("handleOpenMenu")
     setIsOpenListbox(p => !p)
-    await getBookCategoryRequest()
+    
+  return new Promise((resolve, reject) => {
+    getBookCategoryRequest()
       .then(res => {
-        setCategories(res.bookCategories)
-        console.log("res:", res.bookCategories)
+        setCategories(res.bookCategories);
+        console.log("res:", res.bookCategories);
+        resolve();
       })
+      .catch(error => {
+        console.error("Error in handleOpenMenu:", error);
+        reject(error);
+      });
+  });
   }
   const handleSignOut = async () => {
     try {
@@ -45,22 +54,6 @@ const Header = () => {
       console.log(err)
     }
   }
-
-  const items = [
-    {
-      key: "tamli",
-      label: "Tâm lí - kỹ năng sống",
-    },
-    {
-      key: "triethoc",
-      label: "Triết học",
-    },
-    {
-      key: "vanhoc",
-      label: "Văn học",
-    },
-
-  ];
 
   useEffect(() => {
     setAuthenticated(localStorage.getItem("authenticated"))
@@ -208,25 +201,10 @@ const Header = () => {
               <div className={`${styles.listbox} w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100`}>
                 {!categories ? <>...</> :
                   <Listbox
-                    items={items}
                     aria-label="Dynamic Actions"
                     // onAction={(key) => alert(key)}
                     className={styles.listboxContent}
                   >
-                    {/* {
-                  items.map(item => (
-
-                    <ListboxItem
-                      key={item.key}
-                      color={"default"}
-                    >
-                      <a href={`/book-category/${item.key}`}>
-                        {item.label}
-                      </a>
-                    </ListboxItem>
-
-                  ))
-                } */}
 
                     {
                       categories.map(item => (
@@ -235,7 +213,7 @@ const Header = () => {
                           key={item.name}
                           color={"default"}
                         >
-                          <a href={`/book-category/${item.tag}`}>
+                          <a href={`/book-category/${item.tag}`} onClick={() => dispatch(getBooksByCate(`${item.tag}`))}>
                             {item.name}
                           </a>
                         </ListboxItem>

@@ -42,7 +42,7 @@ const SearchBook = () => {
             </div>
             <div className={styles.ruler}></div>
             <div className={styles.sectionBody}>
-              {books && books.length > 0 ? (
+              {filteredBooks && filteredBooks.length > 0 ? (
                 <div className={styles.bookList}>
                   {filteredBooks.map((book) => {
                     return (

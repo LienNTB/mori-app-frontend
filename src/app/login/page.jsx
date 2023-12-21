@@ -43,10 +43,10 @@ const Login = () => {
         new Promise((resolve, reject) => {
           forgetPasswordRequest(email).then((resp) => {
             if (resp.message) {
-              resolve("Password reset email sent!");
+              resolve("Đã gửi mail xác nhận đặt lại mật khẩu, vui lòng kiểm tra mail");
             }
             if (resp.error) {
-              reject(new Error(resp.error));
+              reject(new Error("Đã có lỗi xảy ra, gửi mail thất bại!"));
             }
           });
         }),

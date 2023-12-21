@@ -37,7 +37,7 @@ const ResetPassword = () => {
                 resolve("Reset mật khẩu thành công!");
               }
               if (resp.error) {
-                reject(new Error(resp.error));
+                reject(new Error("Đã có lỗi xảy ra, đặt lại mật khẩu thất bại!"));
               }
             })
 

@@ -1,50 +1,54 @@
-"use client"
-import React, { useCallback, useEffect, useState } from 'react'
-import styles from './login.module.scss'
-import { UserAuth } from '@/app/context/AuthContext'
-import Image from 'next/image'
-import { redirect } from 'next/navigation'
-import { useDispatch } from 'react-redux'
-import { createNewAccount, getCurrentAccount } from "../redux/actions/account"
-import { useSelector } from 'react-redux'
+"use client";
+import React, { useCallback, useEffect, useState } from "react";
+import styles from "./login.module.scss";
+import { UserAuth } from "@/app/context/AuthContext";
+import { redirect } from "next/navigation";
+import { useDispatch } from "react-redux";
 import { Toaster, toast } from "react-hot-toast";
-import ToastContainerWrapper from '@/components/ToastContainerWrapper/ToastContainerWrapper'
-import { Nunito } from 'next/font/google'
-import { fontWeight } from '@mui/system'
-import Link from 'next/link'
-import { createAccountRequest, getCurrentAccountRequest, loginAccountRequest } from '../redux/saga/requests/account'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
-import { forgetPasswordRequest } from '../redux/saga/requests/auth'
-import { useRouter } from 'next/navigation'
-import * as type from '../redux/types'
+import Link from "next/link";
+import {
+  createAccountRequest,
+  getCurrentAccountRequest,
+  loginAccountRequest,
+} from "../redux/saga/requests/account";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+  Input,
+} from "@nextui-org/react";
+import { forgetPasswordRequest } from "../redux/saga/requests/auth";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const { user, googleSignIn } = UserAuth();
-  const [authenticated, setAuthenticated] = useState(null)
-  const dispatch = useDispatch()
+  const [authenticated, setAuthenticated] = useState(null);
+  const dispatch = useDispatch();
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("")
+  const [password, setPassword] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState("");
   const handleForgetPassword = () => {
     if (email === "") {
       toast.error("Vui lòng nhập email!", {
-        duration: 2000, position: 'top-center',
-      })
-    }
-    else {
+        duration: 2000,
+        position: "top-center",
+      });
+    } else {
       toast.promise(
         new Promise((resolve, reject) => {
-          forgetPasswordRequest(email)
-            .then((resp) => {
-              if (resp.message) {
-                resolve("Password reset email sent!");
-              }
-              if (resp.error) {
-                reject(new Error(resp.error));
-              }
-            })
-
+          forgetPasswordRequest(email).then((resp) => {
+            if (resp.message) {
+              resolve("Password reset email sent!");
+            }
+            if (resp.error) {
+              reject(new Error(resp.error));
+            }
+          });
         }),
         {
           loading: "Processing...",
@@ -53,76 +57,70 @@ const Login = () => {
         }
       );
     }
-  }
+  };
 
   async function handleSignInGoogle() {
     try {
-      const googleLogin = await googleSignIn()
-
-    }
-    catch (err) {
+      const googleLogin = await googleSignIn();
+    } catch (err) {
       toast(err, {
         autoClose: 2000,
         type: "error",
       });
-      console.log("err:", err)
+      console.log("err:", err);
     }
-
   }
 
   const handleSignInKeyPressed = (e) => {
     if (e.key === "Enter") {
-      handleSignIn()
+      handleSignIn();
     }
-  }
+  };
 
   const handleSignIn = () => {
-
-
     if (username == "" || password == "") {
       toast.error("Vui lòng nhập đủ thông tin!", {
-        duration: 2000, position: 'top-center',
-      })
-    }
-    else {
+        duration: 2000,
+        position: "top-center",
+      });
+    } else {
       const account = {
         username: username,
-        password: password
-      }
+        password: password,
+      };
       toast.promise(
         new Promise((resolve, reject) => {
-          loginAccountRequest(account)
-            .then((resp) => {
-              if (resp.msg) {
-                // Kiểm tra account có bị khóa không
-                if (resp.user.is_blocked) {
-                  reject(new Error("Tài khoản này đã bị khóa!"));
-
-                }
-                // trường hợp account không bị khóa
-                else {
-                  // trường hợp account là user
-                  if (resp.user.role === 0) {
-                    resolve("Đăng nhập thành công!");
-                    localStorage.setItem("authenticated", true);
-                    localStorage.setItem("user", JSON.stringify({
+          loginAccountRequest(account).then((resp) => {
+            if (resp.msg) {
+              // Kiểm tra account có bị khóa không
+              if (resp.user.is_blocked) {
+                reject(new Error("Tài khoản này đã bị khóa!"));
+              }
+              // trường hợp account không bị khóa
+              else {
+                // trường hợp account là user
+                if (resp.user.role === 0) {
+                  resolve("Đăng nhập thành công!");
+                  localStorage.setItem("authenticated", true);
+                  localStorage.setItem(
+                    "user",
+                    JSON.stringify({
                       _id: resp.user._id,
                       username: resp.user.username,
                       email: resp.user.email,
                       displayName: resp.user.displayName,
                       phoneNumber: resp.user.phoneNumber,
-                      avatar: resp.user.avatar
-                    }));
-                    redirect("/")
-
-                  }
+                      avatar: resp.user.avatar,
+                    })
+                  );
+                  redirect("/");
                 }
               }
-              else {
-                console.log("resp:", resp)
-                reject(new Error(resp));
-              }
-            })
+            } else {
+              console.log("resp:", resp);
+              reject(new Error(resp));
+            }
+          });
         }),
         {
           loading: "Processing...",
@@ -130,52 +128,45 @@ const Login = () => {
           error: (error) => error,
         }
       );
-
-
     }
-  }
+  };
   const router = useRouter();
 
   useEffect(() => {
-    setAuthenticated(localStorage.getItem("authenticated"))
-  }, [])
+    setAuthenticated(localStorage.getItem("authenticated"));
+  }, []);
   useEffect(() => {
     if (authenticated) {
-      const currentAccount = JSON.parse(localStorage.getItem("user"))
-      console.log("role:", currentAccount.role)
-      redirect("/")
+      const currentAccount = JSON.parse(localStorage.getItem("user"));
+      console.log("role:", currentAccount.role);
+      redirect("/");
     }
-  }, [authenticated])
+  }, [authenticated]);
 
   useEffect(() => {
-    getUserInfo()
-  }, [user])
+    getUserInfo();
+  }, [user]);
   const getUserInfo = useCallback(() => {
-    console.log("callback")
+    console.log("callback");
     if (user) {
-      console.log("callback has user")
+      console.log("callback has user");
       let newAccount = {
         email: user.email,
         displayName: user.displayName,
         avatar: user.photoURL,
       };
-      createAccountRequest(newAccount)
-        .then(() => {
-          getCurrentAccountRequest(newAccount)
-            .then(res => {
-              console.log("currentAccount", res.account)
-              localStorage.setItem("user", JSON.stringify(res.account))
-              localStorage.setItem("authenticated", true);
-              setAuthenticated(localStorage.getItem("authenticated"))
-            })
-        })
+      createAccountRequest(newAccount).then(() => {
+        getCurrentAccountRequest(newAccount).then((res) => {
+          console.log("currentAccount", res.account);
+          localStorage.setItem("user", JSON.stringify(res.account));
+          localStorage.setItem("authenticated", true);
+          setAuthenticated(localStorage.getItem("authenticated"));
+        });
+      });
     }
-  }, [user])
-
+  }, [user]);
 
   return (
-
-
     <>
       <Toaster />
 
@@ -186,23 +177,26 @@ const Login = () => {
               <div className={styles.div4}>WELCOME BACK!</div>
               <div className={styles.div5}>
                 {/* <span style="font-family: Nunito, sans-serif;font-weight: 400;color: rgba(68,75,89,1);"> */}
-                <span style={{ fontWeight: 400 }}>
-                  Don’t have a account,{" "}
-                </span>
+                <span style={{ fontWeight: 400 }}>Don’t have a account, </span>
                 {/* <span style="font-family: Nunito, sans-serif;font-weight: 700;color: rgba(134,153,218,1);"> */}
                 <span style={{ fontWeight: 700 }}>
-
-                  <Link href="/signup">
-                    Sign up
-                  </Link>
+                  <Link href="/signup">Sign up</Link>
                 </span>
               </div>
               <div className={styles.div6}>Username</div>
-              <input className={styles.div7} value={username}
-                onChange={e => setUsername(e.target.value)} />
+              <input
+                className={styles.div7}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
               <div className={styles.div8}>Password</div>
-              <input className={styles.div9} type='password' value={password}
-                onChange={e => setPassword(e.target.value)} onKeyPress={(e) => handleSignInKeyPressed(e)} />
+              <input
+                className={styles.div9}
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={(e) => handleSignInKeyPressed(e)}
+              />
 
               <div className={styles.div10}>
                 {/* <div className={styles.div11}>
@@ -213,32 +207,25 @@ const Login = () => {
                   />
                   <div className={styles.div12}>Remember me</div>
                 </div> */}
-                <div className={styles.div13} onClick={onOpen}>Forget password?</div>
+                <div className={styles.div13} onClick={onOpen}>
+                  Forget password?
+                </div>
               </div>
-              <div className={styles.div14} onClick={() => handleSignIn()}>Sign In</div>
+              <div className={styles.div14} onClick={() => handleSignIn()}>
+                Sign In
+              </div>
               <div className={styles.div15}>or continue with</div>
               <div className={styles.div16}>
-                <div className={styles.div17} onClick={() => handleSignInGoogle()}>
+                <div
+                  className={styles.div17}
+                  onClick={() => handleSignInGoogle()}
+                >
                   <img
                     loading="lazy"
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/20c6afde-fdd2-4e57-8fa6-84b8e4a20add?apiKey=169beee3f9a4440abbde404efbae6ea9&"
                     className="img-4"
                   />
                 </div>
-                {/* <div className={styles.div18}>
-                  <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/f224ea88-a67a-4b74-9b27-c5649fbd2eda?apiKey=169beee3f9a4440abbde404efbae6ea9&"
-                    className="img-5"
-                  />
-                </div>
-                <div className={styles.div19}>
-                  <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/c2d4eba2-539e-4ff1-aebb-399bd2f31479?apiKey=169beee3f9a4440abbde404efbae6ea9&"
-                    className="img-6"
-                  />
-                </div> */}
               </div>
             </div>
           </div>
@@ -250,21 +237,31 @@ const Login = () => {
             />
           </div>
         </div>
-      </div >
+      </div>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Tìm email của bạn</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                Tìm email của bạn
+              </ModalHeader>
               <ModalBody>
-                <Input type="text" value={email} onChange={e => setEmail(e.target.value)} />
+                <Input
+                  type="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose} onClick={handleForgetPassword}>
+                <Button
+                  color="primary"
+                  onPress={onClose}
+                  onClick={handleForgetPassword}
+                >
                   Reset password
                 </Button>
               </ModalFooter>
@@ -274,7 +271,6 @@ const Login = () => {
       </Modal>
     </>
   );
-}
+};
 
-
-export default Login
+export default Login;

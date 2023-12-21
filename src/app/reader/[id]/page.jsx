@@ -172,7 +172,7 @@ const Reader = () => {
   }, [rendition]);
 
   useEffect(() => {
-    if (isRenditionReady && currentAccount) {
+    if (isRenditionReady) {
       getNotesForBookByUserRequest(book._id, currentAccount._id).then((res) => {
         setSelections(res.notes);
         renderAnnotations(res.notes);

@@ -82,9 +82,7 @@ const SignUp = () => {
                 resolve("Đăng kí tài khoản thành công!");
                 console.log("resp:", resp);
               } else {
-                reject(
-                  new Error("Đã có lỗi xảy ra, đăng ký tài khoản thất bại")
-                );
+                reject(new Error(resp.message));
                 console.log("resp:", resp);
               }
             })

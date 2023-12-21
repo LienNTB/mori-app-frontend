@@ -36,6 +36,10 @@ const SignUp = () => {
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
     return passwordRegex.test(password);
   };
+  const isValidUsername = (username) => {
+    const usernameRegex = /^[a-zA-Z0-9]+$/;
+    return usernameRegex.test(username);
+  };
   const handleSignup = () => {
     if (
       username == "" ||
@@ -49,6 +53,12 @@ const SignUp = () => {
       });
     } else if (!isValidEmail(email)) {
       toast.error("Vui lòng nhập một địa chỉ email hợp lệ!", {
+        duration: 2000,
+        position: "top-center",
+      });
+      return;
+    } else if (!isValidUsername(username)) {
+      toast.error("Username chỉ được bao gồm chữ cái không dấu và số", {
         duration: 2000,
         position: "top-center",
       });

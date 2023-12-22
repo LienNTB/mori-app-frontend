@@ -1,5 +1,6 @@
 "use client";
 import {
+  faEllipsisVertical,
   faEye,
   faEyeDropper,
   faHeart,
@@ -29,21 +30,19 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import "@splidejs/react-splide/css/sea-green";
 import "@splidejs/react-splide/css/core";
-import { UserAuth } from "@/app/context/AuthContext";
-import { getCurrentAccount } from "@/app/redux/actions/account";
 import * as libraryRequest from "../../redux/saga/requests/myLibrary";
-import { Badge } from "@nextui-org/react";
+import { Input, useDisclosure } from "@nextui-org/react";
 import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
 import {
   addNewOrUpdateReadHistory,
-  increaseTotalReadRequest,
   increaseTotalReadDaily,
   increaseTotalHeartRequest,
 } from "@/app/redux/saga/requests/book";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
-import { reviewBookRequest } from "@/app/redux/saga/requests/review";
+import { deleteReviewRequest, reviewBookRequest, updateReviewRequest } from "@/app/redux/saga/requests/review";
 import RatingStars from "@/components/RatingStars/RatingStars";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 // import PdfViewer from "@/components/PdfViewer/PdfViewer";
 
 function Book() {
@@ -63,6 +62,12 @@ function Book() {
   const [content, setContent] = useState("");
   const router = useRouter();
   const [showPdfViewer, setShowPdfViewer] = useState(false);
+  const [isOpenReviewOption, setIsOpenReviewOption] = useState(false)
+  const [isOpenReview, setIsOpenReview] = useState(null)
+  const { isOpen: isOpenModifyReview, onOpen: onOpenModifyReview, onOpenChange: onOpenChangeModifyReview, onClose: onCloseChangeModifyReview } = useDisclosure();
+  const { isOpen: isOpenDeleteReview, onOpen: onOpenDeleteReview, onOpenChange: onOpenChangeDeleteReview, onClose: onCloseChangeDeleteReview } = useDisclosure();
+  const [currentReviewContent, setCurrentReviewContent] = useState("")
+  const [reload, setReload] = useState(0)
 
   const params = useParams();
   const id = params.id;
@@ -72,7 +77,60 @@ function Book() {
       router.push("/login");
     }
   };
+  console.log("currentReviewContent", currentReviewContent)
+  const handleUpdateReview = () => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        updateReviewRequest(isOpenReview._id, currentReviewContent)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.mesage);
+              onOpenChangeModifyReview()
+              setReload(p => p + 1)
 
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error.message,
+      }
+    );
+    setReload(p => p + 1)
+
+  }
+  const handleDeleteReview = () => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        deleteReviewRequest(isOpenReview._id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve("Review deleted successfully.");
+              onCloseChangeDeleteReview()
+              setReload(p => p + 1)
+
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error.message,
+      }
+    );
+
+  }
   const handleReadBook = async () => {
     // console.log("handleReadBook")
 
@@ -148,6 +206,7 @@ function Book() {
         reviewBookRequest(request).then((resp) => {
           if (resp.message) {
             resolve("Thêm review thành công!");
+            setReload(p => p + 1)
           } else {
             reject(new Error("Thêm review thất bại!"));
           }
@@ -203,6 +262,10 @@ function Book() {
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
   }, [dispatch]);
+  useEffect(() => {
+    dispatch(getBookById(id));
+    dispatch(getReviewsById(id));
+  }, [reload]);
   useEffect(() => {
     if (book) {
       dispatch(getBooksByCate(book.tags[0]));
@@ -518,7 +581,7 @@ function Book() {
                       </div> */}
                     </div>
                   </div>
-                  <div className={styles.ruler}></div>
+                  {/* <div className={styles.ruler}></div> */}
                   {isLoadingReview ? (
                     <Loading />
                   ) : (
@@ -530,29 +593,46 @@ function Book() {
                         >
                           {review.user && (
                             <div className={styles.reviewCustomerWrapper}>
-                              <div className={styles.reviewAvatar}>
-                                {review.user.avatar && (
-                                  <img src={review.user.avatar} alt="avatar" />
-                                )}
-                              </div>
-                              <div className={styles.reviewProfileWrapper}>
-                                <div className={styles.reviewCustomerName}>
-                                  {review.user.displayName}
+                              <div className={styles.info}>
+                                <div className={styles.reviewAvatar}>
+                                  {review.user.avatar && (
+                                    <img src={review.user.avatar} alt="avatar" />
+                                  )}
                                 </div>
-                                <div className={styles.reviewProfile}>
-                                  <div className={styles.reviewTimeRating}>
-                                    <div className={styles.reviewTime}>
-                                      {review.postedDate}
-                                    </div>
-                                    <div className={styles.reviewRating}>
-                                      <RatingStars
-                                        setRatingData={handleSetBookRating}
-                                        currentRating={review.rating}
-                                        lockStar={true}
-                                      />
+                                <div className={styles.reviewProfileWrapper}>
+                                  <div className={styles.reviewCustomerName}>
+                                    {review.user.displayName}
+                                  </div>
+                                  <div className={styles.reviewProfile}>
+                                    <div className={styles.reviewTimeRating}>
+                                      <div className={styles.reviewTime}>
+                                        {review.postedDate}
+                                      </div>
+                                      <div className={styles.reviewRating}>
+                                        <RatingStars
+                                          setRatingData={handleSetBookRating}
+                                          currentRating={review.rating}
+                                          lockStar={true}
+                                        />
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
+                              </div>
+                              <div key={review._id} className={styles.option} onClick={() => {
+                                setIsOpenReviewOption(p => !p);
+                                setIsOpenReview(review)
+                                setCurrentReviewContent(review.content)
+                              }} >
+                                <FontAwesomeIcon className={styles.menu} icon={faEllipsisVertical} />
+
+                                {isOpenReviewOption && review.user._id === currentAccount._id && review._id === isOpenReview._id
+                                  // {isOpenReviewOption && isOpenReview._id === review._id
+                                  ? <div className={styles.actionWrapper}>
+                                    <div className={styles.actionItem} onClick={onOpenModifyReview}>Modify</div>
+                                    <div className={styles.optionRuler}></div>
+                                    <div className={styles.actionItem} onClick={onOpenDeleteReview}>Delete</div>
+                                  </div> : <></>}
                               </div>
                             </div>
                           )}
@@ -622,6 +702,66 @@ function Book() {
         <Footer />
         <Toaster />
       </div>
+      <Modal placement="center" isOpen={isOpenModifyReview} onOpenChange={onOpenChangeModifyReview}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Modify</ModalHeader>
+              <ModalBody>
+                <div className={styles.modifyWrapper}>
+                  <div className={styles.userWrapper}>
+                    <div className={styles.avatar}>
+                      <img src={isOpenReview.user.avatar} alt="img" />
+                    </div>
+                    <div className={styles.name}>{isOpenReview.user.displayName}</div>
+                  </div>
+                  <div className={styles.inputWrapper}>
+                    <Input value={currentReviewContent} onChange={e => setCurrentReviewContent(e.target.value)} />
+                  </div>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={() => { onClose; handleUpdateReview() }}>
+                  Submit
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal >
+      <Modal placement="center" isOpen={isOpenDeleteReview} onOpenChange={onOpenChangeDeleteReview}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Delete this review?</ModalHeader>
+              <ModalBody>
+                <div className={styles.modifyWrapper}>
+                  <div className={styles.userWrapper}>
+                    <div className={styles.avatar}>
+                      <img src={isOpenReview.user.avatar} alt="img" />
+                    </div>
+                    <div className={styles.name}>{isOpenReview.user.displayName}</div>
+                  </div>
+                  <div className={styles.inputWrapper}>
+                    <Input value={isOpenReview.content} />
+                  </div>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={() => { onClose; handleDeleteReview() }}>
+                  Yes
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

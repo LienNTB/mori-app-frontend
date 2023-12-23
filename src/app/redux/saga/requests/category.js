@@ -7,11 +7,11 @@ export const getBookCategoryRequest = async () => {
       "Content-Type": "application/json",
     },
   })
-    .then((response) => {
-      return response.json();
-    })
+  .then((response) => {
+    return response.json();
+  })
 
-    .catch((error) => {
-      throw error;
-    });
+  .catch((error) => {
+    throw error;
+  });
 };

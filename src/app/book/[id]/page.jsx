@@ -132,8 +132,6 @@ function Book() {
 
   }
   const handleReadBook = async () => {
-    // console.log("handleReadBook")
-
     if (book.access_level === 0) {
       increaseTotalReadDaily(book._id);
       if (currentAccount) {
@@ -164,7 +162,6 @@ function Book() {
         } else {
           increaseTotalReadDaily(book._id);
           router.replace(`/reader/${book._id}`);
-          // setShowPdfViewer(true);
         }
       }
     }
@@ -176,7 +173,6 @@ function Book() {
           .then((resp) => {
             if (resp.message) {
               resolve("Hearted!");
-              console.log("resp", resp);
             } else {
               reject("Error!");
             }
@@ -293,7 +289,6 @@ function Book() {
                   <div className={styles.author}>
                     <span>Tác giả: </span>
                     <a
-                      href="https://docsachhay.net/author/koga-fumitake-kishimi-ichiro"
                       title={book.author}
                       class="property-item"
                     >

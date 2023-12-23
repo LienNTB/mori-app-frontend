@@ -5,7 +5,7 @@ export const resetPasswordRequest = async (token, password) => {
     token: token,
     password: password,
   };
-  return fetch(`${type.BACKEND_URL}/auth/reset-password`, {
+  return fetch(`${type.BACKEND_URL}/api/auth/reset-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export const forgetPasswordRequest = async (email) => {
   const request = {
     email: email,
   };
-  return fetch(`${type.BACKEND_URL}/auth/forgot-password`, {
+  return fetch(`${type.BACKEND_URL}/api/auth/forgot-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

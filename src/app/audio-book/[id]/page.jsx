@@ -97,7 +97,6 @@ function AudioBookPage() {
         const membershipRequest = await getMembershipByIdRequest(
           currentAccount._id
         );
-        console.log("membership", membershipRequest.membership);
         if (!membershipRequest.membership) {
           toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
             duration: 2000,
@@ -191,7 +190,6 @@ function AudioBookPage() {
   //   redirect("/login")
   // }
 
-  console.log("render")
   let player = createRef()
   return (
     <>
@@ -622,7 +620,6 @@ function ChapterItem(props) {
 
 // ListChapters component
 function ListChapters({ chapters, onChapterClicked }) {
-  console.log(chapters);
   return (
     <div className="flex flex-col gap-y-2">
       {chapters.map((chapter) => (

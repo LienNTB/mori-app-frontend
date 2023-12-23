@@ -44,7 +44,7 @@ export const getCurrentAccountRequest = async (account) => {
 };
 
 export const registerAccountRequest = async (account) => {
-  return fetch(`${type.BACKEND_URL}/auth/register`, {
+  return fetch(`${type.BACKEND_URL}/api/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export const registerAccountRequest = async (account) => {
 };
 
 export const loginAccountRequest = async (account) => {
-  return fetch(`${type.BACKEND_URL}/auth/login`, {
+  return fetch(`${type.BACKEND_URL}/api/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

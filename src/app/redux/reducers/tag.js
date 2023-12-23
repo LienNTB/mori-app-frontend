@@ -10,26 +10,22 @@ const initialState = {
 export default function tags(state = initialState, action) {
   switch (action.type) {
     case type.GET_TAGS_REQUESTED:
-      console.log("request");
       return {
         ...state,
         loading: true,
       };
     case type.GET_TAG_REQUESTED:
-      console.log("request");
       return {
         ...state,
         loading: true,
       };
     case type.GET_TAGS_SUCCESS:
-      console.log("success");
       return {
         ...state,
         loading: false,
         tags: action.tags,
       };
     case type.GET_TAG_SUCCESS:
-      console.log("success");
 
       return {
         ...state,
@@ -38,7 +34,6 @@ export default function tags(state = initialState, action) {
       };
     case type.GET_TAGS_FAILED:
     case type.GET_TAG_FAILED:
-      console.log("failed");
 
       return {
         ...state,

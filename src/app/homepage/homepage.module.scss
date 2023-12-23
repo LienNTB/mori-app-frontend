@@ -68,16 +68,19 @@
 
 @media (max-width: 576px) {
   .bookList {
-    .bookItem {
-      width: 100%;
-    }
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    // .bookItem {
+    //   width: 100%;
+    // }
   }
   .homePageContent {
     padding: 20px 5px !important;
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 577px) and (max-width: 768px) {
   .bookList {
     .bookItem {
       margin-left: 20px;

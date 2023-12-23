@@ -6,9 +6,11 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDi
 import { useSearchParams } from 'next/navigation';
 import { resetPasswordRequest } from '../redux/saga/requests/auth'
 import { Toaster, toast } from "react-hot-toast";
+import { Router, useRouter } from 'next/navigation';
 
 
 const ResetPassword = () => {
+  const router = useRouter()
   const dispatch = useDispatch()
   const [password, setPassword] = useState("")
   const [retypePassword, setRetypePassword] = useState("")
@@ -35,6 +37,8 @@ const ResetPassword = () => {
             .then((resp) => {
               if (resp.message) {
                 resolve("Reset mật khẩu thành công!");
+                router.replace("/")
+
               }
               if (resp.error) {
                 reject(new Error(resp.error));

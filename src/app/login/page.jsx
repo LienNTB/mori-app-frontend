@@ -2,7 +2,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "./login.module.scss";
 import { UserAuth } from "@/app/context/AuthContext";
-import { redirect } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { Toaster, toast } from "react-hot-toast";
 import Link from "next/link";
@@ -78,6 +77,7 @@ const Login = () => {
   };
 
   const handleSignIn = () => {
+    console.log("handleSignIn")
     if (username == "" || password == "") {
       toast.error("Vui lòng nhập đủ thông tin!", {
         duration: 2000,
@@ -91,7 +91,7 @@ const Login = () => {
       toast.promise(
         new Promise((resolve, reject) => {
           loginAccountRequest(account).then((resp) => {
-            if (resp.msg) {
+            if (resp.message) {
               // Kiểm tra account có bị khóa không
               if (resp.user.is_blocked) {
                 reject(new Error("Tài khoản này đã bị khóa!"));
@@ -113,12 +113,11 @@ const Login = () => {
                       avatar: resp.user.avatar,
                     })
                   );
-                  redirect("/");
+                  router.replace("/")
                 }
               }
             } else {
-              console.log("resp:", resp);
-              reject(new Error(resp));
+              reject(resp.error);
             }
           });
         }),
@@ -139,7 +138,8 @@ const Login = () => {
     if (authenticated) {
       const currentAccount = JSON.parse(localStorage.getItem("user"));
       console.log("role:", currentAccount.role);
-      redirect("/");
+      router.replace("/")
+
     }
   }, [authenticated]);
 
@@ -147,9 +147,8 @@ const Login = () => {
     getUserInfo();
   }, [user]);
   const getUserInfo = useCallback(() => {
-    console.log("callback");
     if (user) {
-      console.log("callback has user");
+
       let newAccount = {
         email: user.email,
         displayName: user.displayName,
@@ -169,7 +168,6 @@ const Login = () => {
   return (
     <>
       <Toaster />
-
       <div className={styles.div}>
         <div className={styles.div2}>
           <div className={styles.column}>

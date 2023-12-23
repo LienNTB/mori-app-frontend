@@ -458,6 +458,9 @@
       margin-top: 50px;
       display: flex;
       flex-direction: column !important;
+      .right {
+        padding: 5px;
+      }
     }
     .reviewMainContent {
       margin: 0 !important;
@@ -466,12 +469,18 @@
       margin: 20px 0;
     }
   }
+  .nextAction > :nth-child(3) {
+    margin-top: 5px;
+  }
+  .line {
+    display: none !important;
+  }
   //   .splideType1 {
   //     display: none;
   //   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 577px) and (max-width: 768px) {
   .bookContainer {
     section {
       margin: 0;
@@ -481,6 +490,9 @@
       margin-top: 50px;
       display: flex;
       flex-direction: column !important;
+      .right {
+        padding: 10px;
+      }
     }
     .reviewMainContent {
       margin: 0 !important;
@@ -504,6 +516,9 @@
       margin-top: 50px;
       display: flex;
       flex-direction: column !important;
+      .right {
+        padding: 10px;
+      }
     }
     .reviewMainContent {
       margin: 0 !important;

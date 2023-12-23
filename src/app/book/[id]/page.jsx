@@ -621,7 +621,7 @@ function Book() {
                               }} >
                                 <FontAwesomeIcon className={styles.menu} icon={faEllipsisVertical} />
 
-                                {isOpenReviewOption && review.user._id === currentAccount._id && review._id === isOpenReview._id
+                                {isOpenReviewOption && review.user._id === currentAccount?._id && review._id === isOpenReview._id
                                   // {isOpenReviewOption && isOpenReview._id === review._id
                                   ? <div className={styles.actionWrapper}>
                                     <div className={styles.actionItem} onClick={onOpenModifyReview}>Modify</div>

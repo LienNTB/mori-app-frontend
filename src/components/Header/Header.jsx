@@ -25,23 +25,23 @@ const Header = () => {
   const router = useRouter();
   const { user, logOut } = UserAuth();
 
-  
+
   const handleOpenMenu = async () => {
     console.log("handleOpenMenu")
     setIsOpenListbox(p => !p)
-    
-  return new Promise((resolve, reject) => {
-    getBookCategoryRequest()
-      .then(res => {
-        setCategories(res.bookCategories);
-        console.log("res:", res.bookCategories);
-        resolve();
-      })
-      .catch(error => {
-        console.error("Error in handleOpenMenu:", error);
-        reject(error);
-      });
-  });
+
+    return new Promise((resolve, reject) => {
+      getBookCategoryRequest()
+        .then(res => {
+          setCategories(res.bookCategories);
+          console.log("res:", res.bookCategories);
+          resolve();
+        })
+        .catch(error => {
+          console.error("Error in handleOpenMenu:", error);
+          reject(error);
+        });
+    });
   }
   const handleSignOut = async () => {
     try {
@@ -69,7 +69,7 @@ const Header = () => {
             <div className={styles.searchBarContainer}>
               <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
                 onChange={(e) => setSearchValue(e.target.value)} />
-              <Link href={`/search/${searchValue}`}>
+              <Link href={`/search/${searchValue}`} shallow>
                 <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
                   Tìm kiếm
                 </button>
@@ -78,10 +78,10 @@ const Header = () => {
           </div>
 
           {authenticated ? (<>
-            <Link className={styles.right} href={"/account/profile"}>
+            <Link className={styles.right} href={"/account/profile"} shallow>
               Tài khoản cá nhân
             </Link>
-            <Link className={styles.right} href={"/member-package"}>
+            <Link className={styles.right} href={"/member-package"} shallow>
               <div className={styles.memberRegisterBtn}>
                 Tham gia hội viên
               </div>
@@ -92,12 +92,12 @@ const Header = () => {
           </>)
             : (
               <>
-                <Link className={styles.right} href={"/member-package"}>
+                <Link className={styles.right} href={"/member-package"} shallow>
                   <div className={styles.memberRegisterBtn}>
                     Tham gia hội viên
                   </div>
                 </Link>
-                <Link className={styles.right} href={"/login"} >
+                <Link className={styles.right} href={"/login"} shallow>
                   Login
                 </Link>
               </>
@@ -114,7 +114,7 @@ const Header = () => {
               <div className={styles.searchBarContainer}>
                 <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
                   onChange={(e) => setSearchValue(e.target.value)} />
-                <Link href="/search">
+                <Link href="/search" shallow>
                   <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
                     Tìm kiếm
                   </button>
@@ -132,22 +132,22 @@ const Header = () => {
                 Danh mục
               </div>
               <div className={styles.menuItem}>
-                <Link href="/book">
+                <Link href="/book" shallow>
                   Sách đọc
                 </Link>
               </div>
               <div className={styles.menuItem}>
-                <Link href="/audio-book">
+                <Link href="/audio-book" shallow>
                   Sách nói
                 </Link>
               </div>
               <div className={styles.menuItem}>
-                <Link href="/ranking/sachdoc">
+                <Link href="/ranking/sachdoc" shallow>
                   Bảng xếp hạng
                 </Link>
               </div>
               <div className={styles.menuItem} >
-                <Link href={"/account/profile"}>
+                <Link href={"/account/profile"} shallow>
                   Tài khoản cá nhân
                 </Link>
               </div>
@@ -155,7 +155,7 @@ const Header = () => {
                 Đăng xuất
               </div>
               <div className={styles.menuItem} >
-                <Link className={styles.right} href={"/member-package"}>
+                <Link className={styles.right} href={"/member-package"} shallow>
                   <div className={styles.memberRegisterBtn}>
                     Tham gia hội viên
                   </div>
@@ -168,22 +168,22 @@ const Header = () => {
                   Danh mục
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/book">
+                  <Link href="/book" shallow>
                     Sách đọc
                   </Link>
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/audio-book">
+                  <Link href="/audio-book" shallow>
                     Sách nói
                   </Link>
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/ranking/sachdoc">
+                  <Link href="/ranking/sachdoc" shallow>
                     Bảng xếp hạng
                   </Link>
                 </div>
                 <div className={styles.menuItem} >
-                  <Link href={"/login"}>
+                  <Link href={"/login"} shallow>
                     Đăng nhập
                   </Link>
                 </div>
@@ -224,13 +224,13 @@ const Header = () => {
 
               </div> : <></>}
           </li>
-          <Link href="/book">
+          <Link href="/book" shallow>
             <li className={styles.bottomMenuItem}>Sách đọc</li>
           </Link>
-          <Link href="/audio-book">
+          <Link href="/audio-book" shallow>
             <li className={styles.bottomMenuItem}>Sách nói</li>
           </Link>
-          <Link href="/ranking/sachdoc">
+          <Link href="/ranking/sachdoc" shallow>
             <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
           </Link>
 

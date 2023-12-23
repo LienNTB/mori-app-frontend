@@ -141,7 +141,7 @@ const SignUp = () => {
               <div className={styles.div4}>WELCOME BACK!</div>
               <div className={styles.div5}>
                 <span style={{ fontWeight: 400 }}>Have an account? </span>
-                <Link href="/login">
+                <Link href="/login" shallow>
                   <span style={{ fontWeight: 700 }}>Sign in</span>
                 </Link>
               </div>

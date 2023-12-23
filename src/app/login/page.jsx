@@ -178,7 +178,7 @@ const Login = () => {
                 <span style={{ fontWeight: 400 }}>Don’t have a account, </span>
                 {/* <span style="font-family: Nunito, sans-serif;font-weight: 700;color: rgba(134,153,218,1);"> */}
                 <span style={{ fontWeight: 700 }}>
-                  <Link href="/signup">Sign up</Link>
+                  <Link href="/signup" shallow>Sign up</Link>
                 </span>
               </div>
               <div className={styles.div6}>Username</div>

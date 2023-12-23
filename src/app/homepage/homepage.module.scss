@@ -71,12 +71,14 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    // .bookItem {
-    //   width: 100%;
-    // }
+  }
+  .headContent {
+    margin-top: 70px !important;
   }
   .homePageContent {
     padding: 20px 5px !important;
+  }
+  .headContent {
   }
 }
 

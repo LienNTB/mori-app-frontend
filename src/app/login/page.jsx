@@ -116,6 +116,7 @@ const Login = () => {
                   router.replace("/")
                 }
               }
+
             } else {
               reject(resp.error);
             }
@@ -137,8 +138,12 @@ const Login = () => {
   useEffect(() => {
     if (authenticated) {
       const currentAccount = JSON.parse(localStorage.getItem("user"));
-      console.log("role:", currentAccount.role);
-      router.replace("/")
+      if (currentAccount.is_blocked) {
+        toast.error("Tài khoản này đã bị khóa!")
+      }
+      else {
+        router.replace("/")
+      }
 
     }
   }, [authenticated]);
@@ -156,7 +161,6 @@ const Login = () => {
       };
       createAccountRequest(newAccount).then(() => {
         getCurrentAccountRequest(newAccount).then((res) => {
-          console.log("currentAccount", res.account);
           localStorage.setItem("user", JSON.stringify(res.account));
           localStorage.setItem("authenticated", true);
           setAuthenticated(localStorage.getItem("authenticated"));

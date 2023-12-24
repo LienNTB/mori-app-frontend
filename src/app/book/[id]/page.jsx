@@ -113,8 +113,7 @@ function Book() {
             if (resp.message) {
               resolve("Review deleted successfully.");
               onCloseChangeDeleteReview()
-              setReload(p => p + 1)
-
+              dispatch(getReviewsById(id))
             } else {
               reject(resp.error);
             }
@@ -259,9 +258,9 @@ function Book() {
     dispatch(getReviewsById(id));
   }, [dispatch]);
   useEffect(() => {
-    dispatch(getBookById(id));
     dispatch(getReviewsById(id));
   }, [reload]);
+
   useEffect(() => {
     if (book) {
       dispatch(getBooksByCate(book.tags[0]));
@@ -370,7 +369,7 @@ function Book() {
                   </div>
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    <Link href={"/book-category/tamlykynang"}>
+                    <Link href={"/book-category/tamlykynang"} shallow>
                       <button className={styles.tag}>
                         Tâm lý - Kỹ năng sống
                       </button>

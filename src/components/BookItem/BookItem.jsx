@@ -11,11 +11,11 @@ const BookItem = ({ book }) => {
   return (
     <div className={styles.container}>
       {hasChapters ? (
-        <Link href={`/audio-book/${book._id}`}>
+        <Link href={`/audio-book/${book._id}`} shallow>
           <img src={book.image} alt="img" />
         </Link>
       ) : (
-        <Link href={`/book/${book._id}`}>
+        <Link href={`/book/${book._id}`} shallow>
           <img src={book.image} alt="img" />
         </Link>
       )}

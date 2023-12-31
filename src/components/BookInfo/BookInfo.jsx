@@ -85,15 +85,15 @@ function BookInfo() {
                   <div className={styles.title}>
                     Thể loại
                   </div>
-                  <Link href={"/book-category/tamlykynang"}>
+                  <Link href={"/book-category/tamlykynang"} shallow>
                     <button className={styles.tag}>Tâm lý - Kỹ năng sống</button>
                   </Link>
                 </div>
                 <div className={styles.nextAction}>
-                  <Link href={book.pdf}>
+                  <Link href={book.pdf} shallow>
                     <button className={styles.read}>Đọc ngay</button>
                   </Link>
-                  <Link href={"/book-category/tamlykynang"}>
+                  <Link href={"/book-category/tamlykynang"} shallow>
                     <button className={styles.save}>Đánh dấu</button>
                   </Link>
                 </div>

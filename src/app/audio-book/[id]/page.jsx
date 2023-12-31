@@ -293,7 +293,7 @@ function AudioBookPage() {
                   </div>
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    <Link href={"/book-category/tamlykynang"}>
+                    <Link href={"/book-category/tamlykynang"} shallow>
                       <button className={styles.tag}>
                         Tâm lý - Kỹ năng sống
                       </button>

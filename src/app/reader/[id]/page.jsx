@@ -286,6 +286,7 @@ const Reader = () => {
           <ModalBody>
             <div>
               <div className={styles.colorPicker}>
+                Choose highlight color:
                 {highlighters.map((option) => (
                   <div
                     key={option.value}
@@ -296,6 +297,7 @@ const Reader = () => {
                       width: "20px",
                       height: "20px",
                       cursor: "pointer",
+                      marginleft: "5px"
                     }}
                     onClick={() =>
                       handleSelectHighlighter({

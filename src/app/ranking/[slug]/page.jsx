@@ -72,10 +72,10 @@ const Ranking = () => {
             <div className={styles.headerTitle}>Bảng xếp hạng</div>
             <div className={styles.navWrapper}>
               <div className={styles.nav}>
-                <Link href={"/ranking/book"}>
+                <Link href={"/ranking/book"} shallow>
                   <div className={styles.navItem}>Sách</div>
                 </Link>
-                <Link href={"/ranking/audio-book"}>
+                <Link href={"/ranking/audio-book"} shallow>
                   <div className={styles.navItem}>Sách nói</div>
                 </Link>
               </div>
@@ -151,7 +151,7 @@ const Ranking = () => {
                     <TableRow key={item?.book_id}>
                       {/* <TableCell>{index ? index : ""}</TableCell> */}
                       <TableCell>
-                        <Link href={`/book/${item?.book_id}`}>
+                        <Link href={`/book/${item?.book_id}`} shallow>
                           <img
                             src={item?.bookInfo?.image}
                             alt={item?.bookInfo?.name || "Hình ảnh sách"}
@@ -160,12 +160,12 @@ const Ranking = () => {
                         </Link>
                       </TableCell>
                       <TableCell>
-                        <Link href={`/book/${item?.book_id}`}>
+                        <Link href={`/book/${item?.book_id}`} shallow> shallow
                           {item?.bookInfo?.name}
                         </Link>
                       </TableCell>
                       <TableCell>
-                        <Link href={`/book/${item?.book_id}`}>
+                        <Link href={`/book/${item?.book_id}`} shallow>
                           {item?.bookInfo?.author}
                         </Link>
                       </TableCell>

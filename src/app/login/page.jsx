@@ -2,7 +2,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "./login.module.scss";
 import { UserAuth } from "@/app/context/AuthContext";
-import { redirect } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { Toaster, toast } from "react-hot-toast";
 import Link from "next/link";
@@ -78,6 +77,7 @@ const Login = () => {
   };
 
   const handleSignIn = () => {
+    console.log("handleSignIn")
     if (username == "" || password == "") {
       toast.error("Vui lòng nhập đủ thông tin!", {
         duration: 2000,
@@ -91,7 +91,7 @@ const Login = () => {
       toast.promise(
         new Promise((resolve, reject) => {
           loginAccountRequest(account).then((resp) => {
-            if (resp.msg) {
+            if (resp.message) {
               // Kiểm tra account có bị khóa không
               if (resp.user.is_blocked) {
                 reject(new Error("Tài khoản này đã bị khóa!"));
@@ -113,12 +113,12 @@ const Login = () => {
                       avatar: resp.user.avatar,
                     })
                   );
-                  redirect("/");
+                  router.replace("/")
                 }
               }
+
             } else {
-              console.log("resp:", resp);
-              reject(new Error(resp));
+              reject(resp.error);
             }
           });
         }),
@@ -138,8 +138,13 @@ const Login = () => {
   useEffect(() => {
     if (authenticated) {
       const currentAccount = JSON.parse(localStorage.getItem("user"));
-      console.log("role:", currentAccount.role);
-      redirect("/");
+      if (currentAccount.is_blocked) {
+        toast.error("Tài khoản này đã bị khóa!")
+      }
+      else {
+        router.replace("/")
+      }
+
     }
   }, [authenticated]);
 
@@ -147,9 +152,8 @@ const Login = () => {
     getUserInfo();
   }, [user]);
   const getUserInfo = useCallback(() => {
-    console.log("callback");
     if (user) {
-      console.log("callback has user");
+
       let newAccount = {
         email: user.email,
         displayName: user.displayName,
@@ -157,7 +161,6 @@ const Login = () => {
       };
       createAccountRequest(newAccount).then(() => {
         getCurrentAccountRequest(newAccount).then((res) => {
-          console.log("currentAccount", res.account);
           localStorage.setItem("user", JSON.stringify(res.account));
           localStorage.setItem("authenticated", true);
           setAuthenticated(localStorage.getItem("authenticated"));
@@ -169,7 +172,6 @@ const Login = () => {
   return (
     <>
       <Toaster />
-
       <div className={styles.div}>
         <div className={styles.div2}>
           <div className={styles.column}>
@@ -180,7 +182,7 @@ const Login = () => {
                 <span style={{ fontWeight: 400 }}>Don’t have a account, </span>
                 {/* <span style="font-family: Nunito, sans-serif;font-weight: 700;color: rgba(134,153,218,1);"> */}
                 <span style={{ fontWeight: 700 }}>
-                  <Link href="/signup">Sign up</Link>
+                  <Link href="/signup" shallow>Sign up</Link>
                 </span>
               </div>
               <div className={styles.div6}>Username</div>

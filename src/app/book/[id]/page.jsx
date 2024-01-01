@@ -17,7 +17,7 @@ import {
   increaseTotalSaved,
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { redirect, useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
 import BookItem from "@/components/BookItem/BookItem";
@@ -383,7 +383,6 @@ function Book() {
                     </div>
                   </div>
                   <div className={styles.category}>
-                    <div className={styles.title}>Thể loại</div>
                     <div className={styles.title}>Thể loại</div>
                     {book.tags.map((tag, index) => (
                       <React.Fragment key={index}>

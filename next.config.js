@@ -38,7 +38,7 @@ const nextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
-    domains: ["localhost"],
+    domains: ["localhost", "http://103.130.211.150:10047"],
     remotePatterns: [
       {
         protocol: "https",

@@ -19,6 +19,7 @@
     "@redux-devtools/extension": "^3.2.6",
     "@splidejs/react-splide": "^0.7.12",
     "axios": "^1.6.2",
+    "base64-js": "^1.5.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.2",
     "eslint": "8.49.0",

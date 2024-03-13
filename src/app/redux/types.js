@@ -1,12 +1,9 @@
-import bcrypt from "bcryptjs";
+import base64 from 'base64-js'
 
 export const BACKEND_URL = process.env.BACKEND_URL_DEV;
 export const ADMIN_URL_DEV = process.env.ADMIN_URL_DEV;
 export const FRONTEND_URL_DEV = process.env.FRONTEND_URL_DEV;
-export const ALLOW_ORIGIN_TOKEN = bcrypt.hashSync(
-  process.env.ALLOW_ORIGIN_TOKEN,
-  10
-);
+export const ALLOW_ORIGIN_TOKEN = base64.fromByteArray(base64.toByteArray(process.env.ALLOW_ORIGIN_TOKEN))
 export const requestHeader = {
   "Content-Type": "application/json",
   Authorization: `Bearer ${ALLOW_ORIGIN_TOKEN}`,

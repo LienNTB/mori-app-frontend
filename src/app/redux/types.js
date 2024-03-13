@@ -1,6 +1,17 @@
+import bcrypt from "bcryptjs";
+
 export const BACKEND_URL = process.env.BACKEND_URL_DEV;
 export const ADMIN_URL_DEV = process.env.ADMIN_URL_DEV;
 export const FRONTEND_URL_DEV = process.env.FRONTEND_URL_DEV;
+export const ALLOW_ORIGIN_TOKEN = bcrypt.hashSync(
+  process.env.ALLOW_ORIGIN_TOKEN,
+  10
+);
+export const requestHeader = {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${ALLOW_ORIGIN_TOKEN}`,
+  Origin: FRONTEND_URL_DEV,
+};
 // * AUTH
 export const LOGIN_REQUESTED = "LOGIN_REQUESTED";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";

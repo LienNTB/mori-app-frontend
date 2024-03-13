@@ -4,9 +4,7 @@ import * as type from "../../types";
 export const getAllBooksRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -19,9 +17,7 @@ export const getAllBooksRequest = async () => {
 export const getAllEBookRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/ebook`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -35,9 +31,7 @@ export const getAllEBookRequest = async () => {
 export const getAllAudioBookRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/audio-book`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -51,9 +45,7 @@ export const getAllAudioBookRequest = async () => {
 export const getBookByIdRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/${id}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -67,9 +59,7 @@ export const getBookByIdRequest = async (id) => {
 export const increaseTotalReadRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/book/total-read/${id}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -83,9 +73,7 @@ export const increaseTotalReadRequest = async (id) => {
 export const increaseTotalHeartRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/book/total-hearted/${id}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -98,9 +86,7 @@ export const increaseTotalHeartRequest = async (id) => {
 export const increaseTotalReadDaily = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/bookRanking/increase/${id}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -114,9 +100,7 @@ export const increaseTotalReadDaily = async (id) => {
 export const increaseTotalSavedRequest = async (payload) => {
   return fetch(`${type.BACKEND_URL}/api/book/total-saved/${payload.bookId}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
     body: JSON.stringify({
       user: payload.accountId,
     }),
@@ -133,9 +117,7 @@ export const increaseTotalSavedRequest = async (payload) => {
 export const findBookByCategoryRequest = async (payload) => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/category`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
     body: JSON.stringify({
       searchValue: payload,
     }),
@@ -152,9 +134,7 @@ export const findBookByCategoryRequest = async (payload) => {
 export const getReadHistoryRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/readHistory/get-readHistory/${id}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -168,9 +148,7 @@ export const getReadHistoryRequest = async (id) => {
 export const addNewOrUpdateReadHistory = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/readHistory/add-readHistory`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -183,12 +161,15 @@ export const addNewOrUpdateReadHistory = async (request) => {
 };
 
 export const findOneReadHistoryRequest = async (book_id, user_id) => {
-  return fetch(`${type.BACKEND_URL}/api/readHistory/get-readHistory/${book_id}/${user_id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
+  return fetch(
+    `${type.BACKEND_URL}/api/readHistory/get-readHistory/${book_id}/${user_id}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
     .then((response) => {
       return response.json();
     })

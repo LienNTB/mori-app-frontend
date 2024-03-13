@@ -7,9 +7,7 @@ export const resetPasswordRequest = async (token, password) => {
   };
   return fetch(`${type.BACKEND_URL}/api/auth/reset-password`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -27,9 +25,7 @@ export const forgetPasswordRequest = async (email) => {
   };
   return fetch(`${type.BACKEND_URL}/api/auth/forgot-password`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
     body: JSON.stringify(request),
   })
     .then((response) => {

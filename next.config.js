@@ -9,6 +9,7 @@ const nextConfig = {
     ADMIN_URL_DEV: process.env.ADMIN_URL_DEV,
     FRONTEND_URL_DEV: process.env.FRONTEND_URL_DEV,
     ALLOW_ORIGIN_TOKEN: process.env.ALLOW_ORIGIN_TOKEN,
+    JWT_SECRET: process.env.JWT_SECRET,
   },
   future: {
     webpack5: true,

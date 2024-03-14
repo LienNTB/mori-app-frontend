@@ -3,7 +3,6 @@ export const getReviewsByIdRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/review/getReviews/${id}`, {
     method: "GET",
     headers: type.requestHeader,
-    credentials: "include",
   })
     .then((response) => {
       return response.json();
@@ -17,7 +16,7 @@ export const reviewBookRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/review/comment`, {
     method: "POST",
     headers: type.requestHeader,
-    credentials: "include",
+
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -33,7 +32,7 @@ export const updateReviewRequest = async (id, content) => {
   return fetch(`${type.BACKEND_URL}/api/review/${id}`, {
     method: "PUT",
     headers: type.requestHeader,
-    credentials: "include",
+
     body: JSON.stringify({
       content: content,
     }),
@@ -50,7 +49,6 @@ export const deleteReviewRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/review/${id}`, {
     method: "DELETE",
     headers: type.requestHeader,
-    credentials: "include",
   })
     .then((response) => {
       return response.json();

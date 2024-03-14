@@ -4,7 +4,6 @@ export const getAllTagsRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/tag/get-tags`, {
     method: "GET",
     headers: type.requestHeader,
-    credentials: "include",
   })
     .then((response) => response.json())
     .catch((error) => {
@@ -15,7 +14,6 @@ export const getTagByIdRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/tag/${id}`, {
     method: "GET",
     headers: type.requestHeader,
-    credentials: "include",
   })
     .then((response) => response.json())
     .catch((error) => {

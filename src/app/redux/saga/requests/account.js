@@ -3,6 +3,7 @@ export const getAccountsRequest = async (searchValue) => {
   return fetch(`${type.BACKEND_URL}/api/account/get-account`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
     body: JSON.stringify({
       searchValue: searchValue,
     }),
@@ -17,6 +18,7 @@ export const createAccountRequest = async (account) => {
   return fetch(`${type.BACKEND_URL}/api/account/add-account`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
     body: JSON.stringify(account),
   })
     .then((response) => response.json())
@@ -29,6 +31,7 @@ export const getCurrentAccountRequest = async (account) => {
   return fetch(`${type.BACKEND_URL}/api/account/find-account`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
     body: JSON.stringify(account),
   })
     .then((response) => response.json())
@@ -41,6 +44,7 @@ export const registerAccountRequest = async (account) => {
   return fetch(`${type.BACKEND_URL}/api/auth/register`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
     body: JSON.stringify(account),
   })
     .then((response) => response.json())
@@ -53,6 +57,7 @@ export const loginAccountRequest = async (account) => {
   return fetch(`${type.BACKEND_URL}/api/auth/login`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
     body: JSON.stringify(account),
   })
     .then((response) => response.json())
@@ -74,6 +79,7 @@ export const changePasswordRequest = async (
   return fetch(`${type.BACKEND_URL}/api/account/change-password`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
     body: JSON.stringify(request),
   })
     .then((response) => response.json())

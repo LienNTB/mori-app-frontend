@@ -5,6 +5,7 @@ export const getAllBooksRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book`, {
     method: "GET",
     headers: type.requestHeader,
+    credentials: "include",
   })
     .then((response) => {
       return response.json();
@@ -18,6 +19,7 @@ export const getAllEBookRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/ebook`, {
     method: "GET",
     headers: type.requestHeader,
+    credentials: "include",
   })
     .then((response) => {
       return response.json();
@@ -32,6 +34,7 @@ export const getAllAudioBookRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/audio-book`, {
     method: "GET",
     headers: type.requestHeader,
+    credentials: "include",
   })
     .then((response) => {
       return response.json();
@@ -46,6 +49,7 @@ export const getBookByIdRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/${id}`, {
     method: "GET",
     headers: type.requestHeader,
+    credentials: "include",
   })
     .then((response) => {
       return response.json();
@@ -60,6 +64,7 @@ export const increaseTotalReadRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/book/total-read/${id}`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
   })
     .then((response) => {
       return response.json();
@@ -74,6 +79,7 @@ export const increaseTotalHeartRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/book/total-hearted/${id}`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
   })
     .then((response) => {
       return response.json();
@@ -87,6 +93,7 @@ export const increaseTotalReadDaily = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/bookRanking/increase/${id}`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
   })
     .then((response) => {
       return response.json();
@@ -101,6 +108,7 @@ export const increaseTotalSavedRequest = async (payload) => {
   return fetch(`${type.BACKEND_URL}/api/book/total-saved/${payload.bookId}`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
     body: JSON.stringify({
       user: payload.accountId,
     }),
@@ -118,6 +126,7 @@ export const findBookByCategoryRequest = async (payload) => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/category`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
     body: JSON.stringify({
       searchValue: payload,
     }),
@@ -135,6 +144,7 @@ export const getReadHistoryRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/readHistory/get-readHistory/${id}`, {
     method: "GET",
     headers: type.requestHeader,
+    credentials: "include",
   })
     .then((response) => {
       return response.json();
@@ -149,6 +159,7 @@ export const addNewOrUpdateReadHistory = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/readHistory/add-readHistory`, {
     method: "POST",
     headers: type.requestHeader,
+    credentials: "include",
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -168,6 +179,7 @@ export const findOneReadHistoryRequest = async (book_id, user_id) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     }
   )
     .then((response) => {

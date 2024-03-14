@@ -6,6 +6,7 @@ export const registerMembershipRequest = async (membership) => {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(membership),
   })
     .then((response) => {
@@ -21,6 +22,7 @@ export const getMembershipByIdRequest = async (userId) => {
   return fetch(`${type.BACKEND_URL}/api/membership/get-membership/${userId}`, {
     method: "GET",
     headers: type.requestHeader,
+    credentials: "include",
   })
     .then((response) => {
       return response.json();

@@ -1,15 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    BACKEND_URL_DEV:
-      process.env.BACKEND_URL_DEV ??
-      process.env.NEXT_PUBLIC_BACKEND_URL_DEV ??
-      "",
-    ADMIN_URL_DEV: process.env.ADMIN_URL_DEV,
-    FRONTEND_URL_DEV: process.env.FRONTEND_URL_DEV,
-    ALLOW_ORIGIN_TOKEN: process.env.ALLOW_ORIGIN_TOKEN,
-    JWT_SECRET: process.env.JWT_SECRET,
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID:
+      "581005886543-016nfq2fq93sjroi50n8puejk9n1r9h3.apps.googleusercontent.com",
+    NEXT_PUBLIC_BACKEND_URL_DEV: "http://127.0.0.1:8080",
+    NEXT_PUBLIC_ADMIN_URL_DEV: "http://127.0.0.1:3001",
+    NEXT_PUBLIC_FRONTEND_URL_DEV: "http://127.0.0.1:3000",
+    NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN: "huonglienhcmutefit12321",
+    NEXT_PUBLIC_JWT_SECRET: "hcmutefitmoriauth",
   },
   future: {
     webpack5: true,

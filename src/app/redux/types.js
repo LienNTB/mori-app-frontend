@@ -1,16 +1,15 @@
-import jwt from "jsonwebtoken";
-
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL_DEV;
 export const ADMIN_URL_DEV = process.env.NEXT_PUBLIC_ADMIN_URL_DEV;
 export const FRONTEND_URL_DEV = process.env.NEXT_PUBLIC_FRONTEND_URL_DEV;
 export const ALLOW_ORIGIN_TOKEN = process.env.NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN;
-export const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET;
-const token = jwt.sign(ALLOW_ORIGIN_TOKEN, JWT_SECRET);
+const token = btoa(ALLOW_ORIGIN_TOKEN);
+
 export const requestHeader = {
   "Content-Type": "application/json",
   Authorization: `Bearer ${token}`,
   Origin: FRONTEND_URL_DEV,
 };
+
 // * AUTH
 export const LOGIN_REQUESTED = "LOGIN_REQUESTED";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";

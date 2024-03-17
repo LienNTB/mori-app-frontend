@@ -2,7 +2,7 @@ export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL_DEV;
 export const ADMIN_URL_DEV = process.env.NEXT_PUBLIC_ADMIN_URL_DEV;
 export const FRONTEND_URL_DEV = process.env.NEXT_PUBLIC_FRONTEND_URL_DEV;
 export const ALLOW_ORIGIN_TOKEN = process.env.NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN;
-const token = btoa(ALLOW_ORIGIN_TOKEN);
+const token = customEncode(ALLOW_ORIGIN_TOKEN);
 
 export const requestHeader = {
   "Content-Type": "application/json",
@@ -102,3 +102,38 @@ export const GET_MEMBERSHIP_BY_ID_FAILED = "GET_MEMBERSHIP_BY_ID_FAILED";
 export const GET_REVIEWS_BY_ID_REQUESTED = "GET_REVIEWS_BY_ID_REQUESTED";
 export const GET_REVIEWS_BY_ID_SUCCESS = "GET_REVIEWS_BY_ID_SUCCESS";
 export const GET_REVIEWS_BY_ID_FAILED = "GET_REVIEWS_BY_ID_FAILED";
+
+function customEncode(str) {
+  let encodedString = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+  for (let i = 0; i < str.length; i += 3) {
+    const char1 = str.charCodeAt(i);
+    const char2 = str.charCodeAt(i + 1);
+    const char3 = str.charCodeAt(i + 2);
+
+    const triplet = (char1 << 16) | (char2 << 8) | char3;
+
+    const encodedChar1 = (triplet >> 18) & 63;
+    const encodedChar2 = (triplet >> 12) & 63;
+    const encodedChar3 = (triplet >> 6) & 63;
+    const encodedChar4 = triplet & 63;
+
+    encodedString +=
+      characters.charAt(encodedChar1) +
+      characters.charAt(encodedChar2) +
+      characters.charAt(encodedChar3) +
+      characters.charAt(encodedChar4);
+  }
+
+  // Pad the encoded string with '=' characters if needed
+  const padding = str.length % 3;
+  if (padding === 1) {
+    encodedString = encodedString.slice(0, -2) + "==";
+  } else if (padding === 2) {
+    encodedString = encodedString.slice(0, -1) + "=";
+  }
+
+  return encodedString;
+}

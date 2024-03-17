@@ -6,7 +6,7 @@ const nextConfig = {
     NEXT_PUBLIC_BACKEND_URL_DEV: "http://127.0.0.1:8080",
     NEXT_PUBLIC_ADMIN_URL_DEV: "http://127.0.0.1:3001",
     NEXT_PUBLIC_FRONTEND_URL_DEV: "http://127.0.0.1:3000",
-    NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN: "huonglienhcmutefit12321",
+    NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN: "huonglienhcmutefit123",
     NEXT_PUBLIC_JWT_SECRET: "hcmutefitmoriauth",
   },
   future: {

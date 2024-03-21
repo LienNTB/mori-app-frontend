@@ -6,12 +6,10 @@ export const ALLOW_ORIGIN_TOKEN = process.env.NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN;
 
 console.log("ALLOW_ORIGIN_TOKEN", ALLOW_ORIGIN_TOKEN);
 
-const token = btoa(ALLOW_ORIGIN_TOKEN);
+const token = Buffer.from(ALLOW_ORIGIN_TOKEN, "base64").toString();
 
 export const requestHeader = {
   "Content-Type": "application/json",
-  Authorization: `Bearer ${token}`,
-  Origin: FRONTEND_URL_DEV,
 };
 
 // * AUTH

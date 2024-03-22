@@ -329,44 +329,7 @@ function Book() {
                   <div className={styles.yourRating}>
                     Đánh giá: 4.2/5 từ 28 lượt. Đánh giá của bạn?
                   </div>
-                  <div className={styles.headerStats}>
-                    <div className={styles.statItem}>
-                      <small>Lượt đọc</small>
-                      <strong>
-                        <FontAwesomeIcon
-                          className={styles.icon}
-                          icon={faEye}
-                          width={20}
-                          height={20}
-                        />
-                        {book.totalRead}
-                      </strong>
-                    </div>
-                    <div className={styles.statItem}>
-                      <small>Lượt yêu thích</small>
-                      <strong>
-                        <FontAwesomeIcon
-                          className={styles.icon}
-                          icon={faHeart}
-                          width={20}
-                          height={20}
-                        />
-                        {book.totalHearted}
-                      </strong>
-                    </div>
-                    <div className={styles.statItem}>
-                      <small>Đánh dấu</small>
-                      <strong>
-                        <FontAwesomeIcon
-                          className={styles.icon}
-                          icon={faSave}
-                          width={20}
-                          height={20}
-                        />
-                        {book.totalSaved.length}
-                      </strong>
-                    </div>
-                  </div>
+
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
                     <Link href={"/book-category/tamlykynang"} shallow>
@@ -375,35 +338,33 @@ function Book() {
                       </button>
                     </Link>
                   </div>
-
-                  <div className={styles.nextAction}>
-                    <button
-                      className={styles.read}
-                      onClick={() => handleReadBook()}
-                    >
-                      Đọc ngay
-                    </button>
-
-                    <button
-                      className={styles.save}
-                      onClick={() => handleSaveToLibrary()}
-                    >
-                      Thêm vào thư viện
-                    </button>
-                    <button
-                      className={styles.save}
-                      onClick={() => handleIncreaseTotalHearted()}
-                    >
-                      <FontAwesomeIcon
-                        className={styles.icon}
-                        icon={faHeart}
-                        width={20}
-                        height={20}
-                      />
-                    </button>
-                    {/* <Link href={"/book-category/tamlykynang"}>
-                </Link> */}
+                  <div className={styles.quantityWrapper}>
+                    <div className={styles.title}>Số lượng</div>
+                    <div className={styles.quantityInputWrapper}>
+                      <button>-</button>
+                      <input type="text" />
+                      <button>+</button>
+                    </div>
                   </div>
+                  <div className={styles.priceWrapper}>
+                    <div className={styles.title}>
+                      Tạm tính
+                    </div>
+                    <div className={styles.price}
+                    >
+                      <div className={styles.priceInfo}>
+                        50.930 đ
+                      </div>
+                      <div className={styles.discountTag}>
+                        -33%
+                      </div></div>
+
+                  </div>
+                  <div className={styles.purchaseAction}>
+                    <button className={styles.purchaseBtn}>Mua ngay</button>
+                    <button className={styles.addToCartBtn}>Thêm vào giỏ</button>
+                  </div>
+
                 </div>
               </div>
             </section>

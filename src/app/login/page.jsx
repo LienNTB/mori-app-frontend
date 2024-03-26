@@ -1,7 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "./login.module.scss";
-import { UserAuth } from "@/app/context/AuthContext";
 import { useDispatch } from "react-redux";
 import { Toaster, toast } from "react-hot-toast";
 import Link from "next/link";
@@ -22,9 +21,14 @@ import {
 } from "@nextui-org/react";
 import { forgetPasswordRequest } from "../redux/saga/requests/auth";
 import { useRouter } from "next/navigation";
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import axios from "axios";
 
 const Login = () => {
-  const { user, googleSignIn } = UserAuth();
+  const router = useRouter();
+  const [user, setUser] = useState("")
+  const [googleUser, setGoogleUser] = useState([]);
+  const [profile, setProfile] = useState([]);
   const [authenticated, setAuthenticated] = useState(null);
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
@@ -58,18 +62,13 @@ const Login = () => {
     }
   };
 
-  async function handleSignInGoogle() {
-    try {
-      const googleLogin = await googleSignIn();
-    } catch (err) {
-      toast(err, {
-        autoClose: 2000,
-        type: "error",
-      });
-      console.log("err:", err);
-    }
-  }
+  const handleSignInGoogle = useGoogleLogin({
+    onSuccess: (codeResponse) => setGoogleUser(codeResponse),
+    onError: (error) => console.log('Login Failed:', error)
+  });
 
+  console.log("setGoogleUser", setGoogleUser)
+  console.log("profile", profile)
   const handleSignInKeyPressed = (e) => {
     if (e.key === "Enter") {
       handleSignIn();
@@ -128,7 +127,7 @@ const Login = () => {
       );
     }
   };
-  const router = useRouter();
+
 
   useEffect(() => {
     setAuthenticated(localStorage.getItem("authenticated"));
@@ -166,7 +165,24 @@ const Login = () => {
       });
     }
   }, [user]);
-
+  useEffect(
+    () => {
+      if (googleUser) {
+        axios
+          .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleUser.access_token}`, {
+            headers: {
+              Authorization: `Bearer ${googleUser.access_token}`,
+              Accept: 'application/json'
+            }
+          })
+          .then((res) => {
+            setUser(res.data);
+          })
+          .catch((err) => console.log(err));
+      }
+    },
+    [googleUser]
+  );
   return (
     <>
       <Toaster />

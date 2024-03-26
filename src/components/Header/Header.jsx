@@ -3,7 +3,6 @@ import React, { useEffect } from 'react'
 import styles from "./Header.module.scss"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { UserAuth } from '@/app/context/AuthContext'
 import Image from "next/image";
 import logo from '../../../public/logo-nobg.png'
 import { Listbox, ListboxItem } from "@nextui-org/react";
@@ -11,9 +10,9 @@ import { useState } from 'react'
 import { searchBooks, getBooksByCate } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars, faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
 import { getBookCategoryRequest } from '@/app/redux/saga/requests/category'
-import Loading from '../Loading/Loading'
+import { googleLogout } from '@react-oauth/google';
 
 const Header = () => {
   const dispatch = useDispatch()
@@ -23,36 +22,27 @@ const Header = () => {
   const [authenticated, setAuthenticated] = useState(false)
   const [categories, setCategories] = useState(null)
   const router = useRouter();
-  const { user, logOut } = UserAuth();
-
 
   const handleOpenMenu = async () => {
-    console.log("handleOpenMenu")
     setIsOpenListbox(p => !p)
 
     return new Promise((resolve, reject) => {
       getBookCategoryRequest()
         .then(res => {
           setCategories(res.bookCategories);
-          console.log("res:", res.bookCategories);
           resolve();
         })
         .catch(error => {
-          console.error("Error in handleOpenMenu:", error);
           reject(error);
         });
     });
   }
   const handleSignOut = async () => {
-    try {
-      await logOut();
-      setAuthenticated(null)
-      localStorage.removeItem("authenticated")
-      localStorage.removeItem("user")
-    }
-    catch (err) {
-      console.log(err)
-    }
+    googleLogout();
+    setAuthenticated(null)
+    localStorage.removeItem("authenticated")
+    localStorage.removeItem("user")
+    window.location.replace("/login")
   }
 
   useEffect(() => {

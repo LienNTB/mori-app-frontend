@@ -133,20 +133,24 @@
           }
           .purchaseAction {
             display: flex;
+            padding-bottom: 20px;
+            width: 100%;
             flex-direction: column;
-            justify-content: end;
-            align-items: center;
+            justify-content: start;
             button {
               margin-top: 10px;
               border-radius: 5px;
             }
             .purchaseBtn {
               color: white;
-              width: 100%;
+              width: 70%;
               background-color: red;
               padding: 10px;
             }
             .addToCartBtn {
+              color: white;
+              width: 70%;
+              background-color: rgb(22, 91, 253);
               padding: 10px;
             }
           }

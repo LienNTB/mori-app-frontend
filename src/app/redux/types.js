@@ -3,7 +3,7 @@ export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL_DEV;
 export const ADMIN_URL_DEV = process.env.NEXT_PUBLIC_ADMIN_URL_DEV;
 export const FRONTEND_URL_DEV = process.env.NEXT_PUBLIC_FRONTEND_URL_DEV;
 export const ALLOW_ORIGIN_TOKEN = process.env.NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN;
-
+export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 console.log("ALLOW_ORIGIN_TOKEN", ALLOW_ORIGIN_TOKEN);
 
 const token = Buffer.from(ALLOW_ORIGIN_TOKEN, "base64").toString();

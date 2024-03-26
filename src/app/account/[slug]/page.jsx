@@ -5,18 +5,13 @@ import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCircleXmark,
-  faCoffee,
-  faTrashCan,
-  faXmark,
+  faTrashCan
 } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import { UserAuth } from "@/app/context/AuthContext";
+
 import { redirect } from "next/navigation";
-import { getAuth, updateProfile } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteBookFromLibrary,
@@ -26,33 +21,22 @@ import Loading from "@/components/Loading/Loading";
 import { toast } from "react-toastify";
 import ToastContainerWrapper from "@/components/ToastContainerWrapper/ToastContainerWrapper";
 import {
-  Tab,
-  Tabs,
+
   TableCell,
   Table,
   TableHeader,
   TableColumn,
   TableBody,
   TableRow,
-  TableContainer,
-  TableCaption,
-  Thead,
-  Tr,
-  Td,
-  Th,
-  Tbody,
-  Tfoot,
+
 } from "@nextui-org/react";
-import { getCurrentAccount } from "@/app/redux/actions/account";
 import { getMembershipById } from "@/app/redux/actions/membership";
 import { getReadHistory } from "@/app/redux/actions/book";
-import { Toaster } from "react-hot-toast";
 
 const Profile = () => {
   const params = useParams();
   const id = params.slug;
   const [currentTopic, setCurrentTopic] = useState(id);
-  const [show, setShow] = useState(false);
   const booksLibrary = useSelector((state) => state.myLibrary.bookList);
   const bookLoading = useSelector((state) => state.books.loading);
   const readHistory = useSelector((state) => state.books.readHistory);
@@ -63,7 +47,7 @@ const Profile = () => {
   const isLoadingMembership = useSelector((state) => state.memberships.loading);
   const [click, setClick] = useState(0);
   const dispatch = useDispatch();
-  const { user } = UserAuth();
+
 
   const handleDeleteBook = (choosenBook) => {
     var request = {

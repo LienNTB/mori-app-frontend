@@ -1,5 +1,6 @@
 "use client"
 import '../app/styles/globalstyle.scss'
+import '../app/globals.scss'
 import { Inter, Montserrat } from "next/font/google";
 import { NextUIProviders } from "./providers/providers";
 import { Provider } from 'react-redux';

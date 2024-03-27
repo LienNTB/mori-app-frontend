@@ -9,10 +9,13 @@ import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useState } from 'react'
 import { searchBooks, getBooksByCate } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faCartArrowDown, faCartFlatbed, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons'
 import { getBookCategoryRequest } from '@/app/redux/saga/requests/category'
 import { googleLogout } from '@react-oauth/google';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTrashCan
+} from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const dispatch = useDispatch()
@@ -68,14 +71,26 @@ const Header = () => {
           </div>
 
           {authenticated ? (<>
-            <Link className={styles.right} href={"/account/profile"} shallow>
-              Tài khoản cá nhân
-            </Link>
             <Link className={styles.right} href={"/member-package"} shallow>
               <div className={styles.memberRegisterBtn}>
                 Tham gia hội viên
               </div>
             </Link>
+            <Link className={styles.right} href={"/account/profile"} shallow>
+              <FontAwesomeIcon
+                icon={faUser}
+                class="cursor-pointer"
+                width={17}
+              />
+            </Link>
+            <Link className={styles.right} href={"/cart"} shallow>
+              <FontAwesomeIcon
+                icon={faCartShopping}
+                class="cursor-pointer"
+                width={20}
+              />
+            </Link>
+
             <div className={styles.right} onClick={() => handleSignOut()}>
               Đăng xuất
             </div>
@@ -138,7 +153,12 @@ const Header = () => {
               </div>
               <div className={styles.menuItem} >
                 <Link href={"/account/profile"} shallow>
-                  Tài khoản cá nhân
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    class="cursor-pointer"
+                    width={20}
+
+                  />
                 </Link>
               </div>
               <div className={styles.menuItem} onClick={handleSignOut}>

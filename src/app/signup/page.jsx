@@ -1,7 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "./signup.module.scss";
-import { UserAuth } from "@/app/context/AuthContext";
 import { redirect } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { createNewAccount, getCurrentAccount } from "../redux/actions/account";
@@ -11,7 +10,7 @@ import { registerAccountRequest } from "../redux/saga/requests/account";
 import { useRouter } from "next/navigation";
 
 const SignUp = () => {
-  const { user, googleSignIn } = UserAuth();
+  const [user, setUser] = useState(null)
   const [authenticated, setAuthenticated] = useState(false);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -90,7 +89,7 @@ const SignUp = () => {
             .then((resp) => {
               if (resp.username) {
                 resolve("Đăng kí tài khoản thành công!");
-                console.log("resp:", resp);
+                window.location.replace('/login')
               } else {
                 reject(new Error(resp.message));
                 console.log("resp:", resp);

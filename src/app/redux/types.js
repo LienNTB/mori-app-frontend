@@ -10,6 +10,7 @@ const token = Buffer.from(ALLOW_ORIGIN_TOKEN, "base64").toString();
 
 export const requestHeader = {
   "Content-Type": "application/json",
+  "Origin": FRONTEND_URL_DEV
 };
 
 // * AUTH

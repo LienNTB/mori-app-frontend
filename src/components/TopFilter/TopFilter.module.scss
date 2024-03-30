@@ -1,0 +1,50 @@
+.topFilterContainer {
+  width: inherit;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 15px;
+  padding-top: 10px;
+  .topFilterLeft {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    div {
+      margin-right: 10px;
+    }
+  }
+  .topFilterRight {
+    cursor: pointer;
+  }
+  ul,
+  li {
+    margin: 0 0;
+    list-style-type: none;
+    padding: 0 0;
+  }
+}
+@media (min-width: 1025px) {
+  .topFilterContainer {
+    display: flex;
+  }
+}
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+  .topFilterContainer {
+    display: flex;
+  }
+}
+@media (max-width: 768px) {
+  .collectionSideBarContainer {
+    display: flex;
+    margin-top: 300px;
+  }
+}
+
+@media (max-width: 576px) {
+  .collectionSideBarContainer {
+    display: flex;
+    margin-top: 300px;
+  }
+}

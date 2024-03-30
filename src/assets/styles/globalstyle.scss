@@ -1,0 +1,17 @@
+$primary-color: #4cacae;
+$font-color: #3da1a3;
+$hover-color: #37a9ab;
+.btn {
+  border: 1px solid $primary-color;
+  border-radius: 5px;
+  background-color: white;
+  padding: 10px 10px;
+  color: $primary-color;
+  width: fit-content;
+  cursor: pointer;
+  transition: all 0.3s linear;
+  &:hover {
+    background-color: $primary-color;
+    color: white;
+  }
+}

@@ -15,7 +15,7 @@ const BookItem = ({ book }) => {
           <img src={book.image} alt="img" />
         </Link>
       ) : (
-        <Link href={`/book/${book._id}`} shallow>
+        <Link href={`/ebook/${book._id}`} shallow>
           <img src={book.image} alt="img" />
         </Link>
       )}
@@ -30,6 +30,7 @@ const BookItem = ({ book }) => {
           />
         </Stack>
       </div>
+
     </div>
   );
 };

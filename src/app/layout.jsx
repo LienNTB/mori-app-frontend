@@ -1,11 +1,13 @@
 "use client"
-import "./globals.css";
+import '../app/styles/globalstyle.scss'
+import '../app/globals.scss'
 import { Inter, Montserrat } from "next/font/google";
 import { NextUIProviders } from "./providers/providers";
-import { AuthContextProvider } from "./context/AuthContext";
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import "react-toastify/dist/ReactToastify.css";
+import { GoogleOAuthProvider } from "@react-oauth/google"
+import * as types from './redux/types'
 
 
 const inter = Montserrat({ subsets: ['latin'] })
@@ -24,13 +26,13 @@ export default function RootLayout({ children }) {
         <link href="/favicon.ico" rel="icon" />
       </head>
       <body className={inter.className}>
-        <Provider store={store}>
-          <AuthContextProvider>
+        <GoogleOAuthProvider clientId={types.GOOGLE_CLIENT_ID}>
+          <Provider store={store}>
             <NextUIProviders>
               {children}
             </NextUIProviders>
-          </AuthContextProvider>
-        </Provider>
+          </Provider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

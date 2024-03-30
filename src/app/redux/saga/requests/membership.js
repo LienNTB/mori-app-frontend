@@ -20,9 +20,7 @@ export const registerMembershipRequest = async (membership) => {
 export const getMembershipByIdRequest = async (userId) => {
   return fetch(`${type.BACKEND_URL}/api/membership/get-membership/${userId}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();

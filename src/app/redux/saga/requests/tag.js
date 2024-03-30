@@ -3,9 +3,7 @@ import * as type from "../../types";
 export const getAllTagsRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/tag/get-tags`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => response.json())
     .catch((error) => {
@@ -15,9 +13,7 @@ export const getAllTagsRequest = async () => {
 export const getTagByIdRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/tag/${id}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => response.json())
     .catch((error) => {

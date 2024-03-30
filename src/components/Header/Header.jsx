@@ -3,17 +3,19 @@ import React, { useEffect } from 'react'
 import styles from "./Header.module.scss"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { UserAuth } from '@/app/context/AuthContext'
 import Image from "next/image";
 import logo from '../../../public/logo-nobg.png'
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useState } from 'react'
 import { searchBooks, getBooksByCate } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars, faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faCartArrowDown, faCartFlatbed, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons'
 import { getBookCategoryRequest } from '@/app/redux/saga/requests/category'
-import Loading from '../Loading/Loading'
+import { googleLogout } from '@react-oauth/google';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTrashCan
+} from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const dispatch = useDispatch()
@@ -23,36 +25,27 @@ const Header = () => {
   const [authenticated, setAuthenticated] = useState(false)
   const [categories, setCategories] = useState(null)
   const router = useRouter();
-  const { user, logOut } = UserAuth();
-
 
   const handleOpenMenu = async () => {
-    console.log("handleOpenMenu")
     setIsOpenListbox(p => !p)
 
     return new Promise((resolve, reject) => {
       getBookCategoryRequest()
         .then(res => {
           setCategories(res.bookCategories);
-          console.log("res:", res.bookCategories);
           resolve();
         })
         .catch(error => {
-          console.error("Error in handleOpenMenu:", error);
           reject(error);
         });
     });
   }
   const handleSignOut = async () => {
-    try {
-      await logOut();
-      setAuthenticated(null)
-      localStorage.removeItem("authenticated")
-      localStorage.removeItem("user")
-    }
-    catch (err) {
-      console.log(err)
-    }
+    googleLogout();
+    setAuthenticated(null)
+    localStorage.removeItem("authenticated")
+    localStorage.removeItem("user")
+    window.location.replace("/login")
   }
 
   useEffect(() => {
@@ -78,14 +71,26 @@ const Header = () => {
           </div>
 
           {authenticated ? (<>
-            <Link className={styles.right} href={"/account/profile"} shallow>
-              Tài khoản cá nhân
-            </Link>
             <Link className={styles.right} href={"/member-package"} shallow>
               <div className={styles.memberRegisterBtn}>
                 Tham gia hội viên
               </div>
             </Link>
+            <Link className={styles.right} href={"/account/profile"} shallow>
+              <FontAwesomeIcon
+                icon={faUser}
+                class="cursor-pointer"
+                width={17}
+              />
+            </Link>
+            <Link className={styles.right} href={"/cart"} shallow>
+              <FontAwesomeIcon
+                icon={faCartShopping}
+                class="cursor-pointer"
+                width={20}
+              />
+            </Link>
+
             <div className={styles.right} onClick={() => handleSignOut()}>
               Đăng xuất
             </div>
@@ -148,7 +153,12 @@ const Header = () => {
               </div>
               <div className={styles.menuItem} >
                 <Link href={"/account/profile"} shallow>
-                  Tài khoản cá nhân
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    class="cursor-pointer"
+                    width={20}
+
+                  />
                 </Link>
               </div>
               <div className={styles.menuItem} onClick={handleSignOut}>

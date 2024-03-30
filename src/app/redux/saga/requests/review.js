@@ -2,9 +2,7 @@ import * as type from "../../types";
 export const getReviewsByIdRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/review/getReviews/${id}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -17,9 +15,8 @@ export const getReviewsByIdRequest = async (id) => {
 export const reviewBookRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/review/comment`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
+
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -34,9 +31,8 @@ export const reviewBookRequest = async (request) => {
 export const updateReviewRequest = async (id, content) => {
   return fetch(`${type.BACKEND_URL}/api/review/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
+
     body: JSON.stringify({
       content: content,
     }),
@@ -52,9 +48,7 @@ export const updateReviewRequest = async (id, content) => {
 export const deleteReviewRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/review/${id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();

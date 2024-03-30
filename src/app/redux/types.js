@@ -1,6 +1,18 @@
-export const BACKEND_URL = process.env.BACKEND_URL_DEV;
-export const ADMIN_URL_DEV = process.env.ADMIN_URL_DEV;
-export const FRONTEND_URL_DEV = process.env.FRONTEND_URL_DEV;
+import { encode, decode } from "base64-js";
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL_DEV;
+export const ADMIN_URL_DEV = process.env.NEXT_PUBLIC_ADMIN_URL_DEV;
+export const FRONTEND_URL_DEV = process.env.NEXT_PUBLIC_FRONTEND_URL_DEV;
+export const ALLOW_ORIGIN_TOKEN = process.env.NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN;
+export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+console.log("ALLOW_ORIGIN_TOKEN", ALLOW_ORIGIN_TOKEN);
+
+const token = Buffer.from(ALLOW_ORIGIN_TOKEN, "base64").toString();
+
+export const requestHeader = {
+  "Content-Type": "application/json",
+  "Origin": FRONTEND_URL_DEV
+};
+
 // * AUTH
 export const LOGIN_REQUESTED = "LOGIN_REQUESTED";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";

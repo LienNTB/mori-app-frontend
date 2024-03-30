@@ -15,12 +15,12 @@ const BookItem = ({ book }) => {
           <img src={book.image} alt="img" />
         </Link>
       ) : (
-        <Link href={`/book/${book._id}`} shallow>
+        <Link href={`/ebook/${book._id}`} shallow>
           <img src={book.image} alt="img" />
         </Link>
       )}
       <h4>{book.name}</h4>
-      {/* <div className={styles.rating}>
+      <div className={styles.rating}>
         <Stack spacing={1}>
           <Rating
             name="half-rating-read"
@@ -29,10 +29,8 @@ const BookItem = ({ book }) => {
             readOnly
           />
         </Stack>
-      </div> */}
-      <div className={styles.price}>
-        120.000 đ
       </div>
+
     </div>
   );
 };

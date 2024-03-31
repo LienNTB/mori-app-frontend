@@ -1,0 +1,95 @@
+@import "../../../assets/styles/globalstyle.scss";
+.postContainer {
+  margin: 50px 100px;
+  .postContentWrapper {
+    section {
+      margin: 50px;
+    }
+    .postMain {
+      .title {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 30px;
+        font-weight: 600;
+      }
+      .postInfo {
+        color: gray;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        .postItem {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          margin-right: 10px;
+
+          img {
+            width: 30px;
+            height: 30px;
+            border-radius: 999;
+            margin-right: 5px;
+          }
+        }
+      }
+      .postImage {
+        align-items: center;
+        width: 100%;
+        height: 300px;
+        object-fit: contain !important;
+        margin-bottom: 30px;
+      }
+      .postBody {
+        width: 100%;
+        overflow-wrap: break-word;
+      }
+    }
+  }
+  .similarPostWrapper {
+    .title {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 30px;
+      font-weight: 600;
+    }
+    .similarPostList {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .similarPostItem {
+        width: 29%;
+        img {
+          width: 100%;
+          height: 100px;
+          object-fit: contain;
+          border-radius: 10px;
+        }
+        .postInfo {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          font-size: 13px;
+          padding: 18px 0;
+          color: gray;
+          div {
+            margin-right: 10px;
+          }
+        }
+        .postName {
+          font-size: 16px;
+          font-weight: 600;
+          transition: all 0.2s linear;
+          cursor: pointer;
+          &:hover {
+            color: $font-color !important;
+          }
+        }
+      }
+    }
+  }
+}

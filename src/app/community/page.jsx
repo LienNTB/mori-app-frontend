@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Header from '@/components/Header/Header';
 import styles from './Community.module.scss'
 import Tag from '@/components/Tag/Tag';
+import Footer from '@/components/Footer/Footer';
 
 const Community = () => {
   return (
@@ -115,6 +116,7 @@ const Community = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

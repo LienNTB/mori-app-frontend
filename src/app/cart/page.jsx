@@ -26,7 +26,6 @@ function Cart() {
     if (cart) {
       const newCart = cart.map((cartItem) => {
         t = t + cartItem.product.initialPrice * cartItem.quantity;
-        ;
       });
       setCart(newCart)
       setTotalPrice(t)
@@ -39,7 +38,7 @@ function Cart() {
   return (
     <>
 
-      <div className={styles.cartContainer}>
+      <div className={styles.cartContainerWrapper}>
         <Toaster />
         <Header />
 
@@ -48,18 +47,22 @@ function Cart() {
             <div className={styles.header}>Giỏ hàng</div>
             <div className={styles.ruler}></div>
             <div className={styles.cartList}>
-              {
+              {/* {
                 cart ?
                   cart.map((cartItem) => (
-                    // <CartItem
-                    //   cartItem={cartItem}
-                    //   handleTotalPrice={() => handleTotalPrice()}
-                    // />
-                    <></>
+                    <CartItem
+                      cartItem={cartItem}
+                      handleTotalPrice={() => handleTotalPrice()}
+                    />
+                  
                   ))
                   :
                   <>no books in cart.</>
-              }
+              } */}
+              <CartItem />
+              <CartItem />
+              <CartItem />
+              <CartItem />
             </div>
             <div className={styles.titleCart}>
               <h2>Tổng tiền: </h2>

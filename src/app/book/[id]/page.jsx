@@ -49,6 +49,8 @@ function Book() {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.books.loading);
   const book = useSelector((state) => state.books.book);
+  const [productPrice, setProductPrice] = useState(0)
+
   const booksByCate = useSelector((state) => state.books.booksByCate);
   const isLoadingReview = useSelector((state) => state.reviews.loading);
   const reviews = useSelector((state) => state.reviews.reviews);
@@ -68,6 +70,7 @@ function Book() {
   const { isOpen: isOpenDeleteReview, onOpen: onOpenDeleteReview, onOpenChange: onOpenChangeDeleteReview, onClose: onCloseChangeDeleteReview } = useDisclosure();
   const [currentReviewContent, setCurrentReviewContent] = useState("")
   const [reload, setReload] = useState(0)
+  const [quantity, setQuantity] = useState(1);
 
   const params = useParams();
   const id = params.id;
@@ -253,6 +256,16 @@ function Book() {
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
   };
+  const handleIncreaseAmount = () => {
+    setQuantity(quantity + 1);
+    setProductPrice(p => (p * (quantity + 1)));
+  };
+  const handleDecreaseAmount = () => {
+    if (quantity != 1) {
+      setQuantity(quantity - 1);
+      setProductPrice(p => (p * (quantity - 1)));
+    }
+  };
   useEffect(() => {
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
@@ -260,7 +273,13 @@ function Book() {
   useEffect(() => {
     dispatch(getReviewsById(id));
   }, [reload]);
+  useEffect(() => {
+    if (book) {
+      setProductPrice(book.price)
+    }
+  }, [book])
 
+  console.log("book", book)
   useEffect(() => {
     if (book) {
       dispatch(getBooksByCate(book.tags[0]));
@@ -341,9 +360,9 @@ function Book() {
                   <div className={styles.quantityWrapper}>
                     <div className={styles.title}>Số lượng</div>
                     <div className={styles.quantityInputWrapper}>
-                      <button>-</button>
-                      <input type="text" />
-                      <button>+</button>
+                      <button onClick={handleDecreaseAmount}>-</button>
+                      <input type="text" value={quantity} />
+                      <button onClick={handleIncreaseAmount}>+</button>
                     </div>
                   </div>
                   <div className={styles.priceWrapper}>
@@ -353,7 +372,7 @@ function Book() {
                     <div className={styles.price}
                     >
                       <div className={styles.priceInfo}>
-                        50.930 đ
+                        {productPrice} đ
                       </div>
                       <div className={styles.discountTag}>
                         -33%

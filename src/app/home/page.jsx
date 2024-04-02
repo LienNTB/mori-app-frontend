@@ -9,7 +9,6 @@ import Newsletter from '@/components/Newsletter/Newsletter'
 const Home = () => {
   return (
     <div className={styles.landingPageContainer}>
-      <Header />
       <div className={styles.landingPageContent}>
         <Hero />
         <Features />

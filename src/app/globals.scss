@@ -1,5 +1,12 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
+
+// /* Additional styles */
+@import "../assets/styles/additional-styles/utility-patterns.scss";
+@import "../assets/styles/additional-styles/range-slider.scss";
+@import "../assets/styles/additional-styles/toggle-switch.scss";
+// @import "../assets/styles/additional-styles/theme.scss";
+
 @import "tailwindcss/utilities";
 * {
   $primary-color: #4ebec0;

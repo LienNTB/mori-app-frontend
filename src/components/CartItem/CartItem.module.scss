@@ -1,4 +1,4 @@
-@import "../../app/globals.scss";
+@import "../../assets/styles/globalstyle.scss";
 
 .wrapper {
   width: 100%;
@@ -27,6 +27,32 @@
     grid-template-columns: 1fr auto 120px;
     grid-gap: 10px;
     align-items: baseline;
+    .quantityWrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      border: 1px solid gray;
+      border-radius: 3px;
+      justify-content: space-between;
+
+      input {
+        border: none;
+        outline: none;
+        width: 20px;
+      }
+      .btnDecrease {
+        text-align: center;
+        padding: 5px 12px;
+        cursor: pointer;
+        border-right: 1px solid gray;
+      }
+      .btnIncrease {
+        text-align: center;
+        padding: 5px 12px;
+        cursor: pointer;
+        border-left: 1px solid gray;
+      }
+    }
   }
   .cartContainer {
     background-color: white;
@@ -55,34 +81,6 @@
           color: gray;
           &:hover {
             color: red;
-          }
-        }
-        .productCartInfo {
-          .quantityWrapper {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            border: 1px solid gray;
-            border-radius: 3px;
-            justify-content: space-between;
-
-            input {
-              border: none;
-              outline: none;
-              width: 20px;
-            }
-            .btnDecrease {
-              text-align: center;
-              padding: 5px 12px;
-              cursor: pointer;
-              border-right: 1px solid gray;
-            }
-            .btnIncrease {
-              text-align: center;
-              padding: 5px 12px;
-              cursor: pointer;
-              border-left: 1px solid gray;
-            }
           }
         }
       }
@@ -154,6 +152,33 @@
     grid-template-columns: 1fr auto 120px;
     grid-gap: 10px;
     align-items: baseline;
+    .quantityWrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      border: 1px solid gray;
+      border-radius: 3px;
+      justify-content: space-between;
+
+      input {
+        border: none;
+        outline: none;
+        width: 20px;
+        text-align: center;
+      }
+      .btnDecrease {
+        text-align: center;
+        padding: 5px 12px;
+        cursor: pointer;
+        border-right: 1px solid gray;
+      }
+      .btnIncrease {
+        text-align: center;
+        padding: 5px 12px;
+        cursor: pointer;
+        border-left: 1px solid gray;
+      }
+    }
   }
   .cartContainer {
     background-color: white;
@@ -182,35 +207,6 @@
           color: gray;
           &:hover {
             color: red;
-          }
-        }
-        .productCartInfo {
-          .quantityWrapper {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            border: 1px solid gray;
-            border-radius: 3px;
-            justify-content: space-between;
-
-            input {
-              border: none;
-              outline: none;
-              width: 20px;
-              text-align: center;
-            }
-            .btnDecrease {
-              text-align: center;
-              padding: 5px 12px;
-              cursor: pointer;
-              border-right: 1px solid gray;
-            }
-            .btnIncrease {
-              text-align: center;
-              padding: 5px 12px;
-              cursor: pointer;
-              border-left: 1px solid gray;
-            }
           }
         }
       }
@@ -306,34 +302,6 @@
           color: gray;
           &:hover {
             color: red;
-          }
-        }
-        .productCartInfo {
-          .quantityWrapper {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            border: 1px solid gray;
-            border-radius: 3px;
-            justify-content: space-between;
-
-            input {
-              border: none;
-              outline: none;
-              width: 20px;
-            }
-            .btnDecrease {
-              text-align: center;
-              padding: 5px 12px;
-              cursor: pointer;
-              border-right: 1px solid gray;
-            }
-            .btnIncrease {
-              text-align: center;
-              padding: 5px 12px;
-              cursor: pointer;
-              border-left: 1px solid gray;
-            }
           }
         }
       }

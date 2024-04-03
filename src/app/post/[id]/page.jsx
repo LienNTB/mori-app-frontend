@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Tag from '@/components/Tag/Tag'
 import Link from 'next/link'
 import Footer from '@/components/Footer/Footer'
+import Comment from '@/components/Comment/Comment'
 
 const Post = () => {
   return (
@@ -35,6 +36,7 @@ const Post = () => {
             dhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfsdhsfiosfdfdsifdsifdifdoifdfdifdsfs
           </div>
         </section>
+        <Comment />
         <section className={styles.similarPostWrapper}>
           <div className={styles.title}>
             Similar Posts
@@ -80,6 +82,7 @@ const Post = () => {
             </div>
           </div>
         </section>
+
       </div>
       <Footer />
     </div>

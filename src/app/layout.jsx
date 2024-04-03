@@ -21,7 +21,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <meta charSet="UTF-8" />
-
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet" />
         <link href="/favicon.ico" rel="icon" />
       </head>
       <body className={inter.className}>

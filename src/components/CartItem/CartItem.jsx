@@ -2,8 +2,9 @@ import styles from "./CartItem.module.scss";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+import { updateCartItemQuantityRequest, deleteBookFromCartRequest } from "@/app/redux/saga/requests/cart";
 
-function CartItem() {
+function CartItem({ cartItem, handleTotalPrice }) {
   // const { user } = useAuthContext();
   // const [productPrice, setProductPrice] = useState(
   //   props.cartItem.product.initialPrice * props.cartItem.quantity
@@ -17,15 +18,15 @@ function CartItem() {
   // if (typeof window !== "undefined") {
   //   cart = JSON.parse(localStorage.getItem("cart"));
   // }
-  // function refreshPage() {
-  //   window.location.reload(false);
-  //   toast("Xoá thành công!", {
-  //     hideProgressBar: true,
-  //     autoClose: 2000,
-  //     type: "success",
-  //     position: "top-right",
-  //   });
-  // }
+  function refreshPage() {
+    window.location.reload(false);
+    toast("Xoá thành công!", {
+      hideProgressBar: true,
+      autoClose: 2000,
+      type: "success",
+      position: "top-right",
+    });
+  }
 
   // const updateCart = (actionType) => {
   //   // update new cart item with new quantity
@@ -82,62 +83,76 @@ function CartItem() {
   //   }
   // };
 
-  // const handleDeleteFromCart = (product) => {
-  //   cart = cart.filter((cartItem) => {
-  //     return cartItem.product._id !== product._id;
-  //   });
-  //   if (user && !user.isAnonymous) {
-  //     updateDB(cart, "currentOrder");
-  //   }
-  //   localStorage.setItem("cart", JSON.stringify(cart));
-  //   refreshPage();
-  // };
+  const handleDeleteFromCart = (cartItemId) => {
+    deleteBookFromCartRequest(cartItemId);
+    refreshPage();
+  };
+  const { book_id, quantity } = cartItem;
+  const [productQuantity, setProductQuantity] = useState(quantity);
 
+  const updateCartItemQuantity = async (cartItemId, quantity) => {
+    try {
+      const request = {
+        cartItemId: cartItemId,
+        quantity: quantity,
+      };
+      updateCartItemQuantityRequest(request);
+    } catch (error) {
+      console.error("Error:", error);
+      throw error; // Ném lỗi để xử lý ở phía frontend nếu cần
+    }
+  };
+
+  const handleDecreaseAmount = () => {
+    if (productQuantity > 1) {
+      setProductQuantity(productQuantity - 1);
+    }
+    updateCartItemQuantity(cartItem._id, productQuantity - 1);
+  };
+
+  const handleIncreaseAmount = () => {
+    setProductQuantity(productQuantity + 1);
+    console.log(productQuantity);
+    updateCartItemQuantity(cartItem._id, productQuantity + 1);
+  };
   return (
     <div className={styles.cartItemContainer}>
       <div className={styles.cartItem}>
         <div
           className={styles.deleteBtn}
-        // onClick={() => handleDeleteFromCart(props.cartItem.product)}
+          onClick={() => handleDeleteFromCart(cartItem._id)}
         >
           Xoá
         </div>
-        <a
-          // href={`/product/${props.cartItem.product._id}`}
-          className={styles.img}
-        >
-          <img alt="hihi" />
+        <a href={`/book/${book_id._id}`} className={styles.img}>
+          <img
+            // src="https://tiemsach.org/wp-content/uploads/2023/09/csk0w7ik.png"
+            src={book_id.image}
+            alt="img book"
+          />
         </a>
         <div className={styles.productCartInfo}>
           <div className={styles.title}>
-            <a
-            // href={`/product/${props.cartItem.product._id}`}
-            >
-              {/* {props.cartItem.product.name} */}
-              cart product name
-            </a>
+            <a href={`/book/${book_id._id}`}>{book_id.name}</a>
           </div>
-          <div className={styles.price}>
-            price
-          </div>
+          <div className={styles.price}>{book_id.price}</div>
           <div className={styles.quantityWrapper}>
             <div
               className={styles.btnDecrease}
-            // onClick={() => handleDecreaseAmount()}
+              onClick={() => handleDecreaseAmount()}
             >
               -
             </div>
             <input
               type="text"
-              name=""
-            // value={quantity}
-            // onChange={(e) => handlePriceChange(e)}
+              value={productQuantity}
+              onChange={(e) => handlePriceChange(e)}
             />
             <div
               className={styles.btnIncrease}
-            // onClick={() => {
-            //   handleIncreaseAmount();
-            // }}
+              onClick={() => {
+                handleIncreaseAmount();
+              }}
             >
               +
             </div>

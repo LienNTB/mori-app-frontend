@@ -17,14 +17,12 @@ function Cart() {
   const breadcumbList = ["Trang chủ", "Giỏ hàng"];
   // const [domLoaded, setDomLoaded] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  let currentAccount = JSON.parse(localStorage.getItem("user"));
-  const id = currentAccount._id;
   const [totalPrice, setTotalPrice] = useState(0);
-
   const [cartItems, setCartItems] = useState([]);
 
-  // Lấy thông tin giỏ hàng từ server khi component được render
   useEffect(() => {
+    let currentAccount = JSON.parse(localStorage.getItem("user"));
+    const id = currentAccount._id;
     cartOfCustomerRequest(id).then((res) => {
       setCartItems(res.cartItems);
       calculateTotalPrice(res.cartItems);

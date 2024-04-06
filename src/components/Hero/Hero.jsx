@@ -68,7 +68,6 @@ export default function Hero() {
                 <div>
                   <a
                     className="btn text-white bg-blue-600 hover:bg-blue-700 w-full mb-4 sm:w-auto sm:mb-0"
-                    href="#0"
                   >
                     <Link href="/">
                       Đọc sách điện tử
@@ -78,7 +77,6 @@ export default function Hero() {
                 <div>
                   <a
                     className="btn bg-blue-400 hover:bg-blue-500 w-full sm:w-auto sm:ml-4"
-                    href="#0"
                   >
                     <Link href="/e-commerce">
                       Mua sách
@@ -88,7 +86,6 @@ export default function Hero() {
                 <div>
                   <a
                     className="btn text-white bg-teal-400 hover:bg-teal-500 w-full sm:w-auto sm:ml-4"
-                    href="#0"
                   >
                     <Link href="/community">
                       Gia nhập cộng đồng đọc sách

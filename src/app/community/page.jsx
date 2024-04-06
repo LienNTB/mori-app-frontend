@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import tempImg from '../../../public/book.png'
 import Link from 'next/link';
@@ -7,117 +7,95 @@ import Header from '@/components/Header/Header';
 import styles from './Community.module.scss'
 import Tag from '@/components/Tag/Tag';
 import Footer from '@/components/Footer/Footer';
+import { getAllPostRequest } from '../redux/saga/requests/post';
+import HeaderCommunity from '@/components/HeaderCommunity/Header';
 
 const Community = () => {
+  const [postList, setPostList] = useState([])
+  console.log("postList", postList)
+  useEffect(() => {
+    getAllPostRequest().then(resp => {
+      setPostList(resp.posts)
+    })
+      .catch(err => {
+        console.log("err", err)
+      })
+  }, [])
   return (
     <div className={styles.communityContainer}>
-      <Header />
+      <HeaderCommunity />
       <div className={styles.communityContent}>
-        <div className={styles.mainPost}>
-          <Image className={styles.imgPost} src={tempImg} alt="main post img" />
-          <div className={styles.postInfo}>
-            <div className={styles.postItem}>
-              <Image className={styles.userAvt} src={tempImg} alt="user avt" />
-              <div className={styles.name}>
-                Mark Dinn
-              </div>
-            </div>
-            <div className={styles.postItem}>
-              03 Apr 2023
-            </div>
-            <div className={styles.postItem}>
-              <Tag link={"/tamly"} name={"Tâm lý"} />
-            </div>
-          </div>
-          <Link href="/post/123">
-            <div className={styles.postTitle}>
-              How to make toys from old Olarpaper
-            </div>
-          </Link>
-          <div className={styles.postBody}>
-            Nemo vel ad consectetur namut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis n Nemo vel ad consectetur namut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis neque bla
-          </div>
-        </div>
-        <div className={styles.postList}>
-          <div className={styles.postListItem}>
-            <Image className={styles.imgPost} src={tempImg} alt="main post img" />
-            <div className={styles.postInfo}>
-              <div className={styles.postItem}>
-                <Image className={styles.userAvt} src={tempImg} alt="user avt" />
-                <div className={styles.name}>
-                  Mark Dinn
+        {
+          postList.length !== 0 ?
+            <div >
+              <div className={styles.mainPost}>
+                <Image className={styles.imgPost} src={tempImg} alt="main post img" />
+                <div className={styles.postInfo}>
+                  <div className={styles.postItem}>
+                    <Image className={styles.userAvt} src={tempImg} alt="user avt" />
+                    <div className={styles.name}>
+                      {postList[0]?.account.displayName}
+                    </div>
+                  </div>
+                  <div className={styles.postItem}>
+                    {postList[0].created_at}
+                  </div>
+                  <div className={styles.postItem}>
+                    <Tag link={"/tamly"} name={"Tâm lý"} />
+                  </div>
+                </div>
+                <Link href={`/post/${postList[0]._id}`}>
+                  <div className={styles.postTitle}>
+                    {postList[0].title}
+
+                  </div>
+                </Link>
+                <div className={styles.postBody}>
+                  {postList[0].content}
                 </div>
               </div>
-              <div className={styles.postItem}>
-                03 Apr 2023
-              </div>
-              <div className={styles.postItem}>
-                <Tag link={"/tamly"} name={"Tâm lý"} />
-              </div>
-            </div>
-            <Link href="/post/123">
-              <div className={styles.postTitle}>
-                How to make toys from old Olarpaper
-              </div>
-            </Link>
-            <div className={styles.postBody}>
-              Nemo vel ad consectetur namut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis n Nemo vel ad consectetur namut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis neque bla
-            </div>
-          </div>
-          <div className={styles.postListItem}>
-            <Image className={styles.imgPost} src={tempImg} alt="main post img" />
-            <div className={styles.postInfo}>
-              <div className={styles.postItem}>
-                <Image className={styles.userAvt} src={tempImg} alt="user avt" />
-                <div className={styles.name}>
-                  Mark Dinn
-                </div>
-              </div>
-              <div className={styles.postItem}>
-                03 Apr 2023
-              </div>
-              <div className={styles.postItem}>
-                <Tag link={"/tamly"} name={"Tâm lý"} />
-              </div>
-            </div>
-            <Link href="/post/123">
-              <div className={styles.postTitle}>
-                How to make toys from old Olarpaper
-              </div>
-            </Link>
-            <div className={styles.postBody}>
-              Nemo vel ad consectetur namut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis n Nemo vel ad consectetur namut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis neque bla
-            </div>
-          </div>
-          <div className={styles.postListItem}>
-            <Image className={styles.imgPost} src={tempImg} alt="main post img" />
-            <div className={styles.postInfo}>
-              <div className={styles.postItem}>
-                <Image className={styles.userAvt} src={tempImg} alt="user avt" />
-                <div className={styles.name}>
-                  Mark Dinn
-                </div>
-              </div>
-              <div className={styles.postItem}>
-                03 Apr 2023
-              </div>
-              <div className={styles.postItem}>
-                <Tag link={"/tamly"} name={"Tâm lý"} />
+              <div className={styles.postList}>
+                {
+                  postList.map((post, index) => {
+                    return (
+                      index != 0 &&
+                      <div className={styles.postListItem}>
+                        <Image className={styles.imgPost} src={tempImg} alt="main post img" />
+                        <div className={styles.postInfo}>
+                          <div className={styles.postItem}>
+                            <Image className={styles.userAvt} src={tempImg} alt="user avt" />
+                            <div className={styles.name}>
+                              {post?.account?.displayName}
+                            </div>
+                          </div>
+                          <div className={styles.postItem}>
+                            {post.created_at}
+                          </div>
+                          <div className={styles.postItem}>
+                            <Tag link={"/tamly"} name={"Tâm lý"} />
+                          </div>
+                        </div>
+                        <Link href={`/post/${post._id}`}>
+                          <div className={styles.postTitle}>
+                            {post.title}
+                          </div>
+                        </Link>
+                        <div className={styles.postBody}>
+                          {post.content}
+                        </div>
+                      </div>)
+                  }
+                  )
+                }
+
               </div>
             </div>
-            <Link href="/post/123">
-              <div className={styles.postTitle}>
-                How to make toys from old Olarpaper
-              </div>
-            </Link>
-            <div className={styles.postBody}>
-              Nemo vel ad consectetur namut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis n Nemo vel ad consectetur namut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis neque bla
-            </div>
-          </div>
-        </div>
+            :
+            <></>
+        }
       </div>
       <Footer />
-    </div>
+    </div >
   )
 }
 

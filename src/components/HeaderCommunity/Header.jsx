@@ -17,7 +17,7 @@ import {
   faTrashCan
 } from "@fortawesome/free-solid-svg-icons";
 
-const Header = () => {
+const HeaderCommunity = () => {
   const dispatch = useDispatch()
   const [isOpenListbox, setIsOpenListbox] = useState(false)
   const [isOpenMenuList, setIsOpenMenuList] = useState(false)
@@ -59,40 +59,24 @@ const Header = () => {
             <div className={styles.logo}>
               <Image src={logo} width={120} height={120} onClick={() => router.push("/")} />
             </div>
-            <div className={styles.searchBarContainer}>
-              <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
-                onChange={(e) => setSearchValue(e.target.value)} />
-              <Link href={`/search/${searchValue}`} shallow>
-                <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
-                  Tìm kiếm
-                </button>
-              </Link>
-            </div>
+
           </div>
 
-          {authenticated ? (<>
-            <Link className={styles.right} href={"/member-package"} shallow>
-              <div className={styles.memberRegisterBtn}>
-                Tham gia hội viên
+          {authenticated ? (
+            <div className={styles.flexRightContainer}>
+              <div className={styles.createNewPostBtn}>
+                <Link href="/new-post">
+                  Tạo post mới
+                </Link>
               </div>
-            </Link>
-            <div className={styles.right} >
-              <Link href={"/account/profile"} shallow>
+              <Link className={styles.right} href={"/account/profile"} shallow>
+
                 Tài khoản của tôi
               </Link>
-            </div>
-            <Link className={styles.right} href={"/cart"} shallow>
-              <FontAwesomeIcon
-                icon={faCartShopping}
-                class="cursor-pointer"
-                width={20}
-              />
-            </Link>
-
-            <div className={styles.right} onClick={() => handleSignOut()}>
-              Đăng xuất
-            </div>
-          </>)
+              <div className={styles.right} onClick={() => handleSignOut()}>
+                Đăng xuất
+              </div>
+            </div>)
             : (
               <>
                 <Link className={styles.right} href={"/member-package"} shallow>
@@ -113,15 +97,6 @@ const Header = () => {
             <div className={styles.left}>
               <div className={styles.logo}>
                 <Image src={logo} width={120} height={120} onClick={() => router.push("/")} />
-              </div>
-              <div className={styles.searchBarContainer}>
-                <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
-                  onChange={(e) => setSearchValue(e.target.value)} />
-                <Link href="/search" shallow>
-                  <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
-                    Tìm kiếm
-                  </button>
-                </Link>
               </div>
             </div>
             <div className={styles.right}>
@@ -151,19 +126,18 @@ const Header = () => {
               </div>
               <div className={styles.menuItem} >
                 <Link href={"/account/profile"} shallow>
-                  Tài khoản của tôi
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    class="cursor-pointer"
+                    width={20}
+
+                  />
                 </Link>
               </div>
               <div className={styles.menuItem} onClick={handleSignOut}>
                 Đăng xuất
               </div>
-              <div className={styles.menuItem} >
-                <Link className={styles.right} href={"/member-package"} shallow>
-                  <div className={styles.memberRegisterBtn}>
-                    Tham gia hội viên
-                  </div>
-                </Link>
-              </div>
+
             </>
               :
               <>
@@ -243,4 +217,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default HeaderCommunity

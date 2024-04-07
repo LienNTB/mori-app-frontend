@@ -101,11 +101,14 @@
         padding: 10px;
         border-radius: 7px;
         margin-right: 20px;
-
         color: #fff;
         cursor: pointer;
+        transition: all 0.2s linear;
         a {
           color: #fff !important;
+        }
+        &:hover {
+          background-color: $hover-color--light;
         }
       }
     }

@@ -1,34 +1,68 @@
+
 "use client"
-import DocumentEditor from '@/components/DocumentEditor/DocumentEditor'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import styles from './NewPost.module.scss'
 import HeaderCommunity from '@/components/HeaderCommunity/Header'
 import { createNewPostRequest } from '../redux/saga/requests/post'
 import { useRouter } from 'next/navigation'
 import { Toaster, toast } from "react-hot-toast";
+import { Chip } from "@nextui-org/react";
+import {
+  Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure,
+  Dropdown, DropdownTrigger, DropdownMenu, DropdownItem
+} from "@nextui-org/react";
+import { getAllTagsRequest } from '../redux/saga/requests/tag'
+import DocumentEditor from '@/components/DocumentEditor/DocumentEditor'
+import RichTextEditor from '../../components/RichTextEditor/RichTextEditor'
 
 
 const NewPost = () => {
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState("")
   const router = useRouter()
+  const [tags, setTags] = useState([''])
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [selectedKeys, setSelectedKeys] = useState([]);
+  const selectedValue = useMemo(
+    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
+    [selectedKeys]
+  );
+  const [selectedTags, setSelectedTags] = useState([])
+  const [postBodyContent, setPostBodyContent] = useState('');
+  console.log("postBodyContent", postBodyContent)
+  const handleClose = (tagToRemove) => {
+    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
+    if (selectedTags.length === 1) {
+      setSelectedTags([]);
+    }
+  };
   const handleCreatePost = () => {
     if (!user) {
-      router.back('/login')
+      router.replace('/login')
     }
+    let tagRequest = tags.filter(tagItem => {
+      if (selectedTags.includes(tagItem.description)) {
+        return tagItem._id
+      }
+    })
+    tagRequest = tagRequest.map(item => item._id)
     const postRequest = {
       account: user._id,
-      title: "title",
-      content: "content"
+      title: title,
+      content: postBodyContent,
+      tag: tagRequest
     }
+    console.log('user', user)
+    console.log("postRequest", postRequest)
     toast.promise(
       new Promise((resolve, reject) => {
         createNewPostRequest(postRequest)
           .then((resp) => {
             if (resp.message) {
-              resolve(resp.mesage);
+              resolve(resp.message);
               router.replace("/community")
             } else {
+              console.log("resp.error", resp.error.toString())
               reject(resp.error);
             }
           })
@@ -39,14 +73,28 @@ const NewPost = () => {
       {
         loading: "Processing...",
         success: (message) => message,
-        error: (error) => error.message,
+        error: (error) => error,
       }
     );
+  }
 
 
+  const loadTagData = () => {
+    getAllTagsRequest().then(resp => {
+      console.log("resp", resp.allTags)
+      setTags(resp.allTags)
+    })
   }
   useEffect(() => {
-    setUser(localStorage.getItem('user'))
+    setSelectedTags(Array.from(selectedKeys))
+  }, [selectedKeys])
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('user'))
+    setUser(userData)
+    if (!userData) {
+      router.replace('/login')
+    }
+    loadTagData()
   }, [])
   return (
     <div className={styles.newPostContainer}>
@@ -54,17 +102,84 @@ const NewPost = () => {
       <HeaderCommunity />
       <div className={styles.newPostContent}>
         <div className={styles.newPostTitle}>
-          New Post
+          Tạo bài viết mới
         </div>
         <div className={styles.inputTitle}>
-          <span>Post title: </span>
-          <input type="text" placeholder='Enter title...' />
+          <span>Tiêu đề bài viết: </span>
+          <input type="text" placeholder='Nhập tiêu đề...' onChange={(e) => setTitle(e.target.value)} />
         </div>
-        <DocumentEditor />
+        <div className={styles.tagInput}>
+          <div className={styles.top}>
+            <div className={styles.title}>
+              Tags:
+            </div>
+            <div className={styles.btn} onClick={onOpen}>
+              Chọn tag
+            </div>
+          </div>
+          <div className={styles.tagList}>
+            <div className="flex gap-2">
+              {selectedTags.map((tagItem, index) => (
+                <Chip key={index} onClose={() => handleClose(tagItem)} variant="flat">
+                  {tagItem}
+                </Chip>
+              ))}
+            </div>
+          </div>
+        </div>
+        <RichTextEditor setPostBodyContent={setPostBodyContent} />
         <div className={styles.submitBtn} onClick={handleCreatePost}>
-          Submit
+          Gửi
         </div>
       </div>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Chọn tag cho bài viết của bạn:</ModalHeader>
+              <ModalBody>
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Button
+                      variant="bordered"
+                      className="capitalize"
+                    >
+                      {selectedValue}
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu
+                    aria-label="Multiple selection example"
+                    variant="flat"
+                    closeOnSelect={false}
+                    disallowEmptySelection
+                    selectionMode="multiple"
+                    selectedKeys={selectedKeys}
+                    onSelectionChange={setSelectedKeys}
+                  >
+                    {
+                      tags ? tags.map((tagItem) => (
+                        <DropdownItem key={tagItem.description}>{tagItem.description}</DropdownItem>
+                      ))
+                        :
+                        <DropdownItem key=""></DropdownItem>
+
+                    }
+                  </DropdownMenu>
+                </Dropdown>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={onClose}>
+                  OK
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
     </div>
   )
 }

@@ -1,8 +1,37 @@
+@import "../../assets/styles/globalstyle.scss";
 .newPostContainer {
   width: 100%;
   height: 1000px;
   .newPostContent {
+    .newPostTitle {
+      font-size: 30px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      padding-top: 90px;
+    }
+    padding: 20px 50px;
     width: 100%;
-    height: 1000px;
+    height: auto;
+    .submitBtn {
+      background-color: $primary-color;
+      color: white;
+      border-radius: 7px;
+      cursor: pointer;
+      width: fit-content;
+      padding: 10px 20px;
+      align-items: end;
+      float: right;
+      margin-top: 10px;
+    }
+  }
+  .inputTitle {
+    padding-bottom: 20px;
+    width: 100%;
+    input {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 7px;
+      outline: gray;
+    }
   }
 }

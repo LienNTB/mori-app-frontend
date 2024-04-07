@@ -1,3 +1,4 @@
+@import "../../assets/styles/globalstyle.scss";
 .container {
   width: 100%;
   .menuLaptop {
@@ -60,31 +61,34 @@
         margin-right: 30px;
       }
       .searchBarContainer {
-        border: 2px solid rgb(176, 176, 176);
+        border: 1px solid #e5e7eb;
         border-radius: 10px;
-        // padding: 0 5px;
         display: flex;
         justify-content: space-between;
+        padding: 3px;
         input {
           width: 353px;
           border-radius: 10px;
-
-          outline: none;
+          border: none !important;
+          outline: none !important;
           padding: 10px 10px;
           font-size: 13px;
         }
         a {
-          background-color: rgb(196, 196, 196);
-          border-top-right-radius: 9px;
-          border-bottom-right-radius: 9px;
+          background-color: $primary-color;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          transition: 0.2s all linear;
+          &:hover {
+            background-color: $hover-color--light;
+          }
         }
         button {
-          border-top-right-radius: 10px;
-          border-bottom-right-radius: 10px;
           padding: 10px 10px;
-          background-color: rgb(196, 196, 196);
           font-size: 13px;
           cursor: pointer;
+          color: #fff;
         }
       }
     }

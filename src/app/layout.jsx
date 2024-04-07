@@ -7,6 +7,7 @@ import store from './redux/store';
 import "react-toastify/dist/ReactToastify.css";
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import * as types from './redux/types'
+import "../../node_modules/draft-js/dist/Draft.css";
 
 
 const inter = Montserrat({ subsets: ['latin'] })

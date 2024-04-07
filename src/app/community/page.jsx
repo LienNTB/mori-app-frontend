@@ -9,7 +9,7 @@ import Tag from '@/components/Tag/Tag';
 import Footer from '@/components/Footer/Footer';
 import { getAllPostRequest } from '../redux/saga/requests/post';
 import HeaderCommunity from '@/components/HeaderCommunity/Header';
-
+import ReactHtmlParser from 'react-html-parser';
 const Community = () => {
   const [postList, setPostList] = useState([])
   console.log("postList", postList)
@@ -38,7 +38,7 @@ const Community = () => {
                     </div>
                   </div>
                   <div className={styles.postItem}>
-                    {postList[0].created_at}
+                    {new Date(postList[0].created_at).toLocaleDateString('en-GB')}
                   </div>
                   <div className={styles.postItem}>
                     <Tag link={"/tamly"} name={"Tâm lý"} />
@@ -69,7 +69,7 @@ const Community = () => {
                             </div>
                           </div>
                           <div className={styles.postItem}>
-                            {post.created_at}
+                            {new Date(post.created_at).toLocaleDateString('en-GB')}
                           </div>
                           <div className={styles.postItem}>
                             <Tag link={"/tamly"} name={"Tâm lý"} />
@@ -81,7 +81,7 @@ const Community = () => {
                           </div>
                         </Link>
                         <div className={styles.postBody}>
-                          {post.content}
+                          {ReactHtmlParser(post.content)}
                         </div>
                       </div>)
                   }

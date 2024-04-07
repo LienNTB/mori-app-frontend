@@ -29,7 +29,7 @@ export const createNewPostRequest = async (postRequest) => {
       throw error;
     });
 };
-export const deletePostById = async (postId) => {
+export const deletePostByIdRequest = async (postId) => {
   return fetch(`${type.BACKEND_URL}/api/post/${postId}`, {
     method: "DELETE",
     headers: type.requestHeader,
@@ -42,7 +42,7 @@ export const deletePostById = async (postId) => {
     });
 };
 
-export const getPostById = async (postId) => {
+export const getPostByIdRequest = async (postId) => {
   return fetch(`${type.BACKEND_URL}/api/post/${postId}`, {
     method: "GET",
     headers: type.requestHeader,

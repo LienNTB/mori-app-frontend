@@ -12,6 +12,8 @@ import ReactHtmlParser from 'react-html-parser';
 import { getPostByIdRequest } from '@/app/redux/saga/requests/post'
 import { useParams } from 'next/navigation'
 import Loading from '@/components/Loading/Loading'
+import { faBars, faCartArrowDown, faCartFlatbed, faCartShopping, faHeart, faShare, faUser } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Post = () => {
   const params = useParams()
@@ -33,29 +35,50 @@ const Post = () => {
               <div className={styles.title}>
                 {post.title}
               </div>
-              <div className={styles.postInfo}>
-                <div className={styles.postItem}>
-                  <Image className={styles.userAvt} src={tempImg} alt="user avt" />
-                  <div className={styles.name}>
-                    {post?.account?.displayName}
+              <div className={styles.top}>
+                <div className={styles.postInfo}>
+                  <div className={styles.postItem}>
+                    <Image className={styles.userAvt} src={tempImg} alt="user avt" />
+                    <div className={styles.name}>
+                      {post?.account?.displayName}
+                    </div>
+                  </div>
+                  <div className={styles.postItem}>
+                    {new Date(post.created_at).toLocaleDateString('en-GB')}
+                  </div>
+                  <div className={styles.postItem}>
+                    {
+                      post.tag.map((tagItem) => (
+                        <Tag link={`/${tagItem.name}`} name={tagItem.description} />
+                      ))
+                    }
                   </div>
                 </div>
-                <div className={styles.postItem}>
-                  {new Date(post.created_at).toLocaleDateString('en-GB')}
-                </div>
-                <div className={styles.postItem}>
-                  {
-                    post.tag.map((tagItem) => (
-                      <Tag link={`/${tagItem.name}`} name={tagItem.description} />
-                    ))
-                  }
+                <div className={styles.actionList}>
+                  <div className={styles.heart}>
+                    <FontAwesomeIcon
+                      icon={faHeart}
+                      class="cursor-pointer"
+                      width={20}
+                    />
+                  </div>
+                  <div className={styles.share}>
+                    <FontAwesomeIcon
+                      icon={faShare}
+                      class="cursor-pointer"
+                      width={20}
+                    />
+
+                  </div>
                 </div>
               </div>
               <Image className={styles.postImage} src={tempImg} />
               <div className={styles.postBody}>
                 {ReactHtmlParser(post.content)}
               </div>
+
             </section>
+
             <Comment />
             <section className={styles.similarPostWrapper}>
               <div className={styles.title}>

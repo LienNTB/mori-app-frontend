@@ -128,10 +128,6 @@ const Login = () => {
     }
   };
 
-
-  useEffect(() => {
-    setAuthenticated(localStorage.getItem("authenticated"));
-  }, []);
   useEffect(() => {
     if (authenticated) {
       const currentAccount = JSON.parse(localStorage.getItem("user"));
@@ -150,15 +146,17 @@ const Login = () => {
   }, [user]);
   const getUserInfo = useCallback(() => {
     if (user) {
-
+      console.log("user", user)
       let newAccount = {
         email: user.email,
-        displayName: user.displayName,
-        avatar: user.photoURL,
+        displayName: user.name,
+        avatar: user.picture,
       };
       createAccountRequest(newAccount).then(() => {
         getCurrentAccountRequest(newAccount).then((res) => {
+          console.log("res", res)
           localStorage.setItem("user", JSON.stringify(res.account));
+          setUser(res.account)
           localStorage.setItem("authenticated", true);
           setAuthenticated(localStorage.getItem("authenticated"));
         });

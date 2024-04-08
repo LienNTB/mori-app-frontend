@@ -6,6 +6,19 @@
       margin: 50px;
     }
     .postMain {
+      .top {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        .actionList {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          .heart {
+            margin-right: 20px;
+          }
+        }
+      }
       .title {
         width: 100%;
         text-align: center;

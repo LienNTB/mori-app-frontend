@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import Image from 'next/image';
 import styles from "../profile.module.scss";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
@@ -32,7 +33,7 @@ import {
 } from "@nextui-org/react";
 import { getMembershipById } from "@/app/redux/actions/membership";
 import { getReadHistory } from "@/app/redux/actions/book";
-
+import bookImg from '../../../../public/book.png'
 const Profile = () => {
   const params = useParams();
   const id = params.slug;
@@ -73,6 +74,7 @@ const Profile = () => {
   if (!currentAccount) {
     redirect("/login");
   }
+
 
   useEffect(() => {
     dispatch(getMembershipById(currentAccount._id));
@@ -163,6 +165,9 @@ const Profile = () => {
             </div>
             <div className={styles.navItem}>
               <Link href="/account/membership">Thông tin hội viên</Link>
+            </div>
+            <div className={styles.navItem}>
+              <Link href="/account/my-post">Bài viết của tôi</Link>
             </div>
           </div>
         </section>
@@ -382,6 +387,39 @@ const Profile = () => {
                 )}
               </div>
             )}
+          </section>
+        ) : (
+          <></>
+        )}
+        {currentTopic == "my-post" ? (
+          <section className={styles.myPostInfo}>
+            <div className={styles.uHead}>
+              <div className={styles.title}>Bài viết của tôi</div>
+            </div>
+            <div className={styles.uTable}>
+              <div className={styles.myPostList}>
+                <Link href={`/post/123`}>
+                  <div className={styles.postItem}>
+                    <Image src={bookImg} alt="post img" />
+                    <div className={styles.postTitle}>
+                      title
+                    </div>
+                  </div>
+                </Link>
+                <div className={styles.postItem}>
+                  <Image src={bookImg} alt="post img" />
+                  <div className={styles.postTitle}>
+                    title
+                  </div>
+                </div>
+                <div className={styles.postItem}>
+                  <Image src={bookImg} alt="post img" />
+                  <div className={styles.postTitle}>
+                    title
+                  </div>
+                </div>
+              </div>
+            </div>
           </section>
         ) : (
           <></>

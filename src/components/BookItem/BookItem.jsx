@@ -4,6 +4,7 @@ import Link from "next/link";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import Image from "next/image";
+import * as types from '../../app/redux/types'
 
 const BookItem = ({ book }) => {
   const hasChapters = book.chapters && book.chapters.length > 0;
@@ -12,11 +13,11 @@ const BookItem = ({ book }) => {
     <div className={styles.container}>
       {hasChapters ? (
         <Link href={`/audio-book/${book._id}`} shallow>
-          <img src={book.image} alt="img" />
+          <img src={`${types.BACKEND_URL}/api/bookimg/${book.image}`} alt="img" />
         </Link>
       ) : (
         <Link href={`/ebook/${book._id}`} shallow>
-          <img src={book.image} alt="img" />
+          <img src={`${types.BACKEND_URL}/api/bookimg/${book.image}`} alt="img" />
         </Link>
       )}
       <h4>{book.name}</h4>

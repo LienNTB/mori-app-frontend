@@ -43,6 +43,7 @@ import { getReviewsById } from "@/app/redux/actions/review";
 import { deleteReviewRequest, reviewBookRequest, updateReviewRequest } from "@/app/redux/saga/requests/review";
 import RatingStars from "@/components/RatingStars/RatingStars";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
+import * as types from "@/app/redux/types"
 // import PdfViewer from "@/components/PdfViewer/PdfViewer";
 
 function EBook() {
@@ -280,7 +281,7 @@ function EBook() {
           <div className={styles.bookContent}>
             <section className={styles.novelHeader}>
               <div className={styles.left}>
-                <img class="" src={book.image} alt="book img" />
+                <img class="" src={`${types.BACKEND_URL}/api/bookimg/${book.image}`} alt="book img" />
               </div>
               <div className={styles.right}>
                 <div className={styles.mainHead}>

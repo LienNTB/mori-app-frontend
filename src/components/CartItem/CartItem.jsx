@@ -2,7 +2,10 @@ import styles from "./CartItem.module.scss";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-import { updateCartItemQuantityRequest, deleteBookFromCartRequest } from "@/app/redux/saga/requests/cart";
+import {
+  updateCartItemQuantityRequest,
+  deleteBookFromCartRequest,
+} from "@/app/redux/saga/requests/cart";
 
 function CartItem({ cartItem, handleTotalPrice }) {
   // const { user } = useAuthContext();
@@ -106,8 +109,15 @@ function CartItem({ cartItem, handleTotalPrice }) {
   const handleDecreaseAmount = () => {
     if (productQuantity > 1) {
       setProductQuantity(productQuantity - 1);
+      updateCartItemQuantity(cartItem._id, productQuantity - 1);
+    } else if (productQuantity == 1) {
+      const confirmed = window.confirm(
+        "Bạn có muốn xóa sản phẩm khỏi giỏ hàng không?"
+      );
+      if (confirmed) {
+        deleteCartItem(cartItem._id);
+      }
     }
-    updateCartItemQuantity(cartItem._id, productQuantity - 1);
   };
 
   const handleIncreaseAmount = () => {
@@ -125,11 +135,7 @@ function CartItem({ cartItem, handleTotalPrice }) {
           Xoá
         </div>
         <a href={`/book/${book_id._id}`} className={styles.img}>
-          <img
-            // src="https://tiemsach.org/wp-content/uploads/2023/09/csk0w7ik.png"
-            src={book_id.image}
-            alt="img book"
-          />
+          <img src={book_id.image} alt="img book" />
         </a>
         <div className={styles.productCartInfo}>
           <div className={styles.title}>

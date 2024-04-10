@@ -27,6 +27,7 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import "@splidejs/react-splide/css/sea-green";
 import "@splidejs/react-splide/css/core";
+import * as types from "@/app/redux/types"
 import * as libraryRequest from "../../redux/saga/requests/myLibrary";
 import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
 import {
@@ -208,7 +209,7 @@ function AudioBookPage() {
           <div className={styles.bookContent}>
             <section className={styles.novelHeader}>
               <div className={styles.left}>
-                <img class="" src={book.image} alt="book img" />
+                <img class="" src={`${types.BACKEND_URL}/api/bookimg/${book.image}`} alt="book img" />
               </div>
               <div className={styles.right}>
                 <div className={styles.mainHead}>

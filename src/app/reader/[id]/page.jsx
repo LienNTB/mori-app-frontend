@@ -25,6 +25,7 @@ import {
   addNoteForBookRequest,
   getNotesForBookByUserRequest,
 } from "@/app/redux/saga/requests/note";
+import * as types from "@/app/redux/types"
 
 const Reader = () => {
   const [location, setLocation] = useState(0);
@@ -202,7 +203,7 @@ const Reader = () => {
         ) : (
           <ReactReader
             title={book.name}
-            url={book.epub}
+            url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
             location={location}
             locationChanged={(newPosition) => handlePageChange(newPosition)}
             getRendition={(p) => setRendition(p)}

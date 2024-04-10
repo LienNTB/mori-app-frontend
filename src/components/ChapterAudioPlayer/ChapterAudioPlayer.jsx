@@ -1,19 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./ChapterAudioPlayer.module.scss";
 import Hls from "hls.js";
-
+import * as types from "@/app/redux/types";
 const ChapterAudioPlayer = ({ chapter, book }) => {
   const audioRef = useRef(null);
   const hlsRef = useRef(null);
+  const encodedChapterAudio = encodeURIComponent(chapter.audio);
   console.log("book", book);
 
   useEffect(() => {
     const audio = audioRef.current;
+    const encodedChapterAudio = encodeURIComponent(chapter.audio);
 
     // Kiểm tra xem trình duyệt có hỗ trợ HLS không
     if (Hls.isSupported()) {
       hlsRef.current = new Hls();
-      hlsRef.current.loadSource(chapter.audio);
+      hlsRef.current.loadSource(
+        `${types.BACKEND_URL}/api/bookaudio/${encodedChapterAudio}`
+      );
       hlsRef.current.attachMedia(audio);
     }
 
@@ -21,7 +25,7 @@ const ChapterAudioPlayer = ({ chapter, book }) => {
     audio.addEventListener("loadeddata", () => {
       audio.play();
     });
-  }, [chapter.audio]);
+  }, [encodedChapterAudio]);
 
   return (
     <div className={styles.chapterAudioPlayer}>
@@ -29,7 +33,7 @@ const ChapterAudioPlayer = ({ chapter, book }) => {
         <div className={styles.bookInfo}>
           <img
             className={styles.circleImage}
-            src={book.image}
+            src={`${types.BACKEND_URL}/api/bookimg/${book.image}`}
             alt="book image"
           />
           <div className={styles.bookDetails}>
@@ -40,7 +44,10 @@ const ChapterAudioPlayer = ({ chapter, book }) => {
       <div className={styles.audioPayerContainer}>
         <div className={styles.audioPlayer}>
           <audio ref={audioRef} controls preload="auto">
-            <source src={chapter.audio} type="application/x-mpegURL" />
+            <source
+              src={`${types.BACKEND_URL}/api/bookaudio/${encodedChapterAudio}`}
+              type="application/x-mpegURL"
+            />
           </audio>
         </div>
       </div>

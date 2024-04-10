@@ -3,7 +3,7 @@ import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
 import React, { useMemo } from "react";
 import styles from "../ranking.module.scss";
-import * as type from "../../redux/types";
+import * as types from "@/app/redux/types"
 import Link from "next/link";
 import {
   Button,

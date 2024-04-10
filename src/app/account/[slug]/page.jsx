@@ -1,15 +1,13 @@
 "use client";
 import React, { useEffect } from "react";
-import Image from 'next/image';
+import Image from "next/image";
 import styles from "../profile.module.scss";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrashCan
-} from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
 import { redirect } from "next/navigation";
@@ -22,18 +20,17 @@ import Loading from "@/components/Loading/Loading";
 import { toast } from "react-toastify";
 import ToastContainerWrapper from "@/components/ToastContainerWrapper/ToastContainerWrapper";
 import {
-
   TableCell,
   Table,
   TableHeader,
   TableColumn,
   TableBody,
   TableRow,
-
 } from "@nextui-org/react";
 import { getMembershipById } from "@/app/redux/actions/membership";
 import { getReadHistory } from "@/app/redux/actions/book";
-import bookImg from '../../../../public/book.png'
+import bookImg from "../../../../public/book.png";
+import * as types from "@/app/redux/types"
 const Profile = () => {
   const params = useParams();
   const id = params.slug;
@@ -48,7 +45,6 @@ const Profile = () => {
   const isLoadingMembership = useSelector((state) => state.memberships.loading);
   const [click, setClick] = useState(0);
   const dispatch = useDispatch();
-
 
   const handleDeleteBook = (choosenBook) => {
     var request = {
@@ -74,7 +70,6 @@ const Profile = () => {
   if (!currentAccount) {
     redirect("/login");
   }
-
 
   useEffect(() => {
     dispatch(getMembershipById(currentAccount._id));
@@ -246,7 +241,7 @@ const Profile = () => {
                       <tr>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
                           <img
-                            src={book.book.image}
+                            src={`${types.BACKEND_URL}/api/bookimg/${book.book.image}`}
                             alt="image"
                             className={styles.bookLibImg}
                           />
@@ -255,7 +250,6 @@ const Profile = () => {
                           <Link href={`/book/${book.book._id}`}>
                             {book.book.name}
                           </Link>
-
                         </td>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
                           {book.book.author}
@@ -313,7 +307,7 @@ const Profile = () => {
                       <tr>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
                           <img
-                            src={book.book.image}
+                            src={`${types.BACKEND_URL}/api/bookimg/${book.book.image}`}
                             alt="image"
                             className={styles.bookLibImg}
                           />
@@ -401,22 +395,16 @@ const Profile = () => {
                 <Link href={`/post/123`}>
                   <div className={styles.postItem}>
                     <Image src={bookImg} alt="post img" />
-                    <div className={styles.postTitle}>
-                      title
-                    </div>
+                    <div className={styles.postTitle}>title</div>
                   </div>
                 </Link>
                 <div className={styles.postItem}>
                   <Image src={bookImg} alt="post img" />
-                  <div className={styles.postTitle}>
-                    title
-                  </div>
+                  <div className={styles.postTitle}>title</div>
                 </div>
                 <div className={styles.postItem}>
                   <Image src={bookImg} alt="post img" />
-                  <div className={styles.postTitle}>
-                    title
-                  </div>
+                  <div className={styles.postTitle}>title</div>
                 </div>
               </div>
             </div>

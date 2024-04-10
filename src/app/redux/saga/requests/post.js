@@ -54,3 +54,15 @@ export const getPostByIdRequest = async (postId) => {
       throw error;
     });
 };
+export const getPostByUserIdRequest = async (userId) => {
+  return fetch(`${type.BACKEND_URL}/api/post/${userId}`, {
+    method: "GET",
+    headers: type.requestHeader,
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((error) => {
+      throw error;
+    });
+};

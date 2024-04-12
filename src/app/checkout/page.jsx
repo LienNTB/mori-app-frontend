@@ -25,7 +25,7 @@ function Checkout() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("");
-  const currentAccount = JSON.parse(localStorage.getItem("user"));
+  const [currentAccount, setCurrentAccount] = useState("");
 
   const deleteCartItems = () => {
     cartItems.forEach((cartItem) => {
@@ -73,12 +73,9 @@ function Checkout() {
           error: (error) => error.message,
         }
       );
-
-      console.log("Order placed successfully:", response.data);
-      // Thực hiện các hành động sau khi đặt hàng thành công, ví dụ: chuyển hướng đến trang cảm ơn
     } catch (error) {
       console.error("Error placing order:", error);
-      // Xử lý lỗi nếu có
+      throw error;
     }
   };
 
@@ -87,6 +84,8 @@ function Checkout() {
   };
 
   useEffect(() => {
+    const currentAccount = JSON.parse(localStorage.getItem("user"));
+    setCurrentAccount(currentAccount);
     const orderItems = JSON.parse(localStorage.getItem("orderItems"));
     if (orderItems) {
       setCartItems(orderItems);

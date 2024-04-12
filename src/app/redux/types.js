@@ -1,5 +1,5 @@
 import { encode, decode } from "base64-js";
-export const BACKEND_URL = "http://localhost:8080"; //process.env.NEXT_PUBLIC_BACKEND_URL_DEV;
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL_DEV;
 export const ADMIN_URL_DEV = process.env.NEXT_PUBLIC_ADMIN_URL_DEV;
 export const FRONTEND_URL_DEV = process.env.NEXT_PUBLIC_FRONTEND_URL_DEV;
 export const ALLOW_ORIGIN_TOKEN = process.env.NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN;

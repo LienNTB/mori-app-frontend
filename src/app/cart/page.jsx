@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
 import { cartOfCustomerRequest } from "../redux/saga/requests/cart";
 import CartItem from "../../components/CartItem/CartItem";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 
 function Cart() {
   const [totalPrice, setTotalPrice] = useState(0);
@@ -22,9 +22,13 @@ function Cart() {
   };
 
   const handleCheckout = () => {
-    const orderItems = getSelectedItems();
-    localStorage.setItem("orderItems", JSON.stringify(orderItems));
-    window.location.href = "/checkout";
+    let orderItems = getSelectedItems();
+    if (orderItems.length == 0) {
+      toast.error("Vui lòng chọn sách bạn muốn đặt hàng");
+    } else {
+      localStorage.setItem("orderItems", JSON.stringify(orderItems));
+      window.location.href = "/checkout";
+    }
   };
 
   // Hàm kiểm tra xem một sản phẩm có được chọn hay không
@@ -43,6 +47,7 @@ function Cart() {
     cartOfCustomerRequest(id).then((res) => {
       setCartItems(res.cartItems);
     });
+    localStorage.removeItem("orderItems");
   }, []);
 
   useEffect(() => {
@@ -115,11 +120,9 @@ function Cart() {
               </div>
             </div>
             <div className={styles.checkoutActions}>
-              <a href="/checkout">
-                <div className={styles.checkoutBtn} onClick={handleCheckout}>
-                  Đặt hàng
-                </div>
-              </a>
+              <div className={styles.checkoutBtn} onClick={handleCheckout}>
+                Đặt hàng
+              </div>
               <div className={styles.continueBtn}>
                 <FontAwesomeIcon icon={faArrowLeft} weight={25} height={25} />
                 <div onClick={() => window.location.replace("/")}>

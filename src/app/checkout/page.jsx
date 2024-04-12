@@ -5,7 +5,7 @@ import styles from "./checkout.module.scss";
 import { faArrowLeft, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
-import { orderRequest } from "../redux/saga/requests/order";
+import { orderRequest, orderPaymentRequest } from "../redux/saga/requests/order";
 import { deleteBookFromCartRequest } from "@/app/redux/saga/requests/cart";
 import * as types from "@/app/redux/types";
 import {
@@ -20,8 +20,10 @@ import {
   getKeyValue,
 } from "@nextui-org/react";
 import { Toaster, toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function Checkout() {
+  const router = useRouter();
   const [totalPrice, setTotalPrice] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -37,46 +39,47 @@ function Checkout() {
   };
 
   const handleCheckout = async () => {
-    try {
-      // Tạo OrderItems từ CartItems
-      const orderItems = cartItems.map((cartItem) => ({
-        book_id: cartItem.book_id._id,
-        quantity: cartItem.quantity,
-        price: cartItem.book_id.price,
-      }));
+    router.replace("/payment-vnpay")
+    // try {
+    //   // Tạo OrderItems từ CartItems
+    //   const orderItems = cartItems.map((cartItem) => ({
+    //     book_id: cartItem.book_id._id,
+    //     quantity: cartItem.quantity,
+    //     price: cartItem.book_id.price,
+    //   }));
 
-      const request = {
-        account_id: currentAccount._id,
-        orderItems: orderItems,
-        // address_id: ,
-        // note: ,
-        // deliveryType: ,
-        paymentMethod: paymentMethod,
-      };
+    //   const request = {
+    //     account_id: currentAccount._id,
+    //     orderItems: orderItems,
+    //     // address_id: ,
+    //     // note: ,
+    //     // deliveryType: ,
+    //     paymentMethod: paymentMethod,
+    //   };
 
-      toast.promise(
-        new Promise((resolve, reject) => {
-          orderRequest(request).then((resp) => {
-            if (resp.message) {
-              resolve("Đặt hàng thành công");
+    //   toast.promise(
+    //     new Promise((resolve, reject) => {
+    //       orderRequest(request).then((resp) => {
+    //         if (resp.message) {
+    //           resolve("Đặt hàng thành công");
 
-              // Xóa các cartItems khi đã đặt hàng thành công
-              deleteCartItems();
-            } else {
-              reject(new Error("Đã có lỗi xảy ra, đặt hàng thất bại"));
-            }
-          });
-        }),
-        {
-          loading: "Processing...",
-          success: (message) => message,
-          error: (error) => error.message,
-        }
-      );
-    } catch (error) {
-      console.error("Error placing order:", error);
-      throw error;
-    }
+    //           // Xóa các cartItems khi đã đặt hàng thành công
+    //           deleteCartItems();
+    //         } else {
+    //           reject(new Error("Đã có lỗi xảy ra, đặt hàng thất bại"));
+    //         }
+    //       });
+    //     }),
+    //     {
+    //       loading: "Processing...",
+    //       success: (message) => message,
+    //       error: (error) => error.message,
+    //     }
+    //   );
+    // } catch (error) {
+    //   console.error("Error placing order:", error);
+    //   throw error;
+    // }
   };
 
   const handlePaymentMethodChange = (e) => {

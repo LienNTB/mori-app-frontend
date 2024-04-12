@@ -8,8 +8,10 @@ import { useState, useEffect } from "react";
 import { cartOfCustomerRequest } from "../redux/saga/requests/cart";
 import CartItem from "../../components/CartItem/CartItem";
 import { Toaster, toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function Cart() {
+  const router = useRouter();
   const [totalPrice, setTotalPrice] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState({});
@@ -27,7 +29,8 @@ function Cart() {
       toast.error("Vui lòng chọn sách bạn muốn đặt hàng");
     } else {
       localStorage.setItem("orderItems", JSON.stringify(orderItems));
-      window.location.href = "/checkout";
+      router.replace("/checkout");
+      // window.location.href = "/checkout";
     }
   };
 

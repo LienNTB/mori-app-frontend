@@ -1,0 +1,74 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin-left: 300px;
+    margin-right: 300px;
+    h3 {
+        font-weight: bold;
+        font-size: 30px;
+        margin-bottom: 40px;
+        margin-top: 40px;
+    }
+}
+
+.tableResponsive {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+    label {
+        &.title {
+            font-weight: bold;
+            font-size: 18px;
+        }
+    }
+}
+
+.formControl {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f2f2f2;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.radioInline {
+    margin-bottom: 10px;
+    margin-left: 50px;
+    input[type="radio"] {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    input[type="radio"]:checked {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+}
+
+.btnPopup {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btnPopup:hover {
+    background-color: #0056b3;
+}

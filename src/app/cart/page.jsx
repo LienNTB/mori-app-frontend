@@ -5,37 +5,86 @@ import styles from "./cart.module.scss";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
-import {
-  addBooktoCartRequest,
-  cartOfCustomerRequest,
-} from "../redux/saga/requests/cart";
-
+import { cartOfCustomerRequest } from "../redux/saga/requests/cart";
 import CartItem from "../../components/CartItem/CartItem";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function Cart() {
-  const breadcumbList = ["Trang chủ", "Giỏ hàng"];
-  // const [domLoaded, setDomLoaded] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  const router = useRouter();
   const [totalPrice, setTotalPrice] = useState(0);
   const [cartItems, setCartItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState({});
+
+  const toggleSelected = (itemId) => {
+    setSelectedItems((prevSelectedItems) => ({
+      ...prevSelectedItems,
+      [itemId]: !prevSelectedItems[itemId],
+    }));
+  };
+
+  const handleCheckout = () => {
+    let orderItems = getSelectedItems();
+    if (orderItems.length == 0) {
+      toast.error("Vui lòng chọn sách bạn muốn đặt hàng");
+    } else {
+      localStorage.setItem("orderItems", JSON.stringify(orderItems));
+      router.replace("/checkout");
+      // window.location.href = "/checkout";
+    }
+  };
+
+  // Hàm kiểm tra xem một sản phẩm có được chọn hay không
+  const isItemSelected = (itemId) => {
+    return !!selectedItems[itemId];
+  };
+
+  // Hàm lấy danh sách các sản phẩm đã được chọn
+  const getSelectedItems = () => {
+    return cartItems.filter((item) => isItemSelected(item._id));
+  };
 
   useEffect(() => {
     let currentAccount = JSON.parse(localStorage.getItem("user"));
     const id = currentAccount._id;
     cartOfCustomerRequest(id).then((res) => {
       setCartItems(res.cartItems);
-      calculateTotalPrice(res.cartItems);
     });
+    localStorage.removeItem("orderItems");
   }, []);
 
-  // Hàm tính tổng tiền từ thông tin giỏ hàng
+  useEffect(() => {
+    calculateTotalPrice(cartItems);
+  }, [selectedItems, cartItems]);
+
   const calculateTotalPrice = (cartItems) => {
     let totalPrice = 0;
-    cartItems.forEach((item) => {
-      totalPrice += item.book_id.price * item.quantity;
-    });
+    if (cartItems) {
+      cartItems.forEach((item) => {
+        if (isItemSelected(item._id)) {
+          totalPrice += item.book_id.price * item.quantity;
+        }
+      });
+    }
     setTotalPrice(totalPrice);
+
+    console.log("cartitem", cartItems);
+    console.log("selectedItems", getSelectedItems());
+  };
+
+  // update quality khi cộng trừ quality
+  const updateQuatity = async (cartItemId, newQuantity) => {
+    try {
+      cartItems.forEach((item) => {
+        if (item._id == cartItemId) {
+          item.quantity = newQuantity;
+        }
+      });
+      calculateTotalPrice(cartItems);
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
   };
 
   return (
@@ -50,7 +99,13 @@ function Cart() {
             <div className={styles.cartList}>
               {cartItems.length > 0 ? (
                 cartItems.map((cartItem) => (
-                  <CartItem key={cartItem._id} cartItem={cartItem} />
+                  <CartItem
+                    key={cartItem._id}
+                    cartItem={cartItem}
+                    selected={selectedItems[cartItem._id]}
+                    toggleSelected={toggleSelected}
+                    updateQuatity={updateQuatity}
+                  />
                 ))
               ) : (
                 <div className={styles.emptyCartMessage}>
@@ -68,13 +123,11 @@ function Cart() {
               </div>
             </div>
             <div className={styles.checkoutActions}>
-              <a href="/checkout">
-                <div className={styles.checkoutBtn}>
-                  Để lại thông tin mua hàng
-                </div>
-              </a>
+              <div className={styles.checkoutBtn} onClick={handleCheckout}>
+                Đặt hàng
+              </div>
               <div className={styles.continueBtn}>
-                <FontAwesomeIcon icon={faArrowLeft} />
+                <FontAwesomeIcon icon={faArrowLeft} weight={25} height={25} />
                 <div onClick={() => window.location.replace("/")}>
                   Tiếp tục mua hàng
                 </div>

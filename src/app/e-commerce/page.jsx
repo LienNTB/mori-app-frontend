@@ -7,6 +7,7 @@ import { getBooks } from '../redux/actions/book';
 import CollectionSidebar from '@/components/CollectionSidebar/CollectionSidebar';
 import TopFilter from '@/components/TopFilter/TopFilter';
 import CollectionContent from '@/components/CollectionContent/CollectionContent';
+import Loading from '@/components/Loading/Loading';
 
 const eCommerce = () => {
   const dispatch = useDispatch()
@@ -126,8 +127,10 @@ const eCommerce = () => {
             handleChange={handleChange}
           />
           <div className={styles.collectionContainer__right}>
-
-            <CollectionContent productList={productList} />
+            {
+              productList.length !== 0 ?
+                <CollectionContent productList={productList} /> : <Loading />
+            }
           </div>
         </div>
       </div>

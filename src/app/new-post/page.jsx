@@ -1,4 +1,3 @@
-
 "use client"
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import styles from './NewPost.module.scss'
@@ -12,8 +11,15 @@ import {
   Dropdown, DropdownTrigger, DropdownMenu, DropdownItem
 } from "@nextui-org/react";
 import { getAllTagsRequest } from '../redux/saga/requests/tag';
-import RichTextEditor from '../../components/RichTextEditor/RichTextEditor'
+import dynamic from 'next/dynamic';
 
+const RichTextEditor = dynamic(
+  () =>
+    import('../../components/RichTextEditor/RichTextEditor').then(
+      (mod) => mod.default
+    ),
+  { ssr: false }
+)
 
 const NewPost = () => {
   const [user, setUser] = useState(null)
@@ -36,7 +42,7 @@ const NewPost = () => {
       setSelectedTags([]);
     }
   };
-  console.log("user", user._id)
+  console.log("user", user)
   const handleCreatePost = () => {
     if (!user) {
       router.replace('/login')
@@ -199,3 +205,4 @@ const NewPost = () => {
 }
 
 export default NewPost
+

@@ -66,3 +66,23 @@ export const getPostByUserIdRequest = async (userId) => {
       throw error;
     });
 };
+
+export const uploadPostImageRequest = async (image) => {
+  const formData = new FormData();
+  formData.append("image", image);
+  return fetch(`${type.BACKEND_URL}/api/post/upload-image`, {
+    method: "POST",
+    headers: {
+      Origin: type.FRONTEND_URL_DEV,
+    },
+
+    body: formData,
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};

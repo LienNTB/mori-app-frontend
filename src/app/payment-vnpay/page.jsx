@@ -13,8 +13,10 @@ import { deleteBookFromCartRequest } from "@/app/redux/saga/requests/cart";
 import * as types from "@/app/redux/types";
 import { Button, Spinner, getKeyValue } from "@nextui-org/react";
 import { Toaster, toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function Payment() {
+  const router = useRouter();
   const [totalPrice, setTotalPrice] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -54,13 +56,16 @@ function Payment() {
       };
 
       const paymentResp = await orderPaymentRequest(requestPayment);
-      console.log("heyyyyyyyyy");
 
       // Nếu orderPaymentRequest thành công
-      if (paymentResp.message) {
+      if (paymentResp && paymentResp.paymentUrl) {
+        // Chuyển hướng trình duyệt đến URL thanh toán từ dữ liệu phản hồi
+        router.push(paymentResp.paymentUrl);
+        // window.location.href = paymentResp.paymentUrl;
         // Thực hiện orderRequest
         const orderResp = await orderRequest(request);
 
+        console.log("orderResp", orderResp.message);
         // Kiểm tra kết quả từ orderResp
         if (orderResp.message) {
           // Xóa cart items khi đặt hàng thành công

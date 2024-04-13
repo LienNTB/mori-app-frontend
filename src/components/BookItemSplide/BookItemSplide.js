@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import noImg from "../../../public/noImg.jpg";
 import Loading from "../Loading/Loading";
+import * as types from "../../app/redux/types";
 
 function BookItemSplide(props) {
   const router = useRouter();
@@ -19,7 +20,10 @@ function BookItemSplide(props) {
       <div className={styles.productThumbnail}>
         <a href={`/book/${props.book._id}`}>
           {props.book.image ? (
-            <img src={props.book.image} alt="book name" />
+            <img
+              src={`${types.BACKEND_URL}/api/bookimg/${props.book.image}`}
+              alt="book name"
+            />
           ) : (
             <Image src={noImg} />
           )}

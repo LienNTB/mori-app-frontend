@@ -14,15 +14,15 @@ export const orderRequest = async (request) => {
     });
 };
 
-
 export const orderPaymentRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/order/create_payment_url`, {
     method: "POST",
     headers: type.requestHeader,
     body: JSON.stringify(request),
   })
-    .then((response) => {
-      return response.json();
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
     })
     .catch((error) => {
       throw error;

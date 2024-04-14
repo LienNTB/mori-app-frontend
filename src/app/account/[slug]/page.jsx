@@ -31,6 +31,7 @@ import { getMembershipById } from "@/app/redux/actions/membership";
 import { getReadHistory } from "@/app/redux/actions/book";
 import bookImg from "../../../../public/book.png";
 import * as types from "@/app/redux/types"
+import { getPostByUserIdRequest } from "@/app/redux/saga/requests/post";
 const Profile = () => {
   const params = useParams();
   const id = params.slug;
@@ -43,6 +44,8 @@ const Profile = () => {
   const deleteBookResult = useSelector((state) => state.myLibrary.message);
   const membership = useSelector((state) => state.memberships.membership);
   const isLoadingMembership = useSelector((state) => state.memberships.loading);
+  const [postList, setPostList] = useState([])
+  const [isLoadingPostList, setIsLoadingPostList] = useState(false)
   const [click, setClick] = useState(0);
   const dispatch = useDispatch();
 
@@ -71,9 +74,17 @@ const Profile = () => {
     redirect("/login");
   }
 
+  const getPostData = () => {
+    setIsLoadingPostList(true)
+    getPostByUserIdRequest(currentAccount._id)
+      .then(resp => {
+        console.log('postlist', resp)
+      })
+  }
   useEffect(() => {
     dispatch(getMembershipById(currentAccount._id));
     dispatch(getReadHistory(currentAccount._id));
+    getPostData()
   }, []);
 
   useEffect(() => {
@@ -392,20 +403,37 @@ const Profile = () => {
             </div>
             <div className={styles.uTable}>
               <div className={styles.myPostList}>
-                <Link href={`/post/123`}>
-                  <div className={styles.postItem}>
-                    <Image src={bookImg} alt="post img" />
-                    <div className={styles.postTitle}>title</div>
-                  </div>
-                </Link>
-                <div className={styles.postItem}>
+                {
+                  isLoadingPostList ?
+                    <isLoading />
+                    :
+                    <>
+                      {
+                        postList.length === 0 ?
+                          <div>
+                            Chưa có bài viết.
+                          </div>
+                          :
+                          postList.map(post => (
+                            <Link href={`/post/${post._id}`}>
+                              <div className={styles.postItem}>
+                                <img className={styles.imgPost} src={post?.image ? `${type.BACKEND_URL}/api/postimg/${post?.image}` : tempImg} alt="main post img" />
+                                <div className={styles.postTitle}>{post.title}</div>
+                              </div>
+                            </Link>
+
+                          ))
+                      }
+                    </>
+                }
+                {/* <div className={styles.postItem}>
                   <Image src={bookImg} alt="post img" />
                   <div className={styles.postTitle}>title</div>
                 </div>
                 <div className={styles.postItem}>
                   <Image src={bookImg} alt="post img" />
                   <div className={styles.postTitle}>title</div>
-                </div>
+                </div> */}
               </div>
             </div>
           </section>

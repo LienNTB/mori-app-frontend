@@ -7,15 +7,13 @@ import Image from "next/image";
 import logo from '../../../public/logo-nobg.png'
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useState } from 'react'
-import { searchBooks, getBooksByCate } from '@/app/redux/actions/book'
+import { getBooksByCate } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
-import { faBars, faCartArrowDown, faCartFlatbed, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
 import { getBookCategoryRequest } from '@/app/redux/saga/requests/category'
 import { googleLogout } from '@react-oauth/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrashCan
-} from "@fortawesome/free-solid-svg-icons";
+
 
 const HeaderCommunity = () => {
   const dispatch = useDispatch()
@@ -43,13 +41,12 @@ const HeaderCommunity = () => {
   const handleSignOut = async () => {
     googleLogout();
     setAuthenticated(null)
-    localStorage.removeItem("authenticated")
     localStorage.removeItem("user")
     window.location.replace("/login")
   }
 
   useEffect(() => {
-    setAuthenticated(localStorage.getItem("authenticated"))
+    setAuthenticated(localStorage.getItem("user"))
   }, [])
   return (
     <div className={styles.container}>

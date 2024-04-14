@@ -43,13 +43,12 @@ const Header = () => {
   const handleSignOut = async () => {
     googleLogout();
     setAuthenticated(null)
-    localStorage.removeItem("authenticated")
     localStorage.removeItem("user")
     window.location.replace("/login")
   }
 
   useEffect(() => {
-    setAuthenticated(localStorage.getItem("authenticated"))
+    setAuthenticated(localStorage.getItem("user"))
   }, [])
   return (
     <div className={styles.container}>

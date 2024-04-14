@@ -46,6 +46,9 @@
         .tagList {
           display: flex;
           flex-wrap: wrap;
+          .tagItem {
+            margin: 5px 5px 0 0;
+          }
         }
       }
     }

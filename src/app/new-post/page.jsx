@@ -71,16 +71,17 @@ const NewPost = () => {
             }
             console.log("postRequest", postRequest)
             createNewPostRequest(postRequest)
-              .then((resp) => {
-                if (resp.message) {
-                  resolve(resp.message);
+              .then((respCreatePost) => {
+                if (respCreatePost.message) {
+                  resolve(respCreatePost.message);
                   router.replace("/community")
                 } else {
-                  console.log("resp.error", resp.error.toString())
-                  reject(resp.error);
+                  console.log("respCreatePost.error", respCreatePost.error.toString())
+                  reject(respCreatePost.error);
                 }
               })
               .catch((err) => {
+                reject("Tạo bài viết thất bại! Vui lòng thử lại!")
                 console.log("err", err);
               });
           }
@@ -120,7 +121,7 @@ const NewPost = () => {
         <div className={styles.newPostTitle}>
           Tạo bài viết mới
         </div>
-        <div className={styles.inputTitle}>
+        <div className={styles.postTitle}>
           <span>Hình ảnh bài viết: </span>
           <input type="file" onChange={(e) => setSelectedImage(e.target.files[0])} />
         </div>
@@ -175,6 +176,7 @@ const NewPost = () => {
                     selectionMode="multiple"
                     selectedKeys={selectedKeys}
                     onSelectionChange={setSelectedKeys}
+                    style={{ overflowY: "scroll", maxHeight: "200px" }}
                   >
                     {
                       tags ? tags.map((tagItem) => (
@@ -200,7 +202,7 @@ const NewPost = () => {
         </ModalContent>
       </Modal>
 
-    </div>
+    </div >
   )
 }
 

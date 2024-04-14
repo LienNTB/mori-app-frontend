@@ -22,6 +22,10 @@
       align-items: end;
       float: right;
       margin-top: 10px;
+      transition: all 0.2s linear;
+      &:hover {
+        background-color: $hover-color--light;
+      }
     }
   }
   .inputTitle {
@@ -32,6 +36,15 @@
       margin-top: 10px;
       border-radius: 7px;
       outline: gray;
+    }
+  }
+  .postTitle {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+    width: 100%;
+    input {
+      margin-top: 10px;
     }
   }
   .tagInput {

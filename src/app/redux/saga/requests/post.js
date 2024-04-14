@@ -15,10 +15,9 @@ export const getAllPostRequest = async () => {
 };
 
 export const createNewPostRequest = async (postRequest) => {
-  return fetch(`${type.BACKEND_URL}/api/post/`, {
+  return fetch(`${type.BACKEND_URL}/api/post`, {
     method: "POST",
     headers: type.requestHeader,
-
     body: JSON.stringify(postRequest),
   })
     .then((response) => {

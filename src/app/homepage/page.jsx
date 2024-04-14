@@ -78,7 +78,7 @@ const HomePage = () => {
             <a
               title="Sách hay nên đọc"
               href="/book-category/sach-hay"
-              class="getmorebtn"
+              className="getmorebtn"
             >
               Xem thêm
             </a>

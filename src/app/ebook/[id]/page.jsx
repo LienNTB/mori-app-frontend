@@ -53,7 +53,7 @@ function EBook() {
   const booksByCate = useSelector((state) => state.books.booksByCate);
   const isLoadingReview = useSelector((state) => state.reviews.loading);
   const reviews = useSelector((state) => state.reviews.reviews);
-  let currentAccount = JSON.parse(localStorage.getItem("user"));
+  let [currentAccount, setCurrentAccount] = useState("");
   const [similarProducts, setSimilarProducts] = useState([]);
   const [reviewRating, setReviewRating] = useState("5/5");
   const [email, setEmail] = useState("");
@@ -78,7 +78,7 @@ function EBook() {
       router.push("/login");
     }
   };
-  console.log("currentReviewContent", currentReviewContent)
+  // console.log("currentReviewContent", currentReviewContent)
   const handleUpdateReview = () => {
     toast.promise(
       new Promise((resolve, reject) => {
@@ -254,10 +254,14 @@ function EBook() {
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
   };
+
   useEffect(() => {
+    let currentAccount = JSON.parse(localStorage.getItem("user"));
+    setCurrentAccount(currentAccount);
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
   }, [dispatch]);
+
   useEffect(() => {
     dispatch(getReviewsById(id));
   }, [reload]);
@@ -591,7 +595,7 @@ function EBook() {
                               <div className={styles.info}>
                                 <div className={styles.reviewAvatar}>
                                   {review.user.avatar && (
-                                    <img src={review.user.avatar} alt="avatar" />
+                                    <img src={`${types.BACKEND_URL}/api/accountimg/${review.user.avatar}`} alt="avatar" />
                                   )}
                                 </div>
                                 <div className={styles.reviewProfileWrapper}>
@@ -706,7 +710,7 @@ function EBook() {
                 <div className={styles.modifyWrapper}>
                   <div className={styles.userWrapper}>
                     <div className={styles.avatar}>
-                      <img src={isOpenReview.user.avatar} alt="img" />
+                      <img src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`} alt="img" />
                     </div>
                     <div className={styles.name}>{isOpenReview.user.displayName}</div>
                   </div>
@@ -736,7 +740,7 @@ function EBook() {
                 <div className={styles.modifyWrapper}>
                   <div className={styles.userWrapper}>
                     <div className={styles.avatar}>
-                      <img src={isOpenReview.user.avatar} alt="img" />
+                      <img src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`} alt="img" />
                     </div>
                     <div className={styles.name}>{isOpenReview.user.displayName}</div>
                   </div>

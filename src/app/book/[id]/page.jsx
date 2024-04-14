@@ -55,7 +55,7 @@ import {
   Button,
 } from "@nextui-org/react";
 import { addBooktoCartRequest } from "@/app/redux/saga/requests/cart";
-import * as types from "@/app/redux/types"
+import * as types from "@/app/redux/types";
 // import PdfViewer from "@/components/PdfViewer/PdfViewer";
 
 function Book() {
@@ -103,7 +103,7 @@ function Book() {
       router.push("/login");
     }
   };
-  console.log("currentReviewContent", currentReviewContent);
+  // console.log("currentReviewContent", currentReviewContent);
   const handleUpdateReview = () => {
     toast.promise(
       new Promise((resolve, reject) => {
@@ -325,7 +325,7 @@ function Book() {
     }
   }, [book]);
 
-  console.log("book", book);
+  // console.log("book", book);
   useEffect(() => {
     if (book) {
       dispatch(getBooksByCate(book.tags[0]));
@@ -345,7 +345,11 @@ function Book() {
           <div className={styles.bookContent}>
             <section className={styles.novelHeader}>
               <div className={styles.left}>
-                <img class="" src={`${types.BACKEND_URL}/api/bookimg/${book.image}`} alt="book img" />
+                <img
+                  class=""
+                  src={`${types.BACKEND_URL}/api/bookimg/${book.image}`}
+                  alt="book img"
+                />
               </div>
               <div className={styles.right}>
                 <div className={styles.mainHead}>
@@ -611,7 +615,7 @@ function Book() {
                                 <div className={styles.reviewAvatar}>
                                   {review.user.avatar && (
                                     <img
-                                      src={review.user.avatar}
+                                      src={`${types.BACKEND_URL}/api/accountimg/${review.user.avatar}`}
                                       alt="avatar"
                                     />
                                   )}
@@ -754,7 +758,10 @@ function Book() {
                 <div className={styles.modifyWrapper}>
                   <div className={styles.userWrapper}>
                     <div className={styles.avatar}>
-                      <img src={isOpenReview.user.avatar} alt="img" />
+                      <img
+                        src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`}
+                        alt="img"
+                      />
                     </div>
                     <div className={styles.name}>
                       {isOpenReview.user.displayName}
@@ -801,7 +808,10 @@ function Book() {
                 <div className={styles.modifyWrapper}>
                   <div className={styles.userWrapper}>
                     <div className={styles.avatar}>
-                      <img src={isOpenReview.user.avatar} alt="img" />
+                      <img
+                        src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`}
+                        alt="img"
+                      />
                     </div>
                     <div className={styles.name}>
                       {isOpenReview.user.displayName}

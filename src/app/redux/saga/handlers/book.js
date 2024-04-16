@@ -64,8 +64,6 @@ export function* searchBooksHandler({ payload }) {
       )
         return item;
     });
-    console.log("filteredBooks", filteredBooks);
-    console.log("books", books);
 
     yield put({
       type: types.SEARCH_BOOKS_SUCCESS,

@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect } from "react";
-import Image from "next/image";
 import styles from "../profile.module.scss";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
@@ -9,7 +8,6 @@ import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-
 import { redirect } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -32,6 +30,10 @@ import { getReadHistory } from "@/app/redux/actions/book";
 import bookImg from "../../../../public/book.png";
 import * as types from "@/app/redux/types"
 import { getPostByUserIdRequest } from "@/app/redux/saga/requests/post";
+
+
+
+
 const Profile = () => {
   const params = useParams();
   const id = params.slug;
@@ -78,8 +80,11 @@ const Profile = () => {
     setIsLoadingPostList(true)
     getPostByUserIdRequest(currentAccount._id)
       .then(resp => {
-        console.log('postlist', resp)
+        console.log('postlist', resp.data)
+        setPostList(resp.data)
       })
+    setIsLoadingPostList(false)
+
   }
   useEffect(() => {
     dispatch(getMembershipById(currentAccount._id));
@@ -417,7 +422,7 @@ const Profile = () => {
                           postList.map(post => (
                             <Link href={`/post/${post._id}`}>
                               <div className={styles.postItem}>
-                                <img className={styles.imgPost} src={post?.image ? `${type.BACKEND_URL}/api/postimg/${post?.image}` : tempImg} alt="main post img" />
+                                <img className={styles.imgPost} src={post?.image ? `${types.BACKEND_URL}/api/postimg/${post?.image}` : tempImg} alt="main post img" />
                                 <div className={styles.postTitle}>{post.title}</div>
                               </div>
                             </Link>

@@ -54,7 +54,7 @@ export const getPostByIdRequest = async (postId) => {
     });
 };
 export const getPostByUserIdRequest = async (userId) => {
-  return fetch(`${type.BACKEND_URL}/api/post/${userId}`, {
+  return fetch(`${type.BACKEND_URL}/api/post/user/${userId}`, {
     method: "GET",
     headers: type.requestHeader,
   })

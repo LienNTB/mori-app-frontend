@@ -1,0 +1,12 @@
+.commentInput {
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  margin-left: 10px;
+  width: 75%;
+  &:focus {
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+  }
+}

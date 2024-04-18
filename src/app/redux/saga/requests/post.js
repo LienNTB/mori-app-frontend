@@ -85,3 +85,37 @@ export const uploadPostImageRequest = async (image) => {
       throw error;
     });
 };
+
+export const likePostRequest = async (postId, accountId) => {
+  return fetch(`${type.BACKEND_URL}/api/post/${postId}/like`, {
+    method: "POST",
+    headers: type.requestHeader,
+    body: JSON.stringify({
+      accountId: accountId,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const sharePostRequest = async (postId, accountId) => {
+  return fetch(`${type.BACKEND_URL}/api/post/${postId}/share`, {
+    method: "POST",
+    headers: type.requestHeader,
+    body: JSON.stringify({
+      accountId: accountId,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};

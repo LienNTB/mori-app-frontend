@@ -2,7 +2,6 @@ import React from 'react'
 import tempImg from '../../../public/book.png'
 
 const ReplyComment = ({ replyItem }) => {
-  console.log("replyItem", replyItem)
   return (
     <div class="flex flex-row mx-auto justify-between mt-4">
       <div class="flex mr-2">

@@ -8,6 +8,7 @@ const nextConfig = {
     NEXT_PUBLIC_FRONTEND_URL_DEV: "http://localhost:8080",
     NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN: "huonglienhcmutefit123",
     NEXT_PUBLIC_JWT_SECRET: "hcmutefitmoriauth",
+    NEXT_PUBLIC_FACEBOOK_APP_ID: "705769797722154",
   },
   future: {
     webpack5: true,

@@ -9,7 +9,7 @@ import Link from 'next/link'
 import Footer from '@/components/Footer/Footer'
 import Comment from '@/components/Comment/Comment'
 import ReactHtmlParser from 'react-html-parser';
-import { getPostByIdRequest } from '@/app/redux/saga/requests/post'
+import { getPostByIdRequest, likePostRequest, sharePostRequest } from '@/app/redux/saga/requests/post'
 import { useParams } from 'next/navigation'
 import Loading from '@/components/Loading/Loading'
 import { faHeart, faShare } from '@fortawesome/free-solid-svg-icons'
@@ -20,6 +20,8 @@ import { Toaster } from 'react-hot-toast'
 import { addNewCommentRequest } from '@/app/redux/saga/requests/comment'
 import { getAllComments, setComments } from '@/app/redux/actions/comment'
 import toast from 'react-hot-toast'
+import { FacebookButton, FacebookCount } from "react-social";
+
 const Post = () => {
   const dispatch = useDispatch()
   const params = useParams()
@@ -30,7 +32,10 @@ const Post = () => {
   const isLoadingComments = useSelector((state) => state.comments.loading);
   const comments = useSelector((state) => state.comments.comments);
   const [commentInput, setCommentInput] = useState("")
-  console.log("comments", comments)
+  const [postLikes, setPostLikes] = useState(0)
+  const [postShares, setPostShares] = useState(0)
+  const [isPostLiked, setIsPostLiked] = useState(false)
+  const [isPostShared, setIsPostShared] = useState(false)
   const onCommentInputChange = (value) => {
     setCommentInput(value)
   }
@@ -71,15 +76,61 @@ const Post = () => {
     }
     setCommentInput("")
   }
-  useEffect(() => {
+  const handleLikePost = () => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        likePostRequest(post._id, currentAccount._id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.message);
+              getPostData()
+            } else {
+              reject("Like bài viết thất bại!");
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error.message,
+      }
+    );
+    l
+  }
+  const handleSharePost = () => {
+    sharePostRequest(post._id, currentAccount._id).then(resp => {
+      console.log("resp", resp)
+      if (resp.message) {
+        getPostData()
+      }
+    })
+  }
+  const getPostData = () => {
     getPostByIdRequest(id).then(resp => {
       setPost(resp.post)
+      setPostLikes(resp.post.likes.length)
+      setPostShares(resp.post.shares.length)
+
     })
+  }
+  useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"))
     if (user) {
       setCurrentAccount(user)
     }
+    getPostData()
   }, [])
+  useEffect(() => {
+    if (post && currentAccount) {
+      const isLiked = post.likes.some(likedAccount => likedAccount.toString() === currentAccount._id)
+      const isShared = post.shares.some(likedAccount => likedAccount.toString() === currentAccount._id)
+      setIsPostLiked(isLiked)
+      setIsPostShared(isShared)
+    }
+  }, [post, currentAccount])
 
   useEffect(() => {
     if (currentAccount && post) {
@@ -119,20 +170,27 @@ const Post = () => {
                   </div>
                 </div>
                 <div className={styles.actionList}>
-                  <div className={styles.heart}>
+                  <span>{postLikes}</span>
+                  <div className={isPostLiked ? styles.redHeart : styles.blackHeart} onClick={handleLikePost}>
                     <FontAwesomeIcon
                       icon={faHeart}
                       class="cursor-pointer"
                       width={20}
                     />
                   </div>
-                  <div className={styles.share}>
-                    <FontAwesomeIcon
-                      icon={faShare}
-                      class="cursor-pointer"
-                      width={20}
-                    />
-                  </div>
+                  {/* <span>{postShares}</span> */}
+                  <FacebookButton onClick={handleSharePost} className={styles.shareBtnContainer} url={`https://ebook.workon.space/post/${post._id}`} appId={types.FACEBOOK_APP_ID}>
+                    <span>
+                      {postShares}
+                    </span>
+                    <div className={isPostShared ? styles.blackShare : styles.blueShare} >
+                      <FontAwesomeIcon
+                        icon={faShare}
+                        class="cursor-pointer"
+                        width={20}
+                      />
+                    </div>
+                  </FacebookButton>
                 </div>
               </div>
               <img className={styles.imgPost} src={post?.image ? `${types.BACKEND_URL}/api/postimg/${post?.image}` : tempImg} alt="main post img" />

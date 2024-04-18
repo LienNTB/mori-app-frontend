@@ -14,8 +14,41 @@
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          .heart {
+          span {
+            margin: 0 7px;
+          }
+          .blackHeart {
+            cursor: pointer;
             margin-right: 20px;
+            transition: all 0.1s linear;
+            height: fit-content;
+            &:hover {
+              color: red;
+            }
+          }
+          .shareBtnContainer {
+            display: flex;
+            flex-direction: row;
+          }
+          .redHeart {
+            cursor: pointer;
+            color: red;
+            margin-right: 20px;
+          }
+          .blackShare {
+            height: fit-content;
+            transition: all 0.1s linear;
+            &:hover {
+              cursor: pointer;
+              color: rgb(0, 132, 255);
+            }
+          }
+          .blueShare {
+            height: fit-content;
+            color: rgb(0, 132, 255);
+            &:hover {
+              cursor: pointer;
+            }
           }
         }
       }

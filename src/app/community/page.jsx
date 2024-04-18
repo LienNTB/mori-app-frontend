@@ -43,9 +43,9 @@ const Community = () => {
                     <img className={styles.imgPost} src={postList[0]?.image ? `${type.BACKEND_URL}/api/postimg/${postList[0]?.image}` : tempImg} alt="main post img" />
                     <div className={styles.postInfo}>
                       <div className={styles.postItem}>
-                        <img className={styles.userAvt} src={postList[0].account.avatar ? postList[0].account.avatar : tempImg} alt="user avt" />
+                        <img className={styles.userAvt} src={postList[0].account?.avatar ? postList[0].account.avatar : tempImg} alt="user avt" />
                         <div className={styles.name}>
-                          {postList[0]?.account.displayName}
+                          {postList[0]?.account?.displayName}
                         </div>
                       </div>
                       <div className={styles.postItem}>
@@ -80,7 +80,7 @@ const Community = () => {
                             <img className={styles.imgPost} src={post?.image ? `${type.BACKEND_URL}/api/postimg/${post?.image}` : tempImg} alt="main post img" />
                             <div className={styles.postInfo}>
                               <div className={styles.postItem}>
-                                <img className={styles.userAvt} src={post.account.avatar ? post.account.avatar : tempImg} alt="user avt" />
+                                <img className={styles.userAvt} src={post.account?.avatar ? post.account.avatar : tempImg} alt="user avt" />
                                 <div className={styles.name}>
                                   {post?.account?.displayName}
                                 </div>

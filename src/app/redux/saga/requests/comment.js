@@ -42,3 +42,20 @@ export const replyCommentRequest = async (request) => {
       console.log("error:", error);
     });
 };
+
+export const likeCommentRequest = async (commentId, accountId) => {
+  return fetch(`${type.BACKEND_URL}/api/comment/${commentId}/like`, {
+    method: "POST",
+    headers: type.requestHeader,
+    body: JSON.stringify({
+      accountId: accountId,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};

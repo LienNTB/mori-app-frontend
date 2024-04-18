@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styles from './Comment.module.scss'
 import ReplyComment from '../ReplyComment/ReplyComment'
-import { replyCommentRequest } from '@/app/redux/saga/requests/comment'
+import { likeCommentRequest, replyCommentRequest } from '@/app/redux/saga/requests/comment'
 import { Toaster, toast } from 'react-hot-toast'
 import { useDispatch } from 'react-redux'
 
@@ -11,6 +11,7 @@ const Comment = (props) => {
   const comments = props.comments
   const [currentAccount, setCurrentAccount] = useState(null)
   const [replyInputValues, setReplyInputValues] = useState([]);
+  const [likeCommentValues, setLikeCommentValues] = useState([])
   const handleReplyInputChange = (e, index) => {
     const newValues = [...replyInputValues];
     newValues[index] = e.target.value;
@@ -21,9 +22,21 @@ const Comment = (props) => {
     newValues[index] = ""
     setReplyInputValues(newValues);
   };
+  console.log("likeCommentValues", likeCommentValues)
+  const handleLikeCommentValueChange = (value, index) => {
+    console.log('handleLikeCommentValueChange')
+    const newValues = [...likeCommentValues];
+    if (value < 0) {
+      newValues[index] = 0
+    }
+    else {
+      newValues[index] = value;
+    }
+    setLikeCommentValues(newValues);
+  };
+
 
   const handleReplyComment = (comment, index) => {
-    console.log("comment", comment)
     console.log("index", index)
     if (replyInputValues[index] === "") {
       toast.error("Bạn chưa nhập nội dung trả lời bình luận!")
@@ -50,6 +63,43 @@ const Comment = (props) => {
       handleClearReplyInput(index)
     }
   }
+  const handleLikeComment = (commentId, index) => {
+    handleLikeCommentValueChange(
+      comments[index]?.likes.some((likedAccount) => likedAccount == currentAccount?._id) ?
+        (likeCommentValues[index] - 1) : (likeCommentValues[index] + 1)
+      , index)
+
+    toast.promise(
+      new Promise((resolve, reject) => {
+        likeCommentRequest(commentId, currentAccount._id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.message);
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+            reject("Gửi bình luận thất bại! Vui lòng thử lại")
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error.message,
+      })
+  }
+  useEffect(() => {
+    let likeValues = []
+    if (comments) {
+      comments.map((c, index) => {
+        console.log("c", c.likes.length)
+        console.log("index", index)
+        likeValues[index] = c.likes.length ? c.likes.length : 0
+      })
+    }
+    setLikeCommentValues(likeValues)
+  }, [comments])
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'))
     if (user) {
@@ -101,24 +151,17 @@ const Comment = (props) => {
                           {commentItem.content}</div>
                         {/* action */}
                         <div class="flex items-center text-sm mt-1 space-x-3">
-                          <a href="#" class="flex items-center text-blue-500 hover:text-blue-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                              <path fill-rule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="font-semibold">2 Bình luận</span>
-                          </a>
-                          <a href="#" class="flex items-center text-red-500 hover:text-red-600 group">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:text-red-600 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                              <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="font-semibold ">11</span>
-                          </a>
-                          <a href="#" class="flex items-center text-blue-500 hover:text-blue-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                              <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                            </svg>
-                            <span class="font-semibold">Share</span>
-                          </a>
+                          <svg xmlns="http://www.w3.org/2000/svg" class=" cursor-pointer h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                          </svg>
+                          <span class="font-semibold">{commentItem?.replies?.length} Bình luận</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" class={`cursor-pointer h-4 w-4 ${likeCommentValues[index] ? "text-red-600" : ""}  group-hover:text-red-600 mr-1`} viewBox="0 0 20 20" fill="currentColor"
+                            onClick={() => handleLikeComment(commentItem._id, index)}>
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                          </svg>
+                          <span class="font-semibold ">{likeCommentValues[index]}</span>
+
+
                         </div>
                         {/* child comments */}
                         {

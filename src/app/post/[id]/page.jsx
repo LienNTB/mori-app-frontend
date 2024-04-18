@@ -98,7 +98,7 @@ const Post = () => {
         error: (error) => error.message,
       }
     );
-    l
+
   }
   const handleSharePost = () => {
     sharePostRequest(post._id, currentAccount._id).then(resp => {

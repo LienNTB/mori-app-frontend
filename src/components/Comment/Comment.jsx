@@ -93,8 +93,6 @@ const Comment = (props) => {
     let likeValues = []
     if (comments) {
       comments.map((c, index) => {
-        console.log("c", c.likes.length)
-        console.log("index", index)
         likeValues[index] = c.likes.length ? c.likes.length : 0
       })
     }

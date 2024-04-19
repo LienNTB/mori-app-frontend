@@ -48,7 +48,7 @@ const VNpayreturn = () => {
 
     const membership = JSON.parse(localStorage.getItem("membership"));
     setMembership(membership);
-    
+
     if (vnp_ResponseCode === "00") {
       handleRegisterMembership(membership);
     }

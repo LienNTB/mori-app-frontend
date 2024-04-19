@@ -66,19 +66,19 @@ export default function Hero() {
                 data-aos-delay="300"
               >
                 <div>
-                  <a
+                  <a href="/homepage"
                     className="btn text-white bg-blue-600 hover:bg-blue-700 w-full mb-4 sm:w-auto sm:mb-0"
                   >
-                    <Link href="/">
-                      Đọc sách điện tử
-                    </Link>
+                    {/* <Link href="/homepage" prefetch={false}> */}
+                    Đọc sách điện tử
+                    {/* </Link> */}
                   </a>
                 </div>
                 <div>
                   <a
                     className="btn bg-blue-400 hover:bg-blue-500 w-full sm:w-auto sm:ml-4"
                   >
-                    <Link href="/e-commerce">
+                    <Link href="/e-commerce" prefetch={false}>
                       Mua sách
                     </Link>
                   </a>
@@ -87,7 +87,7 @@ export default function Hero() {
                   <a
                     className="btn text-white bg-teal-400 hover:bg-teal-500 w-full sm:w-auto sm:ml-4"
                   >
-                    <Link href="/community">
+                    <Link href="/community" prefetch={false}>
                       Gia nhập cộng đồng đọc sách
                     </Link>
                   </a>

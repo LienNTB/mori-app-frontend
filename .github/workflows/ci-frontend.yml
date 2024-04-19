@@ -1,8 +1,8 @@
 name: CI - Frontend
 on:
-  pull_request:
-    paths:
-      - "**/*"
+  push:
+    branches:
+      - lien
 jobs:
   ci-frontend:
     runs-on: ubuntu-latest

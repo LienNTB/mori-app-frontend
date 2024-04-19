@@ -1,0 +1,332 @@
+.parentContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    // gap: 1%;
+    // width: 100%;
+}
+
+.container {
+    left: 0;
+    top: auto;
+    z-index: 11;
+    padding: 1.2rem 0;
+    background-color: #333;
+    width: 100%;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    margin-left: 5%;
+}
+
+.description {
+    font-size: 1.2rem;
+    color: #fff;
+    line-height: 1.6;
+    margin-left: 5%;
+}
+
+.paymentMethod {
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px;
+    background-color: #151A32;
+    // border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.paymentMethodHeader {
+    text-align: center;
+    color: #fff;
+}
+
+.paymentMethodOption {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin: 10px;
+    background-color: #242B42;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: #fff;
+}
+
+.paymentMethodOption:hover {
+    background-color: #2E3650;
+}
+
+.active {
+    background-color: #384561;
+}
+
+.bankList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.bankItem {
+    display: flex;
+    align-items: center;
+    width: 150px;
+    background-color: #2E3650;
+    border-radius: 8px;
+    padding: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.bankItem:hover {
+    background-color: #384561;
+}
+
+.bankLogo {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+}
+
+.bankLogo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.checkedIcon {
+    margin-left: auto;
+}
+
+.checkedIcon img {
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
+}
+
+.qrIcon {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+}
+
+.qrIcon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.containerA {
+    border-left: 1px solid #fff;
+    padding: 1.2rem;
+    background-color: #494646;
+    width: 100%;
+}
+
+.titleA {
+    padding: 24px;
+    text-align: center;
+    color: #fff;
+}
+
+.table {
+    padding: 12px;
+    width: 100%;
+}
+
+.dropdownButton {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1rem 4px;
+    /* Điều chỉnh padding khi cần thiết */
+    border: 1px solid #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    transition: background-color 0.2s ease;
+    &:hover {
+        background-color: #f2f2f2;
+    }
+}
+
+.dropdownText {
+    font-weight: normal;
+    font-size: 0.9375rem;
+    /* 15px */
+    color: #000;
+    text-overflow: ellipsis;
+    /* Thêm dấu chấm lửng cho văn bản dài */
+    white-space: nowrap;
+    /* Ngăn văn bản bị bẻ dòng */
+    overflow: hidden;
+    /* Ẩn văn bản tràn */
+}
+
+.dropdownIcon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    z-index: 10;
+    list-style: none;
+    padding: 0;
+    display: none;
+    &.show {
+        display: block;
+    }
+}
+
+.label {
+    font-weight: normal;
+    font-size: 0.8rem;
+    color: #fff;
+    opacity: 0.7;
+    // padding: 0 2rem;
+    white-space: nowrap;
+}
+
+.product,
+.price,
+.paymentMethodA,
+.discount,
+.total {
+    font-weight: normal;
+    font-size: 0.8rem;
+    color: #fff;
+    opacity: 1;
+    // padding-bottom: 2rem;
+}
+
+.price,
+.total {
+    color: #f03e3e;
+    /* Waka primary color? */
+}
+
+.dropdown {
+    // styles for the product dropdown
+    position: relative;
+    display: flex;
+    width: 100%;
+}
+
+.dropdownLink {
+    // styles for the dropdown link
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 4px;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    transition: background-color 0.2s ease;
+    &:hover {
+        background-color: #f2f2f2;
+    }
+}
+
+.dropdownText {
+    // styles for the dropdown text
+    font-weight: normal;
+    font-size: 0.9375rem;
+    /* 15px */
+    color: #000;
+}
+
+.dropdownIcon {
+    // styles for the dropdown icon
+    width: 20px;
+    height: 20px;
+    transform: rotate(90deg);
+    transition: transform 0.2s ease;
+}
+
+.dropdownLink:hover .dropdownIcon {
+    transform: rotate(0deg);
+}
+
+.dropdownMenu {
+    // styles for the dropdown menu
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    z-index: 10;
+    display: none;
+}
+
+.dropdownMenu.show {
+    display: block;
+}
+
+.dropdownItem {
+    // styles for each dropdown menu item
+    padding: 1rem 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    &:hover {
+        background-color: #f2f2f2;
+    }
+}
+
+.dropdownItemText {
+    // styles for the dropdown menu item text
+    font-weight: normal;
+    font-size: 0.9375rem;
+    /* 15px */
+    color: #000;
+}
+
+.dropdownItemSelected {
+    // styles for the selected dropdown menu item
+    background-color: #f2f2f2;
+}
+
+.hidden {
+    // styles for hidden elements
+    display: none;
+}
+
+.borderTop {
+    // styles for elements with a top border
+    border-top: 1px solid #fff;
+}
+
+.buttonContainer {
+    // styles for the button container
+    text-align: center;
+    padding-top: 2rem;
+}
+
+.button {
+    // styles for the payment button
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 10px;
+    background-color: #000;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    &:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+}

@@ -6,74 +6,29 @@ import { faArrowLeft, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
 import {
-  orderRequest,
   orderPaymentRequest,
 } from "../redux/saga/requests/order";
-import { deleteBookFromCartRequest } from "@/app/redux/saga/requests/cart";
-import * as types from "@/app/redux/types";
-import { Button, Spinner, getKeyValue } from "@nextui-org/react";
-import { Toaster, toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 function Payment() {
   const router = useRouter();
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [cartItems, setCartItems] = useState([]);
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [currentAccount, setCurrentAccount] = useState("");
-
-  const deleteCartItems = () => {
-    cartItems.forEach((cartItem) => {
-      deleteBookFromCartRequest(cartItem._id);
-    });
-    setCartItems([]);
-    setTotalPrice(0);
-    localStorage.removeItem("orderItems");
-  };
+  const [price, setPrice] = useState(0);
+  const [currentAccount, setCurrentAccount] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState(0);
 
   const handlePayment = async () => {
     try {
-      // Tạo OrderItems từ CartItems
-      const orderItems = cartItems.map((cartItem) => ({
-        book_id: cartItem.book_id._id,
-        quantity: cartItem.quantity,
-        price: cartItem.book_id.price,
-      }));
-
       const requestPayment = {
-        amount: totalPrice,
+        amount: price,
         bankCode: bankCode,
         language: "vn",
       };
-
-      const request = {
-        account_id: currentAccount._id,
-        orderItems: orderItems,
-        // address_id: ,
-        // note: ,
-        // deliveryType: ,
-        paymentMethod: paymentMethod,
-      };
-
       const paymentResp = await orderPaymentRequest(requestPayment);
 
       // Nếu orderPaymentRequest thành công
       if (paymentResp && paymentResp.paymentUrl) {
         // Chuyển hướng trình duyệt đến URL thanh toán từ dữ liệu phản hồi
         router.push(paymentResp.paymentUrl);
-        // window.location.href = paymentResp.paymentUrl;
-        // Thực hiện orderRequest
-        const orderResp = await orderRequest(request);
-
-        console.log("orderResp", orderResp.message);
-        // Kiểm tra kết quả từ orderResp
-        if (orderResp.message) {
-          // Xóa cart items khi đặt hàng thành công
-          deleteCartItems();
-          return "Đặt hàng thành công";
-        } else {
-          throw new Error("Đã có lỗi xảy ra khi thực hiện đặt hàng");
-        }
       } else {
         throw new Error("Đã có lỗi xảy ra khi thực hiện thanh toán");
       }
@@ -86,24 +41,12 @@ function Payment() {
   useEffect(() => {
     const currentAccount = JSON.parse(localStorage.getItem("user"));
     setCurrentAccount(currentAccount);
-    const orderItems = JSON.parse(localStorage.getItem("orderItems"));
-    if (orderItems) {
-      setCartItems(orderItems);
-      calculateTotalPrice(orderItems);
-    }
+
+    const membership = JSON.parse(localStorage.getItem("membership"));
+    setPrice(membership.price);
     setPaymentMethod("vnpay");
   }, []);
 
-  // Hàm tính tổng tiền từ thông tin giỏ hàng
-  const calculateTotalPrice = (cartItems) => {
-    let totalPrice = 0;
-    if (cartItems) {
-      cartItems.forEach((item) => {
-        totalPrice += item.book_id.price * item.quantity;
-      });
-      setTotalPrice(totalPrice);
-    }
-  };
   const [bankCode, setBankCode] = useState("");
   const [language, setLanguage] = useState("vn");
 
@@ -127,7 +70,7 @@ function Payment() {
             <input
               type="text"
               className={styles.formControl}
-              value={totalPrice}
+              value={price}
               disabled
             />
           </div>

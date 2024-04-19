@@ -509,7 +509,7 @@ function AudioBookPage() {
                             <div className={styles.reviewCustomerWrapper}>
                               <div className={styles.reviewAvatar}>
                                 {review.user.avatar && (
-                                  <img src={review.user.avatar} alt="avatar" />
+                                  <img src={`${types.BACKEND_URL}/api/accountimg/${review.user.avatar}`} alt="avatar" />
                                 )}
                               </div>
                               <div className={styles.reviewProfileWrapper}>

@@ -87,7 +87,7 @@ const Profile = () => {
           <div className={styles.accountBody}>
             <div className={styles.accountAvatar}>
               {currentAccount.avatar ? (
-                <img src={currentAccount.avatar} alt="avt" />
+                <img src={`${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} alt="avt" />
               ) : (
                 <img
                   src="https://docsachhay.net/frontend/images/default-avatar.jpg"

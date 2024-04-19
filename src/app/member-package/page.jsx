@@ -1,98 +1,93 @@
-"use client"
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import styles from './member-package.module.scss'
-import Header from '@/components/Header/Header'
-import Footer from '@/components/Footer/Footer'
-import { useDispatch, useSelector } from 'react-redux'
-import { redirect } from 'next/navigation'
-import { useRouter } from 'next/navigation'
-import Loading from '@/components/Loading/Loading'
-import * as request from "../redux/saga/requests/membership"
+"use client";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import styles from "./member-package.module.scss";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
+import { useDispatch, useSelector } from "react-redux";
+import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Loading from "@/components/Loading/Loading";
+import * as request from "../redux/saga/requests/membership";
 import { Toaster, toast } from "react-hot-toast";
 
 const MemberPackage = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [membertype, setMembertype] = useState(null);
-  const dispatch = useDispatch()
-  const [user, setUser] = useState("")
-  let currentAccount = user
+  const [user, setUser] = useState("");
+  const [membershipTypes, setMembershipTypes] = useState(0);
+  let currentAccount = user;
 
   const redirectLogin = () => {
-    currentAccount = (user)
+    currentAccount = user;
     if (!currentAccount) {
-      router.push("/login")
+      router.push("/login");
     }
-  }
+  };
 
   const getCurrentDate = () => {
-    const currentDate = new Date()
+    const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const day = currentDate.getDate();
-    return `${year}-${month + 1}-${day}`
-  }
+    return `${year}-${month + 1}-${day}`;
+  };
   const getExpiredDate = () => {
-    const currentDate = new Date()
-    const expiredDate = new Date(currentDate)
+    const currentDate = new Date();
+    const expiredDate = new Date(currentDate);
     // define when expire date is on and calculate
-    if (membertype === "year") expiredDate.setDate(currentDate.getDate() + 365)
-    else if (membertype === "3month") expiredDate.setDate(currentDate.getDate() + 90)
-    else if (membertype === "1month") expiredDate.setDate(currentDate.getDate() + 30)
+    if (membertype === "year") expiredDate.setDate(currentDate.getDate() + 365);
+    else if (membertype === "3month")
+      expiredDate.setDate(currentDate.getDate() + 90);
+    else if (membertype === "1month")
+      expiredDate.setDate(currentDate.getDate() + 30);
 
     // transfer date to yy-mm-dd type
     const year = expiredDate.getFullYear();
     const month = expiredDate.getMonth();
     const day = expiredDate.getDate();
-    return `${year}-${month + 1}-${day}`
-  }
-  const currentDate = new Date(getCurrentDate())
+    return `${year}-${month + 1}-${day}`;
+  };
+  const currentDate = new Date(getCurrentDate());
   const expiredDate = new Date(getExpiredDate()); // Set the expire date
 
-  if (currentDate > expiredDate) {
-    console.log('The expiration date has passed.'); // Perform actions for an expired date
-  } else {
-    console.log('The expiration date is still valid.'); // Perform actions for a valid date
-  }
-
-
-  const handleRegisterMembership = async (membership) => {
-    redirectLogin()
-    toast.promise(
-      new Promise((resolve, reject) => {
-        request.registerMembershipRequest(membership)
-          .then((resp) => {
-            if (resp === 0) {
-              resolve("Đăng kí gói cước thành công!")
-            }
-            if (resp === 1) {
-              reject(new Error("Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!"));
-            }
-          })
-      }),
-      {
-        loading: "Processing...",
-        success: (message) => message,
-        error: (error) => error.message,
-      }
-    );
-  }
   const handleMemberRegisterBtnOnclick = () => {
-    redirectLogin()
+    redirectLogin();
 
+    // if (currentDate < expiredDate) {
+    //   toast.error(
+    //     "Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!"
+    //   );
+    //   console.log("The expiration date is still valid."); // Perform actions for a valid date
+    // }
+    // else 
     if (membertype) {
+
       const membership = {
         user: currentAccount._id,
         type: membertype,
         start_date: getCurrentDate(),
-        outdated_on: getExpiredDate()
-      }
-      handleRegisterMembership(membership)
-    }
+        outdated_on: getExpiredDate(),
+      };
 
-  }
+      let price = 0;
+      membershipTypes.map((membershipType) => {
+        if (membershipType.name == membertype) price = membershipType.price;
+      });
+
+      var membershipData = { membership: membership, price: price };
+      localStorage.setItem("membership", JSON.stringify(membershipData));
+
+      router.replace("/payment");
+      // handleRegisterMembership(membership)
+    }
+  };
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user")))
-  }, [])
+    setUser(JSON.parse(localStorage.getItem("user")));
+    request.getAllMembershipTypeRequest().then((res) => {
+      // console.log(res.membershipTypes);
+      setMembershipTypes(res.membershipTypes);
+    });
+  }, []);
 
   return (
     <div className={styles.memberPackContainer}>
@@ -102,19 +97,23 @@ const MemberPackage = () => {
           <div className={styles.container}>
             <div className={styles.bannerContent}>
               <div className={styles.left}>
-                <div className={styles.title}>
-                  Website đọc sách online
-                </div>
+                <div className={styles.title}>Website đọc sách online</div>
                 <div className={styles.subTitle}>
                   #1 Việt Nam về sách đọc, sách nói
                 </div>
               </div>
               <div className={styles.right}>
                 <div className={styles.banner1}>
-                  <img src="https://moristorage123.blob.core.windows.net/bookimg/banner1.webp" alt="banner1" />
+                  <img
+                    src="https://moristorage123.blob.core.windows.net/bookimg/banner1.webp"
+                    alt="banner1"
+                  />
                 </div>
                 <div className={styles.banner2}>
-                  <img src="https://moristorage123.blob.core.windows.net/bookimg/banner2.webp" alt="banner2" />
+                  <img
+                    src="https://moristorage123.blob.core.windows.net/bookimg/banner2.webp"
+                    alt="banner2"
+                  />
                 </div>
               </div>
             </div>
@@ -124,62 +123,51 @@ const MemberPackage = () => {
         <div className={styles.packageList}>
           <div className={styles.packageItem}>
             <div className={styles.titleWrapper}>
-              <div className={styles.title}>
-                Gói năm
-              </div>
-              <div className={styles.bestPrice}>
-                Giá tốt nhất
-              </div>
+              <div className={styles.title}>Gói năm</div>
+              <div className={styles.bestPrice}>Giá tốt nhất</div>
             </div>
-            <div className={styles.mainPrice}>
-              899.000 ₫/Năm
-            </div>
-            <div className={styles.eachMonth}>
-              (Chỉ còn 75.000 ₫ mỗi tháng)
-            </div>
-            <div className={styles.registerBtn} onClick={(() => {
-              setMembertype("year");
-              handleMemberRegisterBtnOnclick()
-            })}>
+            <div className={styles.mainPrice}>899.000 ₫/Năm</div>
+            <div className={styles.eachMonth}>(Chỉ còn 75.000 ₫ mỗi tháng)</div>
+            <div
+              className={styles.registerBtn}
+              onClick={() => {
+                setMembertype("year");
+                handleMemberRegisterBtnOnclick();
+              }}
+            >
               Mua gói năm
             </div>
           </div>
 
           <div className={styles.packageItem}>
             <div className={styles.titleWrapper}>
-              <div className={styles.title}>
-                Gói 3 tháng
-              </div>
+              <div className={styles.title}>Gói 3 tháng</div>
             </div>
-            <div className={styles.mainPrice}>
-              249.000 ₫/3 tháng
-            </div>
-            <div className={styles.eachMonth}>
-              (Chỉ còn 83.000 ₫ mỗi tháng)
-            </div>
-            <div className={styles.registerBtn} onClick={(() => {
-              setMembertype("3month");
-              handleMemberRegisterBtnOnclick()
-            })}>
+            <div className={styles.mainPrice}>249.000 ₫/3 tháng</div>
+            <div className={styles.eachMonth}>(Chỉ còn 83.000 ₫ mỗi tháng)</div>
+            <div
+              className={styles.registerBtn}
+              onClick={() => {
+                setMembertype("3month");
+                handleMemberRegisterBtnOnclick();
+              }}
+            >
               Mua gói 3 tháng
             </div>
           </div>
           <div className={styles.packageItem}>
             <div className={styles.titleWrapper}>
-              <div className={styles.title}>
-                Gói tháng
-              </div>
+              <div className={styles.title}>Gói tháng</div>
             </div>
-            <div className={styles.mainPrice}>
-              99.000 ₫/Tháng
-            </div>
-            <div className={styles.eachMonth}>
-
-            </div>
-            <div className={styles.registerBtn} onClick={(() => {
-              setMembertype("1month");
-              handleMemberRegisterBtnOnclick()
-            })}>
+            <div className={styles.mainPrice}>99.000 ₫/Tháng</div>
+            <div className={styles.eachMonth}></div>
+            <div
+              className={styles.registerBtn}
+              onClick={() => {
+                setMembertype("1month");
+                handleMemberRegisterBtnOnclick();
+              }}
+            >
               Mua gói tháng
             </div>
           </div>
@@ -188,6 +176,6 @@ const MemberPackage = () => {
       <Footer />
       <Toaster />
     </div>
-  )
-}
+  );
+};
 export default MemberPackage;

@@ -7,15 +7,13 @@ import Image from "next/image";
 import logo from '../../../public/logo-nobg.png'
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useState } from 'react'
-import { searchBooks, getBooksByCate } from '@/app/redux/actions/book'
+import { getBooksByCate } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
-import { faBars, faCartArrowDown, faCartFlatbed, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
 import { getBookCategoryRequest } from '@/app/redux/saga/requests/category'
 import { googleLogout } from '@react-oauth/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrashCan
-} from "@fortawesome/free-solid-svg-icons";
+
 
 const HeaderCommunity = () => {
   const dispatch = useDispatch()
@@ -43,13 +41,12 @@ const HeaderCommunity = () => {
   const handleSignOut = async () => {
     googleLogout();
     setAuthenticated(null)
-    localStorage.removeItem("authenticated")
     localStorage.removeItem("user")
     window.location.replace("/login")
   }
 
   useEffect(() => {
-    setAuthenticated(localStorage.getItem("authenticated"))
+    setAuthenticated(localStorage.getItem("user"))
   }, [])
   return (
     <div className={styles.container}>
@@ -65,11 +62,11 @@ const HeaderCommunity = () => {
           {authenticated ? (
             <div className={styles.flexRightContainer}>
               <div className={styles.createNewPostBtn}>
-                <Link href="/new-post">
+                <Link href="/new-post" prefetch={false} >
                   Tạo post mới
                 </Link>
               </div>
-              <Link className={styles.right} href={"/account/profile"} shallow>
+              <Link className={styles.right} href={"/account/profile"} prefetch={false}>
 
                 Tài khoản của tôi
               </Link>
@@ -79,12 +76,12 @@ const HeaderCommunity = () => {
             </div>)
             : (
               <>
-                <Link className={styles.right} href={"/member-package"} shallow>
+                <Link className={styles.right} href={"/member-package"} prefetch={false}>
                   <div className={styles.memberRegisterBtn}>
                     Tham gia hội viên
                   </div>
                 </Link>
-                <Link className={styles.right} href={"/login"} shallow>
+                <Link className={styles.right} href={"/login"} prefetch={false}>
                   Login
                 </Link>
               </>
@@ -110,22 +107,22 @@ const HeaderCommunity = () => {
                 Danh mục
               </div>
               <div className={styles.menuItem}>
-                <Link href="/book" shallow>
+                <Link href="/book" prefetch={false}>
                   Sách đọc
                 </Link>
               </div>
               <div className={styles.menuItem}>
-                <Link href="/audio-book" shallow>
+                <Link href="/audio-book" prefetch={false}>
                   Sách nói
                 </Link>
               </div>
               <div className={styles.menuItem}>
-                <Link href="/ranking/sachdoc" shallow>
+                <Link href="/ranking/sachdoc" prefetch={false}>
                   Bảng xếp hạng
                 </Link>
               </div>
               <div className={styles.menuItem} >
-                <Link href={"/account/profile"} shallow>
+                <Link href={"/account/profile"} prefetch={false}>
                   <FontAwesomeIcon
                     icon={faUser}
                     class="cursor-pointer"
@@ -145,22 +142,22 @@ const HeaderCommunity = () => {
                   Danh mục
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/book" shallow>
+                  <Link href="/book" prefetch={false}>
                     Sách đọc
                   </Link>
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/audio-book" shallow>
+                  <Link href="/audio-book" prefetch={false}>
                     Sách nói
                   </Link>
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/ranking/sachdoc" shallow>
+                  <Link href="/ranking/sachdoc" prefetch={false}>
                     Bảng xếp hạng
                   </Link>
                 </div>
                 <div className={styles.menuItem} >
-                  <Link href={"/login"} shallow>
+                  <Link href={"/login"} prefetch={false}>
                     Đăng nhập
                   </Link>
                 </div>
@@ -201,13 +198,13 @@ const HeaderCommunity = () => {
 
               </div> : <></>}
           </li>
-          <Link href="/book" shallow>
+          <Link href="/book" prefetch={false}>
             <li className={styles.bottomMenuItem}>Sách đọc</li>
           </Link>
-          <Link href="/audio-book" shallow>
+          <Link href="/audio-book" prefetch={false}>
             <li className={styles.bottomMenuItem}>Sách nói</li>
           </Link>
-          <Link href="/ranking/sachdoc" shallow>
+          <Link href="/ranking/sachdoc" prefetch={false}>
             <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
           </Link>
 

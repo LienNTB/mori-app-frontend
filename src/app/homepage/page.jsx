@@ -62,11 +62,13 @@ const HomePage = () => {
             <div className={styles.tagList}>
               {tags ?
                 tags.map((tag, index) => (
-                  <Tag
-                    key={index}
-                    name={tag.description}
-                    link={`/book-category/${tag.name}`}
-                  />
+                  <div className={styles.tagItem}>
+                    <Tag
+                      key={index}
+                      name={tag.description}
+                      link={`/book-category/${tag.name}`}
+                    />
+                  </div>
                 )) :
                 <>...</>}
             </div>

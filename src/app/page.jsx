@@ -1,8 +1,9 @@
-import HomePage from './homepage/page';
+
+import LandingPage from './home/page';
 
 
 export default async function Home() {
   return <div>
-    <HomePage />
+    <LandingPage />
   </div>;
 }

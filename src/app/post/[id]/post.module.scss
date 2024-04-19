@@ -14,8 +14,41 @@
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          .heart {
+          span {
+            margin: 0 7px;
+          }
+          .blackHeart {
+            cursor: pointer;
             margin-right: 20px;
+            transition: all 0.1s linear;
+            height: fit-content;
+            &:hover {
+              color: red;
+            }
+          }
+          .shareBtnContainer {
+            display: flex;
+            flex-direction: row;
+          }
+          .redHeart {
+            cursor: pointer;
+            color: red;
+            margin-right: 20px;
+          }
+          .blackShare {
+            height: fit-content;
+            transition: all 0.1s linear;
+            &:hover {
+              cursor: pointer;
+              color: rgb(0, 132, 255);
+            }
+          }
+          .blueShare {
+            height: fit-content;
+            color: rgb(0, 132, 255);
+            &:hover {
+              cursor: pointer;
+            }
           }
         }
       }
@@ -39,7 +72,9 @@
           justify-content: center;
           align-items: center;
           margin-right: 10px;
-
+          .imgAvt {
+            border-radius: 999px;
+          }
           img {
             width: 30px;
             height: 30px;
@@ -47,6 +82,12 @@
             margin-right: 5px;
           }
         }
+      }
+      .imgPost {
+        width: 100%;
+        object-fit: cover;
+        height: auto;
+        border-radius: 13px;
       }
       .postImage {
         align-items: center;
@@ -56,6 +97,7 @@
         margin-bottom: 30px;
       }
       .postBody {
+        margin: 20px 0;
         width: 100%;
         overflow-wrap: break-word;
       }

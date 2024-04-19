@@ -15,10 +15,9 @@ export const getAllPostRequest = async () => {
 };
 
 export const createNewPostRequest = async (postRequest) => {
-  return fetch(`${type.BACKEND_URL}/api/post/`, {
+  return fetch(`${type.BACKEND_URL}/api/post`, {
     method: "POST",
     headers: type.requestHeader,
-
     body: JSON.stringify(postRequest),
   })
     .then((response) => {
@@ -55,13 +54,67 @@ export const getPostByIdRequest = async (postId) => {
     });
 };
 export const getPostByUserIdRequest = async (userId) => {
-  return fetch(`${type.BACKEND_URL}/api/post/${userId}`, {
+  return fetch(`${type.BACKEND_URL}/api/post/user/${userId}`, {
     method: "GET",
     headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
     })
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const uploadPostImageRequest = async (image) => {
+  const formData = new FormData();
+  formData.append("image", image);
+  return fetch(`${type.BACKEND_URL}/api/post/upload-image`, {
+    method: "POST",
+    headers: {
+      Origin: type.FRONTEND_URL_DEV,
+    },
+
+    body: formData,
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const likePostRequest = async (postId, accountId) => {
+  return fetch(`${type.BACKEND_URL}/api/post/${postId}/like`, {
+    method: "POST",
+    headers: type.requestHeader,
+    body: JSON.stringify({
+      accountId: accountId,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const sharePostRequest = async (postId, accountId) => {
+  return fetch(`${type.BACKEND_URL}/api/post/${postId}/share`, {
+    method: "POST",
+    headers: type.requestHeader,
+    body: JSON.stringify({
+      accountId: accountId,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
     .catch((error) => {
       throw error;
     });

@@ -43,13 +43,12 @@ const Header = () => {
   const handleSignOut = async () => {
     googleLogout();
     setAuthenticated(null)
-    localStorage.removeItem("authenticated")
     localStorage.removeItem("user")
     window.location.replace("/login")
   }
 
   useEffect(() => {
-    setAuthenticated(localStorage.getItem("authenticated"))
+    setAuthenticated(localStorage.getItem("user"))
   }, [])
   return (
     <div className={styles.container}>
@@ -62,7 +61,7 @@ const Header = () => {
             <div className={styles.searchBarContainer}>
               <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
                 onChange={(e) => setSearchValue(e.target.value)} />
-              <Link href={`/search/${searchValue}`} shallow>
+              <Link href={`/search/${searchValue}`} prefetch={false}>
                 <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
                   Tìm kiếm
                 </button>
@@ -72,17 +71,17 @@ const Header = () => {
           </div>
 
           {authenticated ? (<>
-            <Link className={styles.right} href={"/member-package"} shallow>
+            <Link className={styles.right} href={"/member-package"} prefetch={false}>
               <div className={styles.memberRegisterBtn}>
                 Tham gia hội viên
               </div>
             </Link>
             <div className={styles.right} >
-              <Link href={"/account/profile"} shallow>
+              <Link href={"/account/profile"} prefetch={false}>
                 Tài khoản của tôi
               </Link>
             </div>
-            <Link className={styles.right} href={"/cart"} shallow>
+            <Link className={styles.right} href={"/cart"} prefetch={false}>
               <FontAwesomeIcon
                 icon={faCartShopping}
                 className="cursor-pointer"
@@ -96,12 +95,12 @@ const Header = () => {
           </>)
             : (
               <>
-                <Link className={styles.right} href={"/member-package"} shallow>
+                <Link className={styles.right} href={"/member-package"} prefetch={false}>
                   <div className={styles.memberRegisterBtn}>
                     Tham gia hội viên
                   </div>
                 </Link>
-                <Link className={styles.right} href={"/login"} shallow>
+                <Link className={styles.right} href={"/login"} prefetch={false}>
                   Login
                 </Link>
               </>
@@ -118,7 +117,7 @@ const Header = () => {
               <div className={styles.searchBarContainer}>
                 <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
                   onChange={(e) => setSearchValue(e.target.value)} />
-                <Link href="/search" shallow>
+                <Link href="/search" prefetch={false}>
                   <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
                     Tìm kiếm
                   </button>
@@ -140,22 +139,22 @@ const Header = () => {
                 Danh mục
               </div>
               <div className={styles.menuItem}>
-                <Link href="/book" shallow>
+                <Link href="/book" prefetch={false}>
                   Sách đọc
                 </Link>
               </div>
               <div className={styles.menuItem}>
-                <Link href="/audio-book" shallow>
+                <Link href="/audio-book" prefetch={false}>
                   Sách nói
                 </Link>
               </div>
               <div className={styles.menuItem}>
-                <Link href="/ranking/sachdoc" shallow>
+                <Link href="/ranking/sachdoc" prefetch={false}>
                   Bảng xếp hạng
                 </Link>
               </div>
               <div className={styles.menuItem} >
-                <Link href={"/account/profile"} shallow>
+                <Link href={"/account/profile"} prefetch={false}>
                   Tài khoản của tôi
                 </Link>
               </div>
@@ -163,7 +162,7 @@ const Header = () => {
                 Đăng xuất
               </div>
               <div className={styles.menuItem} >
-                <Link className={styles.right} href={"/member-package"} shallow>
+                <Link className={styles.right} href={"/member-package"} prefetch={false}>
                   <div className={styles.memberRegisterBtn}>
                     Tham gia hội viên
                   </div>
@@ -176,22 +175,22 @@ const Header = () => {
                   Danh mục
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/book" shallow>
+                  <Link href="/book" prefetch={false}>
                     Sách đọc
                   </Link>
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/audio-book" shallow>
+                  <Link href="/audio-book" prefetch={false}>
                     Sách nói
                   </Link>
                 </div>
                 <div className={styles.menuItem}>
-                  <Link href="/ranking/sachdoc" shallow>
+                  <Link href="/ranking/sachdoc" prefetch={false}>
                     Bảng xếp hạng
                   </Link>
                 </div>
                 <div className={styles.menuItem} >
-                  <Link href={"/login"} shallow>
+                  <Link href={"/login"} prefetch={false}>
                     Đăng nhập
                   </Link>
                 </div>
@@ -232,13 +231,13 @@ const Header = () => {
 
               </div> : <></>}
           </li>
-          <Link href="/book" shallow>
+          <Link href="/book" prefetch={false}>
             <li className={styles.bottomMenuItem}>Sách đọc</li>
           </Link>
-          <Link href="/audio-book" shallow>
+          <Link href="/audio-book" prefetch={false}>
             <li className={styles.bottomMenuItem}>Sách nói</li>
           </Link>
-          <Link href="/ranking/sachdoc" shallow>
+          <Link href="/ranking/sachdoc" prefetch={false}>
             <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
           </Link>
 

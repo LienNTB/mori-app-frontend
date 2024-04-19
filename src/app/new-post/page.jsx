@@ -1,9 +1,8 @@
-
 "use client"
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import styles from './NewPost.module.scss'
 import HeaderCommunity from '@/components/HeaderCommunity/Header'
-import { createNewPostRequest } from '../redux/saga/requests/post'
+import { createNewPostRequest, uploadPostImageRequest } from '../redux/saga/requests/post'
 import { useRouter } from 'next/navigation'
 import { Toaster, toast } from "react-hot-toast";
 import { Chip } from "@nextui-org/react";
@@ -11,10 +10,16 @@ import {
   Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure,
   Dropdown, DropdownTrigger, DropdownMenu, DropdownItem
 } from "@nextui-org/react";
-import { getAllTagsRequest } from '../redux/saga/requests/tag'
-import DocumentEditor from '@/components/DocumentEditor/DocumentEditor'
-import RichTextEditor from '../../components/RichTextEditor/RichTextEditor'
+import { getAllTagsRequest } from '../redux/saga/requests/tag';
+import dynamic from 'next/dynamic';
 
+const RichTextEditor = dynamic(
+  () =>
+    import('../../components/RichTextEditor/RichTextEditor').then(
+      (mod) => mod.default
+    ),
+  { ssr: false }
+)
 
 const NewPost = () => {
   const [user, setUser] = useState(null)
@@ -29,46 +34,58 @@ const NewPost = () => {
   );
   const [selectedTags, setSelectedTags] = useState([])
   const [postBodyContent, setPostBodyContent] = useState('');
-  console.log("postBodyContent", postBodyContent)
+  const [selectedImage, setSelectedImage] = useState("")
+
   const handleClose = (tagToRemove) => {
     setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
     if (selectedTags.length === 1) {
       setSelectedTags([]);
     }
   };
+  console.log("user", user)
   const handleCreatePost = () => {
     if (!user) {
       router.replace('/login')
     }
+
     let tagRequest = tags.filter(tagItem => {
       if (selectedTags.includes(tagItem.description)) {
         return tagItem._id
       }
     })
     tagRequest = tagRequest.map(item => item._id)
-    const postRequest = {
-      account: user._id,
-      title: title,
-      content: postBodyContent,
-      tag: tagRequest
-    }
-    console.log('user', user)
-    console.log("postRequest", postRequest)
+
     toast.promise(
       new Promise((resolve, reject) => {
-        createNewPostRequest(postRequest)
-          .then((resp) => {
-            if (resp.message) {
-              resolve(resp.message);
-              router.replace("/community")
-            } else {
-              console.log("resp.error", resp.error.toString())
-              reject(resp.error);
+        uploadPostImageRequest(selectedImage).then(respUploadImg => {
+          if (respUploadImg.error) {
+            reject(respUploadImg.error)
+          }
+          else {
+            const postRequest = {
+              account: (user._id.toString()),
+              title: title,
+              content: postBodyContent,
+              tag: tagRequest,
+              image: respUploadImg.filename
             }
-          })
-          .catch((err) => {
-            console.log("err", err);
-          });
+            console.log("postRequest", postRequest)
+            createNewPostRequest(postRequest)
+              .then((respCreatePost) => {
+                if (respCreatePost.message) {
+                  resolve(respCreatePost.message);
+                  router.replace("/community")
+                } else {
+                  console.log("respCreatePost.error", respCreatePost.error.toString())
+                  reject(respCreatePost.error);
+                }
+              })
+              .catch((err) => {
+                reject("Tạo bài viết thất bại! Vui lòng thử lại!")
+                console.log("err", err);
+              });
+          }
+        })
       }),
       {
         loading: "Processing...",
@@ -103,6 +120,10 @@ const NewPost = () => {
       <div className={styles.newPostContent}>
         <div className={styles.newPostTitle}>
           Tạo bài viết mới
+        </div>
+        <div className={styles.postTitle}>
+          <span>Hình ảnh bài viết: </span>
+          <input type="file" onChange={(e) => setSelectedImage(e.target.files[0])} />
         </div>
         <div className={styles.inputTitle}>
           <span>Tiêu đề bài viết: </span>
@@ -155,6 +176,7 @@ const NewPost = () => {
                     selectionMode="multiple"
                     selectedKeys={selectedKeys}
                     onSelectionChange={setSelectedKeys}
+                    style={{ overflowY: "scroll", maxHeight: "200px" }}
                   >
                     {
                       tags ? tags.map((tagItem) => (
@@ -180,8 +202,9 @@ const NewPost = () => {
         </ModalContent>
       </Modal>
 
-    </div>
+    </div >
   )
 }
 
 export default NewPost
+

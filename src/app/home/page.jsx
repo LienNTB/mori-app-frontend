@@ -6,7 +6,7 @@ import Features from '@/components/Features/Features'
 import Testimonials from '@/components/Testimonials/Testimonials'
 import Newsletter from '@/components/Newsletter/Newsletter'
 
-const Home = () => {
+const LandingPage = () => {
   return (
     <div className={styles.landingPageContainer}>
       <div className={styles.landingPageContent}>
@@ -19,4 +19,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default LandingPage

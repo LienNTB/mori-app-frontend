@@ -26,9 +26,8 @@ import axios from "axios";
 
 const Login = () => {
   const router = useRouter();
-  const [user, setUser] = useState("")
-  const [googleUser, setGoogleUser] = useState([]);
-  const [profile, setProfile] = useState([]);
+  const [googleUserResponse, setGoogleUserResponse] = useState(null);
+  const [googleUser, setGoogleUser] = useState(null)
   const [authenticated, setAuthenticated] = useState(null);
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
@@ -63,12 +62,14 @@ const Login = () => {
   };
 
   const handleSignInGoogle = useGoogleLogin({
-    onSuccess: (codeResponse) => setGoogleUser(codeResponse),
+    onSuccess: (codeResponse) => {
+      setGoogleUserResponse(codeResponse);
+
+    },
     onError: (error) => console.log('Login Failed:', error)
   });
 
-  console.log("setGoogleUser", setGoogleUser)
-  console.log("profile", profile)
+
   const handleSignInKeyPressed = (e) => {
     if (e.key === "Enter") {
       handleSignIn();
@@ -77,109 +78,58 @@ const Login = () => {
 
   const handleSignIn = () => {
     console.log("handleSignIn")
-    if (username == "" || password == "") {
-      toast.error("Vui lòng nhập đủ thông tin!", {
-        duration: 2000,
-        position: "top-center",
-      });
-    } else {
-      const account = {
-        username: username,
-        password: password,
-      };
-      toast.promise(
-        new Promise((resolve, reject) => {
-          loginAccountRequest(account).then((resp) => {
-            if (resp.message) {
-              // Kiểm tra account có bị khóa không
-              if (resp.user.is_blocked) {
-                reject(new Error("Tài khoản này đã bị khóa!"));
-              }
-              // trường hợp account không bị khóa
-              else {
-                // trường hợp account là user
-                resolve("Đăng nhập thành công!");
-                localStorage.setItem("authenticated", true);
-                localStorage.setItem(
-                  "user",
-                  JSON.stringify({
-                    _id: resp.user._id,
-                    username: resp.user.username,
-                    email: resp.user.email,
-                    displayName: resp.user.displayName,
-                    phoneNumber: resp.user.phoneNumber,
-                    avatar: resp.user.avatar,
-                  })
-                );
-                router.replace("/")
-              }
-
-            } else {
-              reject(resp.error);
+    const loginRequest = {
+      googleAccount: googleUser,
+      username,
+      password
+    }
+    toast.promise(
+      new Promise((resolve, reject) => {
+        loginAccountRequest(loginRequest)
+          .then(resp => {
+            console.log("resp login", resp)
+            if (resp.error) {
+              reject(resp.error)
             }
-          });
-        }),
-        {
-          loading: "Processing...",
-          success: (message) => message,
-          error: (error) => error,
-        }
-      );
-    }
-  };
+            else {
+              localStorage.setItem("user", JSON.stringify(resp.user))
+              router.replace('/')
+              resolve(resp.message)
+            }
+          })
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (message) => message,
+      }
+    );
+  }
 
   useEffect(() => {
-    if (authenticated) {
-      const currentAccount = JSON.parse(localStorage.getItem("user"));
-      if (currentAccount.is_blocked) {
-        toast.error("Tài khoản này đã bị khóa!")
-      }
-      else {
-        router.replace("/")
-      }
-
+    // handle login if handle login google
+    if (googleUser) {
+      handleSignIn()
     }
-  }, [authenticated]);
-
-  useEffect(() => {
-    getUserInfo();
-  }, [user]);
-  const getUserInfo = useCallback(() => {
-    if (user) {
-      console.log("user", user)
-      let newAccount = {
-        email: user.email,
-        displayName: user.name,
-        avatar: user.picture,
-      };
-      createAccountRequest(newAccount).then(() => {
-        getCurrentAccountRequest(newAccount).then((res) => {
-          console.log("res", res)
-          localStorage.setItem("user", JSON.stringify(res.account));
-          setUser(res.account)
-          localStorage.setItem("authenticated", true);
-          setAuthenticated(localStorage.getItem("authenticated"));
-        });
-      });
-    }
-  }, [user]);
+  }, [googleUser])
   useEffect(
     () => {
-      if (googleUser) {
+      if (googleUserResponse) {
         axios
-          .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleUser.access_token}`, {
+          .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleUserResponse.access_token}`, {
             headers: {
-              Authorization: `Bearer ${googleUser.access_token}`,
+              Authorization: `Bearer ${googleUserResponse.access_token}`,
               Accept: 'application/json'
             }
           })
           .then((res) => {
-            setUser(res.data);
+            setGoogleUser(res.data);
+            // handleSignIn()
           })
-          .catch((err) => console.log(err));
+          .catch((err) => toast.error("Đăng nhập Google thất bại! Vui lòng thử lại"));
       }
     },
-    [googleUser]
+    [googleUserResponse]
   );
   return (
     <>

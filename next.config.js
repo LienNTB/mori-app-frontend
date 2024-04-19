@@ -3,9 +3,9 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_GOOGLE_CLIENT_ID:
       "581005886543-016nfq2fq93sjroi50n8puejk9n1r9h3.apps.googleusercontent.com",
-    NEXT_PUBLIC_BACKEND_URL_DEV: "http://localhost:8080",
-    NEXT_PUBLIC_ADMIN_URL_DEV: "http://localhost:8080",
-    NEXT_PUBLIC_FRONTEND_URL_DEV: "http://localhost:8080",
+    NEXT_PUBLIC_BACKEND_URL_DEV: "https://ebook.workon.space",
+    NEXT_PUBLIC_ADMIN_URL_DEV: "https://ebook.workon.space",
+    NEXT_PUBLIC_FRONTEND_URL_DEV: "https://ebook.workon.space",
     NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN: "huonglienhcmutefit123",
     NEXT_PUBLIC_JWT_SECRET: "hcmutefitmoriauth",
     NEXT_PUBLIC_FACEBOOK_APP_ID: "705769797722154",

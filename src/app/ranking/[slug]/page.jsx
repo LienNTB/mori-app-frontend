@@ -3,7 +3,7 @@ import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
 import React, { useMemo } from "react";
 import styles from "../ranking.module.scss";
-import * as types from "@/app/redux/types"
+import * as types from "@/app/redux/types";
 import Link from "next/link";
 import {
   Button,
@@ -46,7 +46,7 @@ const Ranking = () => {
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useSWR(
-    `${type.BACKEND_URL}/api/bookRanking/getRanking/${selectedRanking}`,
+    `${types.BACKEND_URL}/api/bookRanking/getRanking/${selectedRanking}`,
     fetcher,
     {
       keepPreviousData: true,
@@ -153,7 +153,7 @@ const Ranking = () => {
                       <TableCell>
                         <Link href={`/book/${item?.book_id}`} shallow>
                           <img
-                            src={item?.bookInfo?.image}
+                            src={`${types.BACKEND_URL}/api/bookimg/${item?.bookInfo?.image}`}
                             alt={item?.bookInfo?.name || "Hình ảnh sách"}
                             className={styles.responsiveImage}
                           />

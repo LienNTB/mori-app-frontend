@@ -29,7 +29,7 @@ deploy:
   environment: production
   script:
     - ssh hcmute@103.130.211.150 -p 10038
-    - hcmute@fit
+    - echo "hcmute@fit"
     - cd project/MoriApp_20110141_20110335/mori-app-deploy
     - docker-compose down
     - docker-compose pull

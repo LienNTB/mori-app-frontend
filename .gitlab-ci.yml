@@ -14,12 +14,10 @@ stages:
   - build
   - deploy
 
-before_script:
-  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-
 build:
   stage: build
   script:
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker build -t frontend .
     - docker tag frontend "$DOCKER_IMAGE"
     - docker push "$DOCKER_IMAGE"

@@ -38,23 +38,21 @@ const VNpayreturn = () => {
   };
 
   useEffect(() => {
-    // Parse URL query parameters
     const params = new URLSearchParams(window.location.search);
     const queryParams = {};
     for (const [key, value] of params.entries()) {
       queryParams[key] = value;
     }
     setQueryData(queryParams);
-
+  
     const membership = JSON.parse(localStorage.getItem("membership"));
     setMembership(membership);
-
-    if (vnp_ResponseCode === "00") {
-      handleRegisterMembership(membership);
+  
+    if (queryParams.vnp_ResponseCode === "00") {
+      handleRegisterMembership(membership.membership);
     }
   }, []);
 
-  // Extract query parameters from the state
   const {
     vnp_Amount,
     vnp_BankCode,

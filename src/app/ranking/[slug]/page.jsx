@@ -46,7 +46,7 @@ const Ranking = () => {
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useSWR(
-    `${type.BACKEND_URL}/api/bookRanking/getRanking/${selectedRanking}`,
+    `${types.BACKEND_URL}/api/bookRanking/getRanking/${selectedRanking}`,
     fetcher,
     {
       keepPreviousData: true,

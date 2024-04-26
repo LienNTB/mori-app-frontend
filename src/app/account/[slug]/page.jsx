@@ -28,11 +28,8 @@ import {
 import { getMembershipById } from "@/app/redux/actions/membership";
 import { getReadHistory } from "@/app/redux/actions/book";
 import bookImg from "../../../../public/book.png";
-import * as types from "@/app/redux/types"
+import * as types from "@/app/redux/types";
 import { getPostByUserIdRequest } from "@/app/redux/saga/requests/post";
-
-
-
 
 const Profile = () => {
   const params = useParams();
@@ -46,8 +43,8 @@ const Profile = () => {
   const deleteBookResult = useSelector((state) => state.myLibrary.message);
   const membership = useSelector((state) => state.memberships.membership);
   const isLoadingMembership = useSelector((state) => state.memberships.loading);
-  const [postList, setPostList] = useState([])
-  const [isLoadingPostList, setIsLoadingPostList] = useState(false)
+  const [postList, setPostList] = useState([]);
+  const [isLoadingPostList, setIsLoadingPostList] = useState(false);
   const [click, setClick] = useState(0);
   const dispatch = useDispatch();
 
@@ -77,19 +74,17 @@ const Profile = () => {
   }
 
   const getPostData = () => {
-    setIsLoadingPostList(true)
-    getPostByUserIdRequest(currentAccount._id)
-      .then(resp => {
-        console.log('postlist', resp.data)
-        setPostList(resp.data)
-      })
-    setIsLoadingPostList(false)
-
-  }
+    setIsLoadingPostList(true);
+    getPostByUserIdRequest(currentAccount._id).then((resp) => {
+      console.log("postlist", resp.data);
+      setPostList(resp.data);
+    });
+    setIsLoadingPostList(false);
+  };
   useEffect(() => {
     dispatch(getMembershipById(currentAccount._id));
     dispatch(getReadHistory(currentAccount._id));
-    getPostData()
+    getPostData();
   }, []);
 
   useEffect(() => {
@@ -103,7 +98,10 @@ const Profile = () => {
           <div className={styles.accountBody}>
             <div className={styles.accountAvatar}>
               {currentAccount.avatar ? (
-                <img src={`${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} alt="avt" />
+                <img
+                  src={`${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`}
+                  alt="avt"
+                />
               ) : (
                 <img
                   src="https://docsachhay.net/frontend/images/default-avatar.jpg"
@@ -165,19 +163,39 @@ const Profile = () => {
           </div>
           <div className={styles.ruler}></div>
           <div className={styles.accountNav}>
-            <div className={styles.navItem}>
+            <div
+              className={`${styles.navItem} ${
+                currentTopic === "profile" ? styles.active : ""
+              }`}
+            >
               <Link href="/account/profile">Thông tin cá nhân</Link>
             </div>
-            <div className={styles.navItem}>
+            <div
+              className={`${styles.navItem} ${
+                currentTopic === "library" ? styles.active : ""
+              }`}
+            >
               <Link href="/account/library">Thư viện của tôi</Link>
             </div>
-            <div className={styles.navItem}>
+            <div
+              className={`${styles.navItem} ${
+                currentTopic === "history" ? styles.active : ""
+              }`}
+            >
               <Link href="/account/history">Lịch sử đọc </Link>
             </div>
-            <div className={styles.navItem}>
+            <div
+              className={`${styles.navItem} ${
+                currentTopic === "membership" ? styles.active : ""
+              }`}
+            >
               <Link href="/account/membership">Thông tin hội viên</Link>
             </div>
-            <div className={styles.navItem}>
+            <div
+              className={`${styles.navItem} ${
+                currentTopic === "my-post" ? styles.active : ""
+              }`}
+            >
               <Link href="/account/my-post">Bài viết của tôi</Link>
             </div>
           </div>
@@ -408,29 +426,32 @@ const Profile = () => {
             </div>
             <div className={styles.uTable}>
               <div className={styles.myPostList}>
-                {
-                  isLoadingPostList ?
-                    <isLoading />
-                    :
-                    <>
-                      {
-                        postList.length === 0 ?
-                          <div>
-                            Chưa có bài viết.
+                {isLoadingPostList ? (
+                  <isLoading />
+                ) : (
+                  <>
+                    {postList.length === 0 ? (
+                      <div>Chưa có bài viết.</div>
+                    ) : (
+                      postList.map((post) => (
+                        <Link href={`/post/${post._id}`}>
+                          <div className={styles.postItem}>
+                            <img
+                              className={styles.imgPost}
+                              src={
+                                post?.image
+                                  ? `${types.BACKEND_URL}/api/postimg/${post?.image}`
+                                  : tempImg
+                              }
+                              alt="main post img"
+                            />
+                            <div className={styles.postTitle}>{post.title}</div>
                           </div>
-                          :
-                          postList.map(post => (
-                            <Link href={`/post/${post._id}`}>
-                              <div className={styles.postItem}>
-                                <img className={styles.imgPost} src={post?.image ? `${types.BACKEND_URL}/api/postimg/${post?.image}` : tempImg} alt="main post img" />
-                                <div className={styles.postTitle}>{post.title}</div>
-                              </div>
-                            </Link>
-
-                          ))
-                      }
-                    </>
-                }
+                        </Link>
+                      ))
+                    )}
+                  </>
+                )}
                 {/* <div className={styles.postItem}>
                   <Image src={bookImg} alt="post img" />
                   <div className={styles.postTitle}>title</div>

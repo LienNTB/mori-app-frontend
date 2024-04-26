@@ -51,6 +51,13 @@ const Profile = () => {
   const [userTrans, setUserTrans] = useState();
   const dispatch = useDispatch();
 
+  function getBookType(book) {
+    if (book.access_level == 2) {
+      return "book";
+    }
+    return book.chapters && book.chapters.length > 0 ? "audio-book" : "ebook";
+  }
+
   const handleDeleteBook = (choosenBook) => {
     var request = {
       user: currentAccount._id,
@@ -296,7 +303,11 @@ const Profile = () => {
                           />
                         </td>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
-                          <Link href={`/book/${book.book._id}`}>
+                          <Link
+                            href={`/${getBookType(book.book)}/${book.book._id}`}
+                            prefetch={false}
+                            shallow
+                          >
                             {book.book.name}
                           </Link>
                         </td>
@@ -362,7 +373,11 @@ const Profile = () => {
                           />
                         </td>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
-                          <Link href={`/book/${book.book._id}`}>
+                          <Link
+                            href={`/${getBookType(book.book)}/${book.book._id}`}
+                            prefetch={false}
+                            shallow
+                          >
                             {book.book.name}
                           </Link>
                         </td>
@@ -524,17 +539,28 @@ const Profile = () => {
                           />
                         </td>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
-                          {trans.product.name}
+                          <Link
+                            href={`/${getBookType(trans.product)}/${trans.product._id}`}
+                            prefetch={false}
+                            shallow
+                          >
+                            {trans.product.name}
+                          </Link>
                         </td>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
                           {trans.product.author}
                         </td>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                          thể loại
+                          {trans.product.tags.map((tag, index) => (
+                            <React.Fragment key={index}>{tag}</React.Fragment>
+                          ))}
                         </td>
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
                           <div className={styles.readBtn}>
-                            <Link href={`/reader/${trans.product._id}`}>
+                            <Link
+                              href={`/reader/${trans.product._id}`}
+                              prefetch={false}
+                            >
                               Đọc sách
                             </Link>
                           </div>

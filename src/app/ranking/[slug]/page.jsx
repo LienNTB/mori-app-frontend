@@ -33,18 +33,14 @@ import useSWR from "swr";
 
 const Ranking = () => {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["Ngày"]));
-
   const selectedValue = useMemo(
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
     [selectedKeys]
   );
 
   const [selectedRanking, setSelectedRanking] = useState("daily");
-
-  // for table
   const fetcher = (...args) => fetch(...args).then((res) => res.json());
   const [page, setPage] = useState(1);
-
   const { data, isLoading } = useSWR(
     `${types.BACKEND_URL}/api/bookRanking/getRanking/${selectedRanking}`,
     fetcher,
@@ -54,15 +50,19 @@ const Ranking = () => {
   );
 
   const rowsPerPage = 10;
-
   const pages = useMemo(() => {
     return data?.count ? Math.ceil(data.count / rowsPerPage) : 0;
   }, [data?.count, rowsPerPage]);
-
   const loadingState =
     isLoading || data?.rankingData.length === 0 ? "loading" : "idle";
 
-  // end for table
+    function getBookType(book) {
+      if (book.access_level == 2) {
+        return "book";
+      }
+      return book.chapters && book.chapters.length > 0 ? "audio-book" : "ebook";
+    }
+
   return (
     <div className={styles.rankingContainer}>
       <Header />
@@ -151,7 +151,11 @@ const Ranking = () => {
                     <TableRow key={item?.book_id}>
                       {/* <TableCell>{index ? index : ""}</TableCell> */}
                       <TableCell>
-                        <Link href={`/book/${item?.book_id}`} shallow>
+                        <Link
+                          href={`/${getBookType(item)}/${item?.book_id}`}
+                          prefetch={false}
+                          shallow
+                        >
                           <img
                             src={`${types.BACKEND_URL}/api/bookimg/${item?.bookInfo?.image}`}
                             alt={item?.bookInfo?.name || "Hình ảnh sách"}
@@ -160,12 +164,20 @@ const Ranking = () => {
                         </Link>
                       </TableCell>
                       <TableCell>
-                        <Link href={`/book/${item?.book_id}`} shallow>
+                        <Link
+                          href={`/${getBookType(item)}/${item?.book_id}`}
+                          prefetch={false}
+                          shallow
+                        >
                           {item?.bookInfo?.name}
                         </Link>
                       </TableCell>
                       <TableCell>
-                        <Link href={`/book/${item?.book_id}`} shallow>
+                        <Link
+                          href={`/${getBookType(item)}/${item?.book_id}`}
+                          prefetch={false}
+                          shallow
+                        >
                           {item?.bookInfo?.author}
                         </Link>
                       </TableCell>

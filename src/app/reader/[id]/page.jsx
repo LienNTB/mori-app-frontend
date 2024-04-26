@@ -25,7 +25,7 @@ import {
   addNoteForBookRequest,
   getNotesForBookByUserRequest,
 } from "@/app/redux/saga/requests/note";
-import * as types from "@/app/redux/types"
+import * as types from "@/app/redux/types";
 
 const Reader = () => {
   const [location, setLocation] = useState(0);
@@ -36,7 +36,7 @@ const Reader = () => {
   const [rendition, setRendition] = useState(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [scrollBehavior, setScrollBehavior] = React.useState("inside");
-  let currentAccount = JSON.parse(localStorage.getItem("user"));
+  const [currentAccount, setCurrentAccount] = useState(0);
   const fetcher = (...args) => fetch(...args).then((res) => res.json());
   const [isSelectionMenuOpen, setSelectionMenuOpen] = useState(false);
   const [currentCfiRange, setCurrentCfiRange] = useState(null);
@@ -134,6 +134,8 @@ const Reader = () => {
 
   // gọi đầu tiên
   useEffect(() => {
+    const currentAccount = JSON.parse(localStorage.getItem("user"));
+    setCurrentAccount(currentAccount);
     getBookByIdRequest(id).then((res) => {
       setBook(res.book);
       if (res.book && currentAccount) {
@@ -298,7 +300,7 @@ const Reader = () => {
                       width: "20px",
                       height: "20px",
                       cursor: "pointer",
-                      marginleft: "5px"
+                      marginleft: "5px",
                     }}
                     onClick={() =>
                       handleSelectHighlighter({

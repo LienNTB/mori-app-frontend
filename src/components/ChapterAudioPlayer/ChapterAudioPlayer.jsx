@@ -10,13 +10,15 @@ const ChapterAudioPlayer = ({ chapter, book }) => {
 
   useEffect(() => {
     const audio = audioRef.current;
+    const encodedBook = encodeURIComponent(book.name);
+    const encodedChapter = encodeURIComponent(chapter.name);
     const encodedChapterAudio = encodeURIComponent(chapter.audio);
 
     // Kiểm tra xem trình duyệt có hỗ trợ HLS không
     if (Hls.isSupported()) {
       hlsRef.current = new Hls();
       hlsRef.current.loadSource(
-        `${types.BACKEND_URL}/api/bookaudio/${encodedChapterAudio}`
+        `${types.BACKEND_URL}/api/bookaudio/${encodedBook}/${encodedChapter}/${encodedChapterAudio}`
       );
       hlsRef.current.attachMedia(audio);
     }

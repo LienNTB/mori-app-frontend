@@ -198,6 +198,9 @@ const Profile = () => {
             >
               <Link href="/account/my-post">Bài viết của tôi</Link>
             </div>
+            <div className={styles.navItem}>
+              <Link href="/account/my-book">Sách đã mua</Link>
+            </div>
           </div>
         </section>
         {/* profile section */}
@@ -461,6 +464,66 @@ const Profile = () => {
                   <div className={styles.postTitle}>title</div>
                 </div> */}
               </div>
+            </div>
+          </section>
+        ) : (
+          <></>
+        )}
+        {currentTopic == "my-book" ? (
+          <section className={styles.profileInfo}>
+            <div className={styles.historyHead}>
+              <div className={styles.title}>
+                Danh sách sách, truyện bạn đã mua{" "}
+              </div>
+            </div>
+
+            <div className={styles.libraryBody}>
+              <table class="table-auto w-full">
+                <thead class="bg-slate-300">
+                  <tr>
+                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                      Hình
+                    </th>
+                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                      Sách
+                    </th>
+                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                      Tác giả
+                    </th>
+                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                      Thể loại
+                    </th>
+                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                      Hành động
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                      <img
+                        src={bookImg}
+                        alt="image"
+                        className={styles.bookLibImg}
+                      />
+                    </td>
+                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
+                      <Link href={`/book/id`}>
+                        book name
+                      </Link>
+                    </td>
+                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                      author
+                    </td>
+                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                      thể loại
+                    </td>
+                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                      <div className={styles.readBtn}>Đọc sách</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </section>
         ) : (

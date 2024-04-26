@@ -30,6 +30,7 @@ import { getReadHistory } from "@/app/redux/actions/book";
 import bookImg from "../../../../public/book.png";
 import * as types from "@/app/redux/types";
 import { getPostByUserIdRequest } from "@/app/redux/saga/requests/post";
+import { getUserTransactionsRequest } from "@/app/redux/saga/requests/transaction";
 
 const Profile = () => {
   const params = useParams();
@@ -45,7 +46,9 @@ const Profile = () => {
   const isLoadingMembership = useSelector((state) => state.memberships.loading);
   const [postList, setPostList] = useState([]);
   const [isLoadingPostList, setIsLoadingPostList] = useState(false);
+  const [isLoadingUserTrans, setIsLoadingUserTrans] = useState(false);
   const [click, setClick] = useState(0);
+  const [userTrans, setUserTrans] = useState();
   const dispatch = useDispatch();
 
   const handleDeleteBook = (choosenBook) => {
@@ -76,15 +79,24 @@ const Profile = () => {
   const getPostData = () => {
     setIsLoadingPostList(true);
     getPostByUserIdRequest(currentAccount._id).then((resp) => {
-      console.log("postlist", resp.data);
       setPostList(resp.data);
     });
     setIsLoadingPostList(false);
   };
+
+  const getUserTransactions = () => {
+    setIsLoadingUserTrans(true);
+    getUserTransactionsRequest(currentAccount._id, "Book").then((resp) => {
+      setUserTrans(resp.transactions);
+    });
+    setIsLoadingUserTrans(false);
+  };
+
   useEffect(() => {
     dispatch(getMembershipById(currentAccount._id));
     dispatch(getReadHistory(currentAccount._id));
     getPostData();
+    getUserTransactions();
   }, []);
 
   useEffect(() => {
@@ -499,29 +511,37 @@ const Profile = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                      <img
-                        src={bookImg}
-                        alt="image"
-                        className={styles.bookLibImg}
-                      />
-                    </td>
-                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
-                      <Link href={`/book/id`}>
-                        book name
-                      </Link>
-                    </td>
-                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                      author
-                    </td>
-                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                      thể loại
-                    </td>
-                    <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                      <div className={styles.readBtn}>Đọc sách</div>
-                    </td>
-                  </tr>
+                  {!userTrans ? (
+                    <Loading />
+                  ) : (
+                    userTrans.map((trans) => (
+                      <tr>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          <img
+                            src={`${types.BACKEND_URL}/api/bookimg/${trans.product.image}`}
+                            alt="image"
+                            className={styles.bookLibImg}
+                          />
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
+                          {trans.product.name}
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          {trans.product.author}
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          thể loại
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          <div className={styles.readBtn}>
+                            <Link href={`/reader/${trans.product._id}`}>
+                              Đọc sách
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

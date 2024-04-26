@@ -59,9 +59,8 @@ const MemberPackage = () => {
     //   );
     //   console.log("The expiration date is still valid."); // Perform actions for a valid date
     // }
-    // else 
+    // else
     if (membertype) {
-
       const membership = {
         user: currentAccount._id,
         type: membertype,
@@ -70,12 +69,25 @@ const MemberPackage = () => {
       };
 
       let price = 0;
+      var type = null;
+      let productId = null;
       membershipTypes.map((membershipType) => {
-        if (membershipType.name == membertype) price = membershipType.price;
+        if (membershipType.name == membertype) {
+          price = membershipType.price;
+          description = membershipType.description;
+          productId = membershipType._id;
+        }
       });
+      var type = "Membership";
+      var payment = {
+        price: price,
+        description: description,
+        type: type,
+        productId: productId,
+      };
+      localStorage.setItem("payment", JSON.stringify(payment));
 
-      var membershipData = { membership: membership, price: price };
-      localStorage.setItem("membership", JSON.stringify(membershipData));
+      localStorage.setItem("membership", JSON.stringify(membership));
 
       router.replace("/payment");
       // handleRegisterMembership(membership)
@@ -84,7 +96,7 @@ const MemberPackage = () => {
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
     request.getAllMembershipTypeRequest().then((res) => {
-      // console.log(res.membershipTypes);
+      console.log(res.membershipTypes);
       setMembershipTypes(res.membershipTypes);
     });
   }, []);

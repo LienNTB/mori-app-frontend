@@ -11,14 +11,18 @@ import { useState, useEffect } from "react";
 import * as types from "@/app/redux/types";
 import { Toaster, toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import {
+  orderPaymentRequest,
+} from "@/app/redux/saga/requests/order";
 
-function Checkout() {
+function Payment() {
   const router = useRouter();
   const [currentAccount, setCurrentAccount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [activePaymentMethod, setActivePaymentMethod] = React.useState("qr");
   const [isOpen, setIsOpen] = useState(false); // State for dropdown visibility
   const [membership, setMembership] = useState(0);
+  const [payment, setPayment] = useState(0);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -29,7 +33,27 @@ function Checkout() {
   };
 
   const handleVNPAY = async () => {
-    router.replace("/payment-vnpay");
+    try {
+      const requestPayment = {
+        amount: payment.price,
+        bankCode: "",
+        language: "vn",
+      };
+      const paymentResp = await orderPaymentRequest(requestPayment);
+
+      // Nếu orderPaymentRequest thành công
+      if (paymentResp && paymentResp.paymentUrl) {
+        // Chuyển hướng trình duyệt đến URL thanh toán từ dữ liệu phản hồi
+        router.push(paymentResp.paymentUrl);
+      } else {
+        throw new Error("Đã có lỗi xảy ra khi thực hiện thanh toán");
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      throw error;
+    }
+
+    // router.replace("/payment-vnpay");
   };
 
   const handlePaymentMethodChange = (e) => {
@@ -43,6 +67,10 @@ function Checkout() {
     const membership = JSON.parse(localStorage.getItem("membership"));
     setMembership(membership);
     console.log("membership", membership);
+
+    const payment = JSON.parse(localStorage.getItem("payment"));
+    setPayment(payment);
+    console.log("payment", payment);
 
     setPaymentMethod("cod");
   }, []);
@@ -288,48 +316,15 @@ function Checkout() {
                 <td className={styles.label}>Sản phẩm</td>
                 <td className={styles.product}>
                   <div className={styles.dropdown}>
-                    <div
-                      className={styles.dropdownButton}
-                      aria-haspopup="list"
-                      aria-controls="dropdown-menu"
-                      role="button"
-                      tabIndex="0"
-                      onClick={toggleDropdown}
-                    >
-                      <p className={styles.dropdownText}>
-                        Gói hội viên Waka 12 Tháng
-                      </p>
-                      <img
-                        src="https://waka.vn/svgs/icon-chevron-down.svg"
-                        alt="icon-chevron-down"
-                        className={styles.dropdownIcon}
-                      />
+                    <div className={styles.dropdownButton}>
+                      <p className={styles.dropdownText}>{payment.description}</p>
                     </div>
-                    {isOpen && (
-                      <ul className={styles.dropdownMenu} id="dropdown-menu">
-                        <li className={styles.dropdownItem}>
-                          <p className={styles.dropdownItemText}>
-                            Gói hội viên Waka 3 Tháng
-                          </p>
-                        </li>
-                        <li className={styles.dropdownItem}>
-                          <p className={styles.dropdownItemText}>
-                            Gói hội viên Waka 6 tháng
-                          </p>
-                        </li>
-                        <li className={styles.dropdownItemSelected}>
-                          <p className={styles.dropdownItemText}>
-                            Gói hội viên Waka 12 Tháng
-                          </p>
-                        </li>
-                      </ul>
-                    )}
                   </div>
                 </td>
               </tr>
               <tr>
                 <td className={styles.label}>Tạm tính</td>
-                <td className={styles.price}>{membership.price}</td>
+                <td className={styles.price}>{payment.price}</td>
               </tr>
               <tr>
                 <td className={styles.label}>Hình thức thanh toán</td>
@@ -337,6 +332,7 @@ function Checkout() {
                   {paymentMethod === "qr" && "QR Code"}
                   {paymentMethod === "bank" && "Thẻ ATM"}
                   {paymentMethod === "card" && "Thẻ tín dụng/ghi nợ"}
+                  {paymentMethod === "digital-wallet" && "Ví điện tử"}
                 </td>
               </tr>
               <tr className={styles.hidden}>
@@ -346,13 +342,17 @@ function Checkout() {
               <tr>
                 <td className={`${styles.label} ${styles.borderTop}`}>TỔNG</td>
                 <td className={`${styles.total} ${styles.borderTop}`}>
-                  {membership.price}
+                  {payment.price}
                 </td>
               </tr>
             </tbody>
           </table>
           <div className={styles.buttonContainer}>
-            <button type="button" className={styles.button} onClick={handleVNPAY}>
+            <button
+              type="button"
+              className={styles.button}
+              onClick={handleVNPAY}
+            >
               Thanh toán
             </button>
           </div>
@@ -364,4 +364,4 @@ function Checkout() {
   );
 }
 
-export default Checkout;
+export default Payment;

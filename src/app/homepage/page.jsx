@@ -14,22 +14,32 @@ import Loading from "@/components/Loading/Loading";
 
 const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [books, setBooks] = useState(null)
-  const [tags, setTags] = useState(null)
-  const itemsPerPage = 20;
-  const totalPages = Math.ceil((books?.length || 0) / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const displayedItems = books?.slice(startIndex, endIndex);
+  const [books, setBooks] = useState(null);
+  const [tags, setTags] = useState(null);
+  // const itemsPerPage = 20;
+  // const totalPages = Math.ceil((books?.length || 0) / itemsPerPage);
+  // const startIndex = (currentPage - 1) * itemsPerPage;
+  // const endIndex = startIndex + itemsPerPage;
+  // const displayedItems = books?.slice(startIndex, endIndex);
+  const [booksLoaded, setBooksLoaded] = useState(false);
 
   useEffect(() => {
-    getAllBooksRequest().then(res => {
-      setBooks(res.books)
-    })
-    getAllTagsRequest().then(res => {
-      setTags(res.allTags)
-    })
-  }, [])
+    getAllBooksRequest().then((res) => {
+      const categorizedBooks = {
+        free: res.books.filter((book) => book.access_level == 0).slice(0, 10),
+        member: res.books.filter((book) => book.access_level == 1).slice(0, 10),
+        purchase: res.books
+          .filter((book) => book.access_level == 2)
+          .slice(0, 10),
+      };
+      setBooks(categorizedBooks);
+      console.log(categorizedBooks);
+      // setBooks(res.books)
+    });
+    getAllTagsRequest().then((res) => {
+      setTags(res.allTags);
+    });
+  }, []);
   return (
     <div className={styles.homePageContainer}>
       <Header />
@@ -60,27 +70,32 @@ const HomePage = () => {
           <div className={styles.ruler}></div>
           <div className={styles.sectionBody}>
             <div className={styles.tagList}>
-              {tags ?
+              {tags ? (
                 tags.map((tag, index) => (
                   <div className={styles.tagItem}>
                     <Tag
                       key={index}
                       name={tag.description}
                       link={`/book-category/${tag.name}`}
+                      prefetch={false}
+                      shallow
                     />
                   </div>
-                )) :
-                <>...</>}
+                ))
+              ) : (
+                <>...</>
+              )}
             </div>
           </div>
         </section>
         <section className={styles.bookSectionContainer}>
           <div className={styles.sectionHeader}>
-            <h3>Sách hay nên đọc</h3>
+            <h3>Sách miễn phí</h3>
             <a
-              title="Sách hay nên đọc"
-              href="/book-category/sach-hay"
-              className="getmorebtn"
+              title="Sách miễn phí"
+              href="/book-category/free"
+              className={styles.getmorebtn}
+              prefetch={false}
             >
               Xem thêm
             </a>
@@ -88,26 +103,87 @@ const HomePage = () => {
           <div className={styles.ruler}></div>
           <div className={styles.sectionBody}>
             <div className={styles.bookList}>
-              {displayedItems ?
-                displayedItems.map((book) => {
+              {books ? (
+                books.free.map((book) => {
                   return (
                     <div className={styles.bookItem}>
                       <BookItem book={book} key={book._id} />
                     </div>
                   );
-                }) : <Loading />}
+                })
+              ) : (
+                <Loading />
+              )}
+            </div>
+          </div>
+        </section>
+        <section className={styles.bookSectionContainer}>
+          <div className={styles.sectionHeader}>
+            <h3>Sách hội viên</h3>
+            <a
+              title="Sách hội viên"
+              href="/book-category/member"
+              className={styles.getmorebtn}
+              prefetch={false}
+            >
+              Xem thêm
+            </a>
+          </div>
+          <div className={styles.ruler}></div>
+          <div className={styles.sectionBody}>
+            <div className={styles.bookList}>
+              {books ? (
+                books.member.map((book) => {
+                  return (
+                    <div className={styles.bookItem}>
+                      <BookItem book={book} key={book._id} />
+                    </div>
+                  );
+                })
+              ) : (
+                <Loading />
+              )}
+            </div>
+          </div>
+        </section>
+        <section className={styles.bookSectionContainer}>
+          <div className={styles.sectionHeader}>
+            <h3>Sách mua lẻ</h3>
+            <a
+              title="Sách mua lẻ"
+              href="/book-category/purchase"
+              className={styles.getmorebtn}
+              prefetch={false}
+            >
+              Xem thêm
+            </a>
+          </div>
+          <div className={styles.ruler}></div>
+          <div className={styles.sectionBody}>
+            <div className={styles.bookList}>
+              {books ? (
+                books.purchase.map((book) => {
+                  return (
+                    <div className={styles.bookItem}>
+                      <BookItem book={book} key={book._id} />
+                    </div>
+                  );
+                })
+              ) : (
+                <Loading />
+              )}
             </div>
           </div>
         </section>
       </div>
-      <div className={styles.pagination}>
+      {/* <div className={styles.pagination}>
         <Pagination
           total={totalPages}
           initialPage={1}
           page={currentPage}
           onChange={setCurrentPage}
         />
-      </div>
+      </div> */}
       <Footer />
     </div>
   );

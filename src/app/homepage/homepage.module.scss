@@ -1,114 +1,118 @@
 .homePageContainer {
-  font-size: 14px;
-  .homePageContent {
-    padding: 20px 100px;
-    .headContent {
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 10px;
-      color: white;
-      background-image: url("https://docsachhay.net/bg-home-2.jpg");
-    }
-    .bookSectionContainer {
-      .sectionHeader {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        font-weight: 600;
-      }
-      .sectionBody {
-        margin-bottom: 10px;
-        .bookList {
-          display: flex;
-          //   justify-content: space-between;
-          flex-wrap: wrap;
-          margin-left: -10px;
-          width: 100%;
-          .bookItem {
-            margin-right: 25px;
-            margin-bottom: 30px;
-            // width: calc(15% - 10px);
-            display: block;
-            img {
-              width: 100%;
-              height: 210px;
-              border-radius: 8px;
-              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-              transition: transform 0.2s ease-in-out;
-            }
-            &:hover {
-              img {
-                transform: scale(1.05);
-              }
-            }
-          }
+    font-size: 14px;
+    .homePageContent {
+        padding: 20px 100px;
+        .headContent {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            color: white;
+            background-image: url("https://docsachhay.net/bg-home-2.jpg");
         }
-        .tagList {
-          display: flex;
-          flex-wrap: wrap;
-          .tagItem {
-            margin: 5px 5px 0 0;
-          }
+        .bookSectionContainer {
+            .sectionHeader {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                font-weight: 600;
+                font-size: 18px;
+                .getmorebtn {
+                    font-size: 15px;
+                }
+            }
+            .sectionBody {
+                margin-bottom: 10px;
+                .bookList {
+                    display: flex;
+                    //   justify-content: space-between;
+                    flex-wrap: wrap;
+                    margin-left: -10px;
+                    width: 100%;
+                    .bookItem {
+                        margin-right: 25px;
+                        margin-top: 15px;
+                        margin-bottom: 10px;
+                        // width: calc(15% - 10px);
+                        display: block;
+                        img {
+                            width: 100%;
+                            height: 210px;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                            transition: transform 0.2s ease-in-out;
+                        }
+                        &:hover {
+                            img {
+                                transform: scale(1.05);
+                            }
+                        }
+                    }
+                }
+                .tagList {
+                    display: flex;
+                    flex-wrap: wrap;
+                    .tagItem {
+                        margin: 5px 5px 0 0;
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
 
 .ruler {
-  width: 100%;
-  height: 3px;
-  border-radius: 20px;
-  background-color: rgb(221, 221, 221);
-  margin: 5px 0;
+    width: 100%;
+    height: 3px;
+    border-radius: 20px;
+    background-color: rgb(221, 221, 221);
+    margin: 5px 0;
 }
 
 .pagination {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-@media (max-width: 576px) {
-  .bookList {
     width: 100%;
     display: flex;
     justify-content: center;
-  }
-  .headContent {
-    margin-top: 70px !important;
-  }
-  .homePageContent {
-    padding: 20px 5px !important;
-  }
-  .headContent {
-  }
+}
+
+@media (max-width: 576px) {
+    .bookList {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    .headContent {
+        margin-top: 70px !important;
+    }
+    .homePageContent {
+        padding: 20px 5px !important;
+    }
+    .headContent {}
 }
 
 @media (min-width: 577px) and (max-width: 768px) {
-  .bookList {
-    .bookItem {
-      margin-left: 20px;
-      width: 40%;
+    .bookList {
+        .bookItem {
+            margin-left: 20px;
+            width: 40%;
+        }
     }
-  }
-  .homePageContent {
-    padding: 20px 15px !important;
-  }
+    .homePageContent {
+        padding: 20px 15px !important;
+    }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  .bookList {
-    .bookItem {
-      width: 20%;
+    .bookList {
+        .bookItem {
+            width: 20%;
+        }
     }
-  }
 }
 
 @media (min-width: 1025px) {
-  .bookList {
-    .bookItem {
-      width: 17%;
+    .bookList {
+        .bookItem {
+            width: 17%;
+        }
     }
-  }
 }

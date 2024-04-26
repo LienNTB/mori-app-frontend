@@ -9,18 +9,49 @@ import { useDispatch, useSelector } from "react-redux";
 import { getBooks } from "@/app/redux/actions/book";
 import Loading from "@/components/Loading/Loading";
 import { Pagination } from "@nextui-org/react";
+import { useParams } from "next/navigation";
+import { getAllTagsRequest } from "@/app/redux/saga/requests/tag";
 
 const BookCategory = ({ books }) => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.books.loading);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 18;
+  const itemsPerPage = 20;
   const totalPages = Math.ceil((books?.length || 0) / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedItems = books?.slice(startIndex, endIndex);
+  let [title, setTitle] = useState();
+
+  const params = useParams();
 
   useEffect(() => {
     dispatch(getBooks());
   }, [dispatch]);
 
+  useEffect(() => {
+    getAllTagsRequest().then((res) => {
+      const fetchedSlug = params.slug;
+      setTitle(titleBookCategory(res.allTags, fetchedSlug));
+    });
+  }, []);
+
+  const titleBookCategory = (tags, slug) => {
+    if (slug == "free") {
+      title = " miễn phí";
+    } else if (slug == "member") {
+      title = " hội viên";
+    } else if (slug == "purchase") {
+      title = " mua lẻ";
+    } else {
+      tags.map((tag) => {
+        if (tag.name == slug) {
+          title = tag.description;
+        }
+      });
+    }
+    return title;
+  };
   return (
     <div className={styles.homePageContainer}>
       <Header />
@@ -50,13 +81,13 @@ const BookCategory = ({ books }) => {
           <section className={styles.bookSectionContainer}></section>
           <section className={styles.bookSectionContainer}>
             <div class={styles.sectionHeader}>
-              <h3>Sách theo thể loại</h3>
+              <h3>Sách {title}</h3>
             </div>
             <div className={styles.ruler}></div>
             <div className={styles.sectionBody}>
-              {books && books.length > 0 ? (
+              {displayedItems && displayedItems.length > 0 ? (
                 <div className={styles.bookList}>
-                  {books.map((book) => {
+                  {displayedItems.map((book) => {
                     return (
                       <div className={styles.bookItem}>
                         <BookItem book={book} key={book._id} />

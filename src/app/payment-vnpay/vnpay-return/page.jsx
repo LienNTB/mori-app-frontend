@@ -7,11 +7,11 @@ import Footer from "@/components/Footer/Footer";
 import { useRouter } from "next/navigation";
 import { Toaster, toast } from "react-hot-toast";
 import * as request from "@/app/redux/saga/requests/membership";
+import { createTransactionRequest } from "@/app/redux/saga/requests/transaction";
 
 const VNpayreturn = () => {
   const router = useRouter();
   const [queryData, setQueryData] = useState({});
-  const [membership, setMembership] = useState(0);
 
   const handleRegisterMembership = async (membership) => {
     toast.promise(
@@ -36,7 +36,25 @@ const VNpayreturn = () => {
       }
     );
   };
-
+  const handleCreateTransaction = async (transaction) => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        createTransactionRequest(transaction).then((resp) => {
+          if (resp === 0) {
+            resolve("Mua sách thành công");
+          }
+          if (resp === 1) {
+            reject(new Error("Mua sách thất bại, vui lòng kiểm tra lại"));
+          }
+        });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error.message,
+      }
+    );
+  };
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const queryParams = {};
@@ -44,12 +62,28 @@ const VNpayreturn = () => {
       queryParams[key] = value;
     }
     setQueryData(queryParams);
-  
+
     const membership = JSON.parse(localStorage.getItem("membership"));
-    setMembership(membership);
-  
+    const payment = JSON.parse(localStorage.getItem("payment"));
+    const currentAccount = JSON.parse(localStorage.getItem("user"));
+
     if (queryParams.vnp_ResponseCode === "00") {
-      handleRegisterMembership(membership.membership);
+      if (membership) {
+        handleRegisterMembership(membership);
+        localStorage.removeItem("membership");
+      }
+
+      if (payment && payment.type == "Book") {
+        const transaction = {
+          account: currentAccount._id,
+          product: payment.productId,
+          productType: payment.type,
+          status: 1,
+          amount: payment.amount,
+        };
+        handleCreateTransaction(transaction);
+        localStorage.removeItem("payment");
+      }
     }
   }, []);
 

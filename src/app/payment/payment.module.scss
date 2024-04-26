@@ -1,8 +1,6 @@
 .parentContainer {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    // gap: 1%;
-    // width: 100%;
 }
 
 .container {
@@ -121,7 +119,7 @@
 .containerA {
     border-left: 1px solid #fff;
     padding: 1.2rem;
-    background-color: #494646;
+    background-color: #525050;
     width: 100%;
 }
 
@@ -134,6 +132,17 @@
 .table {
     padding: 12px;
     width: 100%;
+    tbody {
+        tr {
+            td {
+                &.label {
+                    padding: 7px 10px;
+                    color: #ffffff;
+                    text-align: left;
+                }
+            }
+        }
+    }
 }
 
 .dropdownButton {
@@ -156,14 +165,10 @@
 .dropdownText {
     font-weight: normal;
     font-size: 0.9375rem;
-    /* 15px */
     color: #000;
     text-overflow: ellipsis;
-    /* Thêm dấu chấm lửng cho văn bản dài */
     white-space: nowrap;
-    /* Ngăn văn bản bị bẻ dòng */
     overflow: hidden;
-    /* Ẩn văn bản tràn */
 }
 
 .dropdownIcon {
@@ -189,15 +194,6 @@
     }
 }
 
-.label {
-    font-weight: normal;
-    font-size: 0.8rem;
-    color: #fff;
-    opacity: 0.7;
-    // padding: 0 2rem;
-    white-space: nowrap;
-}
-
 .product,
 .price,
 .paymentMethodA,
@@ -207,24 +203,22 @@
     font-size: 0.8rem;
     color: #fff;
     opacity: 1;
-    // padding-bottom: 2rem;
 }
 
 .price,
 .total {
-    color: #f03e3e;
-    /* Waka primary color? */
+    color: #fffcfc;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .dropdown {
-    // styles for the product dropdown
     position: relative;
     display: flex;
     width: 100%;
 }
 
 .dropdownLink {
-    // styles for the dropdown link
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -241,15 +235,12 @@
 }
 
 .dropdownText {
-    // styles for the dropdown text
     font-weight: normal;
     font-size: 0.9375rem;
-    /* 15px */
     color: #000;
 }
 
 .dropdownIcon {
-    // styles for the dropdown icon
     width: 20px;
     height: 20px;
     transform: rotate(90deg);
@@ -261,7 +252,6 @@
 }
 
 .dropdownMenu {
-    // styles for the dropdown menu
     position: absolute;
     top: 100%;
     left: 0;
@@ -278,7 +268,6 @@
 }
 
 .dropdownItem {
-    // styles for each dropdown menu item
     padding: 1rem 10px;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -288,40 +277,33 @@
 }
 
 .dropdownItemText {
-    // styles for the dropdown menu item text
     font-weight: normal;
     font-size: 0.9375rem;
-    /* 15px */
     color: #000;
 }
 
 .dropdownItemSelected {
-    // styles for the selected dropdown menu item
     background-color: #f2f2f2;
 }
 
 .hidden {
-    // styles for hidden elements
     display: none;
 }
 
 .borderTop {
-    // styles for elements with a top border
     border-top: 1px solid #fff;
 }
 
 .buttonContainer {
-    // styles for the button container
     text-align: center;
     padding-top: 2rem;
 }
 
 .button {
-    // styles for the payment button
     padding: 1rem 2rem;
     border: none;
     border-radius: 10px;
-    background-color: #000;
+    background: #1badad;
     color: #fff;
     cursor: pointer;
     transition: background-color 0.2s ease;

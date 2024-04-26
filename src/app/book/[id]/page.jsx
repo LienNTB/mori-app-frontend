@@ -1,14 +1,11 @@
 "use client";
 import {
   faEllipsisVertical,
-  faEye,
-  faEyeDropper,
+  faStar,
   faHeart,
   faSave,
-  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import Tag from "@/components/Tag/Tag";
 import styles from "./book.module.scss";
 import {
   getBookById,
@@ -56,7 +53,6 @@ import {
 } from "@nextui-org/react";
 import { addBooktoCartRequest } from "@/app/redux/saga/requests/cart";
 import * as types from "@/app/redux/types";
-// import PdfViewer from "@/components/PdfViewer/PdfViewer";
 
 function Book() {
   const dispatch = useDispatch();
@@ -68,15 +64,9 @@ function Book() {
   const isLoadingReview = useSelector((state) => state.reviews.loading);
   const reviews = useSelector((state) => state.reviews.reviews);
   let currentAccount = JSON.parse(localStorage.getItem("user"));
-  const [similarProducts, setSimilarProducts] = useState([]);
-  const [reviewRating, setReviewRating] = useState("5/5");
-  const [email, setEmail] = useState("");
-  const [starHover, setStarHover] = useState(0);
   const [rating, setRating] = useState(5);
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const router = useRouter();
-  const [showPdfViewer, setShowPdfViewer] = useState(false);
   const [isOpenReviewOption, setIsOpenReviewOption] = useState(false);
   const [isOpenReview, setIsOpenReview] = useState(null);
   const {
@@ -163,8 +153,6 @@ function Book() {
         });
       }
       router.replace(`/reader/${book._id}`);
-
-      // setShowPdfViewer(true);
     } else {
       if (currentAccount == null) {
         toast.error(
@@ -239,77 +227,25 @@ function Book() {
     setContent("");
   };
 
-  const handleSaveToLibrary = () => {
-    currentAccount = JSON.parse(localStorage.getItem("user"));
-    if (!currentAccount) {
-      router.push("/login");
-    } else {
-      var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
-      if (register == true) {
-        var request = {
-          user: currentAccount._id,
-          book: book,
-        };
-        dispatch(increaseTotalSaved(book._id, currentAccount._id));
-
-        toast.promise(
-          new Promise((resolve, reject) => {
-            libraryRequest.addBookToLibraryRequest(request).then((resp) => {
-              if (resp === 0) {
-                resolve("Thêm sách vào thư viện thành công!");
-              }
-              if (resp === 1) {
-                reject(new Error("Sách đã tồn tại trong thư viện!"));
-              }
-            });
-          }),
-          {
-            loading: "Processing...",
-            success: (message) => message,
-            error: (error) => error.message,
-          }
-        );
-      }
-    }
-  };
-
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
   };
-  const handleIncreaseAmount = () => {
-    setQuantity(quantity + 1);
-    setProductPrice((p) => p * (quantity + 1));
-  };
-  const handleDecreaseAmount = () => {
-    if (quantity != 1) {
-      setQuantity(quantity - 1);
-      setProductPrice((p) => p * (quantity - 1));
-    }
-  };
 
-  const handleAddBooktoCart = () => {
-    const request = {
-      account_id: currentAccount._id,
-      book_id: id,
-      quantity: quantity,
+  const handleBuyEbook = () => {
+    const price = book.price;
+    const productId = book._id;
+    var description = "Mua lẻ sách " + book.name;
+    var type = "Book";
+    var payment = {
+      price: price,
+      description: description,
+      type: type,
+      productId: productId,
     };
-    toast.promise(
-      new Promise((resolve, reject) => {
-        addBooktoCartRequest(request).then((resp) => {
-          if (resp.message) {
-            resolve("Đã thêm sách vào giỏ hàng");
-            setReload((p) => p + 1);
-          } else {
-            reject(new Error("Thêm sách vào giỏ hàng thất bại thất bại!"));
-          }
-        });
-      }),
-      {
-        loading: "Processing...",
-        success: (message) => message,
-        error: (error) => error.message,
-      }
-    );
+
+    localStorage.setItem("payment", JSON.stringify(payment));
+
+    router.replace("/payment");
   };
 
   useEffect(() => {
@@ -404,28 +340,41 @@ function Book() {
                       </button>
                     </Link>
                   </div>
-                  <div className={styles.quantityWrapper}>
-                    <div className={styles.title}>Số lượng</div>
-                    <div className={styles.quantityInputWrapper}>
-                      <button onClick={handleDecreaseAmount}>-</button>
-                      <input type="text" value={quantity} />
-                      <button onClick={handleIncreaseAmount}>+</button>
-                    </div>
-                  </div>
                   <div className={styles.priceWrapper}>
                     <div className={styles.title}>Tạm tính</div>
                     <div className={styles.price}>
-                      <div className={styles.priceInfo}>{productPrice} đ</div>
+                      <div className={styles.originalPrice}>
+                        {productPrice}đ
+                      </div>
+                      <div className={styles.discountPrice}>
+                        {productPrice}đ
+                      </div>
                       <div className={styles.discountTag}>-33%</div>
                     </div>
                   </div>
-                  <div className={styles.purchaseAction}>
-                    <button className={styles.purchaseBtn}>Mua ngay</button>
+                  <div className={styles.nextAction}>
                     <button
-                      className={styles.addToCartBtn}
-                      onClick={handleAddBooktoCart}
+                      className={styles.read}
+                      onClick={() => handleReadBook()}
                     >
-                      Thêm vào giỏ
+                      Đọc ngay
+                    </button>
+                    <button
+                      className={styles.purchaseBtn}
+                      onClick={handleBuyEbook}
+                    >
+                      Mua lẻ ebook
+                    </button>
+                    <button
+                      className={styles.save}
+                      onClick={() => handleIncreaseTotalHearted()}
+                    >
+                      <FontAwesomeIcon
+                        className={styles.icon}
+                        icon={faHeart}
+                        width={20}
+                        height={20}
+                      />
                     </button>
                   </div>
                 </div>
@@ -438,7 +387,6 @@ function Book() {
               </div>
               <div className={styles.content}>{book.intro}</div>
             </section>
-
             <section className={styles.productReview}>
               <div className={styles.reviewHeader}>
                 <div className={styles.writeReviewBtn}>Viết đánh giá</div>
@@ -477,129 +425,10 @@ function Book() {
                 <div className={styles.ruler}></div>
               </div>
               <div className={styles.productReviewWrapper}>
-                {/* <div className={styles.reviewSidebar}>
-                  <div className={styles.ratingOverview}>
-                    <div className={styles.rating__current}>5</div>
-                    <div className={styles.rating__left}>
-                      <div className={styles.ratingStars}>
-                        <div className={styles.rating__star}>
-                          <div className={styles.reviewStars}>
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                          </div>
-                        </div>
-                        <div className={styles.rating__secondary}>
-                          (Đánh giá: 3)
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.starDetail}>
-                    <div className={styles.starLines}>
-                      <div>5</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="100"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>4</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>3</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>2</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>1</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                  </div>
-                </div> */}
                 <div className={styles.reviewMainContent}>
                   <div className={styles.reviewNavigation}>
-                    <div className={styles.reviewNavigationList}>
-                      {/* <div className={styles.reviewNavigationItemChoosen}>
-                        All review
-                      </div>
-                      <div className={styles.reviewNavigationItem}>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                        <div
-                          className={styles.reviewNavigationItem__starNumber}
-                        >
-                          5
-                        </div>
-                      </div> */}
-                    </div>
+                    <div className={styles.reviewNavigationList}></div>
                   </div>
-                  {/* <div className={styles.ruler}></div> */}
                   {isLoadingReview ? (
                     <Loading />
                   ) : (
@@ -734,10 +563,6 @@ function Book() {
                 </Splide>
               </section>
             )}
-            {/* Hiển thị PDF Viewer nếu showPdfViewer là true */}
-            {/* {showPdfViewer && <PdfViewer pdfUrl={book.pdf} />} */}
-
-            {/* ... (các phần khác) */}
           </div>
         ) : (
           <Loading />

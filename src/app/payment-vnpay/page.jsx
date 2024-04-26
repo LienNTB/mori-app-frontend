@@ -43,7 +43,8 @@ function Payment() {
     setCurrentAccount(currentAccount);
 
     const membership = JSON.parse(localStorage.getItem("membership"));
-    setPrice(membership.price);
+    const payment = JSON.parse(localStorage.getItem("payment"));
+    setPrice(payment.price);
     setPaymentMethod("vnpay");
   }, []);
 

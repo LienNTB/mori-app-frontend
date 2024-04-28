@@ -71,6 +71,7 @@ const MemberPackage = () => {
       let price = 0;
       var type = null;
       let productId = null;
+      let description = ""
       membershipTypes.map((membershipType) => {
         if (membershipType.name == membertype) {
           price = membershipType.price;
@@ -89,7 +90,7 @@ const MemberPackage = () => {
 
       localStorage.setItem("membership", JSON.stringify(membership));
 
-      router.replace("/payment");
+      router.replace("/payment", undefined, { shallow: true });
       // handleRegisterMembership(membership)
     }
   };

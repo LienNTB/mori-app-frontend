@@ -111,7 +111,10 @@ const Profile = () => {
             <div className={styles.accountAvatar}>
               {currentAccount.avatar ? (
                 <img
-                  src={`${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`}
+                  src={
+                    currentAccount.avatar.includes("googleusercontent") ?
+                      currentAccount.avatar
+                      : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`}
                   alt="avt"
                 />
               ) : (
@@ -176,37 +179,32 @@ const Profile = () => {
           <div className={styles.ruler}></div>
           <div className={styles.accountNav}>
             <div
-              className={`${styles.navItem} ${
-                currentTopic === "profile" ? styles.active : ""
-              }`}
+              className={`${styles.navItem} ${currentTopic === "profile" ? styles.active : ""
+                }`}
             >
               <Link href="/account/profile">Thông tin cá nhân</Link>
             </div>
             <div
-              className={`${styles.navItem} ${
-                currentTopic === "library" ? styles.active : ""
-              }`}
+              className={`${styles.navItem} ${currentTopic === "library" ? styles.active : ""
+                }`}
             >
               <Link href="/account/library">Thư viện của tôi</Link>
             </div>
             <div
-              className={`${styles.navItem} ${
-                currentTopic === "history" ? styles.active : ""
-              }`}
+              className={`${styles.navItem} ${currentTopic === "history" ? styles.active : ""
+                }`}
             >
               <Link href="/account/history">Lịch sử đọc </Link>
             </div>
             <div
-              className={`${styles.navItem} ${
-                currentTopic === "membership" ? styles.active : ""
-              }`}
+              className={`${styles.navItem} ${currentTopic === "membership" ? styles.active : ""
+                }`}
             >
               <Link href="/account/membership">Thông tin hội viên</Link>
             </div>
             <div
-              className={`${styles.navItem} ${
-                currentTopic === "my-post" ? styles.active : ""
-              }`}
+              className={`${styles.navItem} ${currentTopic === "my-post" ? styles.active : ""
+                }`}
             >
               <Link href="/account/my-post">Bài viết của tôi</Link>
             </div>

@@ -5,15 +5,15 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from "next/image";
 import logo from '../../../public/logo-nobg.png'
-import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useState } from 'react'
 import { getBooksByCate } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
-import { faBars, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faUser, faBell, faSignOut } from '@fortawesome/free-solid-svg-icons'
 import { getBookCategoryRequest } from '@/app/redux/saga/requests/category'
 import { googleLogout } from '@react-oauth/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
+import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
 
 const HeaderCommunity = () => {
   const dispatch = useDispatch()
@@ -23,6 +23,9 @@ const HeaderCommunity = () => {
   const [authenticated, setAuthenticated] = useState(false)
   const [categories, setCategories] = useState(null)
   const router = useRouter();
+  const currentAccount = JSON.parse(localStorage.getItem("user"));
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false)
 
   const handleOpenMenu = async () => {
     setIsOpenListbox(p => !p)
@@ -66,12 +69,204 @@ const HeaderCommunity = () => {
                   Tạo post mới
                 </Link>
               </div>
-              <Link className={styles.right} href={"/account/profile"} prefetch={false}>
+              <div className={styles.right} >
+                <div className={styles.notificationBtn}
+                  onClick={() => {
+                    setIsAccountMenuOpen(false);
+                    setIsNotificationMenuOpen(p => !p)
+                  }}
+                >
+                  <FontAwesomeIcon icon={faBell} />
+                </div>
+                <div className={styles.accountAvt}
+                  onClick={() => {
+                    setIsNotificationMenuOpen(false);
+                    setIsAccountMenuOpen(p => !p)
+                  }}
+                >
+                  <img src={currentAccount.avatar.includes("googleusercontent") ?
+                    currentAccount.avatar
+                    : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`}
+                    alt="avt" />
+                </div>
+                {isAccountMenuOpen && <div className={styles.menuAccount}>
+                  <ListboxWrapper>
+                    <Listbox variant="flat" aria-label="Listbox menu with sections">
+                      <ListboxSection >
 
-                Tài khoản của tôi
-              </Link>
-              <div className={styles.right} onClick={() => handleSignOut()}>
-                Đăng xuất
+                        <ListboxItem
+                          key="new"
+                          startContent={<FontAwesomeIcon icon={faUser} />}
+                          onClick={() => router.replace("/account/profile", undefined, { shallow: true })}
+                        >
+                          Tài khoản của tôi
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                          startContent={<FontAwesomeIcon icon={faSignOut} />}
+                          onClick={() => handleSignOut()}
+                        >
+                          Đăng xuất
+                        </ListboxItem>
+                      </ListboxSection>
+
+                    </Listbox>
+                  </ListboxWrapper>
+                </div>}
+
+                {isNotificationMenuOpen && <div className={styles.menuNotification}>
+                  <ListboxWrapper >
+                    <Listbox variant="flat" aria-label="Listbox menu with sections" className={"max-h-80 overflow-y-scroll"}>
+                      <ListboxSection title="Thông báo">
+
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">bình luận bài viết của bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">Đã theo dõi bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">đã thích bài viết của bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">bình luận bài viết của bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">Đã theo dõi bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">đã thích bài viết của bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">bình luận bài viết của bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">Đã theo dõi bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">đã thích bài viết của bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">bình luận bài viết của bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                        <ListboxItem
+                          key="new"
+                        >
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-small">Pham quynh huong</span>
+                              <span className="text-tiny text-default-400">Đã theo dõi bạn.</span>
+                            </div>
+                          </div>
+                        </ListboxItem>
+                      </ListboxSection>
+
+                    </Listbox>
+                  </ListboxWrapper>
+                </div>}
               </div>
             </div>)
             : (

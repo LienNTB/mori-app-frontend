@@ -97,8 +97,36 @@
       align-items: center;
       cursor: pointer;
       font-weight: 600;
-      &:hover {
-        color: #31b6ba !important;
+      position: relative;
+      .accountAvt {
+        img {
+          border-radius: 999px;
+          width: 40px;
+          height: 40px;
+        }
+      }
+      .notificationBtn {
+        border-radius: 999px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        background-color: rgb(231, 231, 231);
+        cursor: pointer;
+        transition: all 0.2s linear;
+        &:hover {
+          background-color: rgb(224, 223, 223);
+          color: black;
+        }
+      }
+      .menuAccount,
+      .menuNotification {
+        position: absolute;
+        top: 57px;
+        right: 0;
+        z-index: 3;
       }
     }
   }

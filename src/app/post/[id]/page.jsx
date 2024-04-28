@@ -21,6 +21,7 @@ import { addNewCommentRequest } from '@/app/redux/saga/requests/comment'
 import { getAllComments, setComments } from '@/app/redux/actions/comment'
 import toast from 'react-hot-toast'
 import { FacebookButton, FacebookCount } from "react-social";
+import HeaderCommunity from '@/components/HeaderCommunity/Header'
 
 const Post = () => {
   const dispatch = useDispatch()
@@ -142,7 +143,7 @@ const Post = () => {
   return (
     <div className={styles.postContainer}>
       <Toaster />
-      <Header />
+      <HeaderCommunity />
       {
         post ?
           <div className={styles.postContentWrapper}>

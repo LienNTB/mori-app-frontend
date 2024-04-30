@@ -128,161 +128,29 @@ const Header = () => {
                       <ListboxItem
                         key="new"
                       >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">đã thích bài viết của bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">bình luận bài viết của bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">Đã theo dõi bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">đã thích bài viết của bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">bình luận bài viết của bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">Đã theo dõi bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">đã thích bài viết của bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">bình luận bài viết của bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">Đã theo dõi bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">đã thích bài viết của bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">bình luận bài viết của bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <Avatar alt="avt" className="flex-shrink-0" size="sm" src={currentAccount.avatar.includes("googleusercontent") ?
-                            currentAccount.avatar
-                            : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
-                          <div className="flex flex-col">
-                            <span className="text-small">Pham quynh huong</span>
-                            <span className="text-tiny text-default-400">Đã theo dõi bạn.</span>
-                          </div>
-                        </div>
-                      </ListboxItem>
-                    </ListboxSection>
+                        <div className="flex gap-2 justify-between items-center">
 
+                          <div className="flex gap-2 items-center">
+                            <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]" src={currentAccount.avatar.includes("googleusercontent") ?
+                              currentAccount.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                            <div className="flex flex-col">
+                              <span className="text-sm/[17px] font-medium ">Pham quynh huong</span>
+                              <span className="text-sm/[15px] font-normal max-w-[207px] overflow-hidden whitespace-normal max-h-7">đã thích bài viết của bạn. dsds fsfsf dfsdsa dasdda dsa sda dasdda dsa sda dasdda dsa sda</span>
+                            </div>
+                          </div>
+                          <div className={styles.newNotiIcon}></div>
+                        </div>
+                      </ListboxItem>
+
+                    </ListboxSection>
+                    {/* <ListboxSection title="Thông báo">
+                      <ListboxItem
+                        key="new"
+                      >
+                        Bạn chưa có thông báo nào.
+                      </ListboxItem>
+                    </ListboxSection> */}
                   </Listbox>
                 </ListboxWrapper>
               </div>}

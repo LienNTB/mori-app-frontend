@@ -127,6 +127,12 @@
         top: 57px;
         right: 0;
         z-index: 3;
+        .newNotiIcon {
+          width: 12px;
+          height: 12px;
+          background-color: rgb(4, 81, 247);
+          border-radius: 999px;
+        }
       }
     }
   }

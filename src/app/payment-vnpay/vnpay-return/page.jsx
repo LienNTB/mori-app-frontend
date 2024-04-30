@@ -68,21 +68,25 @@ const VNpayreturn = () => {
     const currentAccount = JSON.parse(localStorage.getItem("user"));
 
     if (queryParams.vnp_ResponseCode === "00") {
-      if (membership) {
-        handleRegisterMembership(membership);
-        localStorage.removeItem("membership");
-      }
-
-      if (payment && payment.type == "Book") {
+      try {
         const transaction = {
           account: currentAccount._id,
           product: payment.productId,
           productType: payment.type,
           status: 1,
-          amount: payment.amount,
+          amount: payment.price,
         };
-        handleCreateTransaction(transaction);
-        localStorage.removeItem("payment");
+        if (membership && payment.type == "Membership") {
+          handleRegisterMembership(membership);
+          handleCreateTransaction(transaction);
+          localStorage.removeItem("payment");
+          localStorage.removeItem("membership");
+        } else if (payment && payment.type == "Book") {
+          handleCreateTransaction(transaction);
+          localStorage.removeItem("payment");
+        }
+      } catch {
+        toast.error("Không tồn tại sản phẩm bạn cần thanh toán");
       }
     }
   }, []);

@@ -52,6 +52,7 @@ import {
   Button,
 } from "@nextui-org/react";
 import { addBooktoCartRequest } from "@/app/redux/saga/requests/cart";
+import { getUserTransactionsRequest } from "@/app/redux/saga/requests/transaction";
 import * as types from "@/app/redux/types";
 
 function Book() {
@@ -84,6 +85,7 @@ function Book() {
   const [currentReviewContent, setCurrentReviewContent] = useState("");
   const [reload, setReload] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [userTrans, setUserTrans] = useState();
 
   const params = useParams();
   const id = params.id;
@@ -93,6 +95,13 @@ function Book() {
       router.push("/login");
     }
   };
+
+  const getUserTransactions = () => {
+    getUserTransactionsRequest(currentAccount._id, "Book").then((resp) => {
+      setUserTrans(resp.transactions);
+    });
+  };
+
   // console.log("currentReviewContent", currentReviewContent);
   const handleUpdateReview = () => {
     toast.promise(
@@ -144,35 +153,18 @@ function Book() {
     );
   };
   const handleReadBook = async () => {
-    if (book.access_level === 0) {
-      increaseTotalReadDaily(book._id);
-      if (currentAccount) {
-        addNewOrUpdateReadHistory({
-          book: book,
-          user: currentAccount._id,
-        });
-      }
-      router.replace(`/reader/${book._id}`);
+    if (currentAccount == null) {
+      toast.error("Vui lòng đăng nhập và mua sách để đọc sách này!", {
+        duration: 2000,
+      });
     } else {
-      if (currentAccount == null) {
-        toast.error(
-          "Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!",
-          {
-            duration: 2000,
-          }
-        );
+      if (!checkBuyBook) {
+        toast.error("Vui lòng mua sách để đọc sách này!", {
+          duration: 2000,
+        });
       } else {
-        const membershipRequest = await getMembershipByIdRequest(
-          currentAccount._id
-        );
-        if (!membershipRequest.membership) {
-          toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
-            duration: 2000,
-          });
-        } else {
-          increaseTotalReadDaily(book._id);
-          router.replace(`/reader/${book._id}`);
-        }
+        increaseTotalReadDaily(book._id);
+        router.replace(`/reader/${book._id}`);
       }
     }
   };
@@ -230,22 +222,36 @@ function Book() {
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
   };
+  const checkBuyBook = () => {
+    if (userTrans) {
+      userTrans.map((userTran) => {
+        if (userTran.product === book._id) {
+          return true;
+        }
+      });
+      return false;
+    }
+  };
 
   const handleBuyEbook = () => {
-    const price = book.price;
-    const productId = book._id;
-    var description = "Mua lẻ sách " + book.name;
-    var type = "Book";
-    var payment = {
-      price: price,
-      description: description,
-      type: type,
-      productId: productId,
-    };
-
-    localStorage.setItem("payment", JSON.stringify(payment));
-
-    router.replace("/payment");
+    if (!checkBuyBook) {
+      const price = book.price;
+      const productId = book._id;
+      var description = "Mua lẻ sách " + book.name;
+      var type = "Book";
+      var payment = {
+        price: price,
+        description: description,
+        type: type,
+        productId: productId,
+      };
+      localStorage.setItem("payment", JSON.stringify(payment));
+      router.replace("/payment");
+    } else {
+      toast.error("Bạn đã mua sách này, để đọc tiếp vui lòng chọn đọc ngay", {
+        duration: 2000,
+      });
+    }
   };
 
   useEffect(() => {
@@ -258,6 +264,7 @@ function Book() {
   useEffect(() => {
     if (book) {
       setProductPrice(book.price);
+      getUserTransactions();
     }
   }, [book]);
 

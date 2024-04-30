@@ -29,7 +29,7 @@ function Cart() {
       toast.error("Vui lòng chọn sách bạn muốn đặt hàng");
     } else {
       localStorage.setItem("orderItems", JSON.stringify(orderItems));
-      router.replace("/checkout");
+      router.replace("/checkout", undefined, { shallow: true });
       // window.location.href = "/checkout";
     }
   };
@@ -128,7 +128,7 @@ function Cart() {
               </div>
               <div className={styles.continueBtn}>
                 <FontAwesomeIcon icon={faArrowLeft} weight={25} height={25} />
-                <div onClick={() => window.location.replace("/")}>
+                <div onClick={() => window.location.replace("/", undefined, { shallow: true })}>
                   Tiếp tục mua hàng
                 </div>
               </div>

@@ -72,10 +72,10 @@ const Ranking = () => {
             <div className={styles.headerTitle}>Bảng xếp hạng</div>
             <div className={styles.navWrapper}>
               <div className={styles.nav}>
-                <Link href={"/ranking/book"} shallow>
+                <Link href={"/ranking/book"} prefetch={false}  shallow>
                   <div className={styles.navItem}>Sách</div>
                 </Link>
-                <Link href={"/ranking/audio-book"} shallow>
+                <Link href={"/ranking/audio-book"} prefetch={false}  shallow>
                   <div className={styles.navItem}>Sách nói</div>
                 </Link>
               </div>

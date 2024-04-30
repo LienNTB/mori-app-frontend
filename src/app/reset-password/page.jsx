@@ -37,7 +37,7 @@ const ResetPassword = () => {
             .then((resp) => {
               if (resp.message) {
                 resolve("Reset mật khẩu thành công!");
-                router.replace("/")
+                router.replace("/", undefined, { shallow: true })
 
               }
               if (resp.error) {

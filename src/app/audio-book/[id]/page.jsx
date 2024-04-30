@@ -291,7 +291,7 @@ function AudioBookPage() {
                     <div className={styles.title}>Thể loại</div>
                     {book.tags.map((tag, index) => (
                       <React.Fragment key={index}>
-                        <Link href={`/book-category/${tag}`} shallow>
+                        <Link href={`/book-category/${tag}`} prefetch={false}  shallow>
                           <button className={styles.tag}>{tag}</button>
                         </Link>{" "}
                       </React.Fragment>

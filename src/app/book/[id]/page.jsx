@@ -164,7 +164,7 @@ function Book() {
         });
       } else {
         increaseTotalReadDaily(book._id);
-        router.replace(`/reader/${book._id}`);
+        router.replace(`/reader/${book._id}`, undefined, { shallow: true });
       }
     }
   };
@@ -246,7 +246,7 @@ function Book() {
         productId: productId,
       };
       localStorage.setItem("payment", JSON.stringify(payment));
-      router.replace("/payment");
+      router.replace("/payment", undefined, { shallow: true });
     } else {
       toast.error("Bạn đã mua sách này, để đọc tiếp vui lòng chọn đọc ngay", {
         duration: 2000,
@@ -341,7 +341,7 @@ function Book() {
 
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    <Link href={"/book-category/tamlykynang"} shallow>
+                    <Link href={"/book-category/tamlykynang"} prefetch={false}  shallow>
                       <button className={styles.tag}>
                         Tâm lý - Kỹ năng sống
                       </button>

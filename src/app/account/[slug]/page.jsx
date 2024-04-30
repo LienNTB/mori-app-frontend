@@ -305,7 +305,7 @@ const Profile = () => {
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
                           <Link
                             href={`/${getBookType(book.book)}/${book.book._id}`}
-                            prefetch={false}
+                            prefetch={false} 
                             shallow
                           >
                             {book.book.name}
@@ -464,7 +464,7 @@ const Profile = () => {
                       <div>Chưa có bài viết.</div>
                     ) : (
                       postList.map((post) => (
-                        <Link href={`/post/${post._id}`}>
+                        <Link href={`/post/${post._id}`} prefetch={false} >
                           <div className={styles.postItem}>
                             <img
                               className={styles.imgPost}

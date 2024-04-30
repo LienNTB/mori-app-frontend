@@ -61,7 +61,7 @@ const Community = () => {
                         }
                       </div>
                     </div>
-                    <Link href={`/post/${postList[0]._id}`}>
+                    <Link href={`/post/${postList[0]._id}`} prefetch={false} >
                       <div className={styles.postTitle}>
                         {postList[0].title}
 
@@ -98,7 +98,7 @@ const Community = () => {
                                 ))
                               }
                             </div>
-                            <Link href={`/post/${post._id}`}>
+                            <Link href={`/post/${post._id}`} prefetch={false} >
                               <div className={styles.postTitle}>
                                 {post.title}
                               </div>

@@ -45,7 +45,7 @@ const NewPost = () => {
   console.log("user", user)
   const handleCreatePost = () => {
     if (!user) {
-      router.replace('/login')
+      router.replace('/login', undefined, { shallow: true })
     }
 
     let tagRequest = tags.filter(tagItem => {
@@ -74,7 +74,7 @@ const NewPost = () => {
               .then((respCreatePost) => {
                 if (respCreatePost.message) {
                   resolve(respCreatePost.message);
-                  router.replace("/community")
+                  router.replace("/community", undefined, { shallow: true })
                 } else {
                   console.log("respCreatePost.error", respCreatePost.error.toString())
                   reject(respCreatePost.error);
@@ -109,7 +109,7 @@ const NewPost = () => {
     const userData = JSON.parse(localStorage.getItem('user'))
     setUser(userData)
     if (!userData) {
-      router.replace('/login')
+      router.replace('/login', undefined, { shallow: true })
     }
     loadTagData()
   }, [])

@@ -93,7 +93,7 @@ const Login = () => {
             }
             else {
               localStorage.setItem("user", JSON.stringify(resp.user))
-              router.replace('/homepage')
+              router.replace('/homepage', undefined, { shallow: true })
               resolve(resp.message)
             }
           })

@@ -90,7 +90,7 @@ const MemberPackage = () => {
 
       localStorage.setItem("membership", JSON.stringify(membership));
 
-      router.replace("/payment");
+      router.replace("/payment", undefined, { shallow: true });
       // handleRegisterMembership(membership)
     }
   };

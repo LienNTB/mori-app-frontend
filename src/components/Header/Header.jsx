@@ -44,7 +44,7 @@ const Header = () => {
     googleLogout();
     setAuthenticated(null)
     localStorage.removeItem("user")
-    window.location.replace("/login")
+    window.location.replace("/login", undefined, { shallow: true })
   }
 
   useEffect(() => {

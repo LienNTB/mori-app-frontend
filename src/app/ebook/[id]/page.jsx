@@ -140,7 +140,7 @@ function EBook() {
           user: currentAccount._id,
         });
       }
-      router.replace(`/reader/${book._id}`);
+      router.replace(`/reader/${book._id}`, undefined, { shallow: true });
 
       // setShowPdfViewer(true);
     } else {
@@ -161,7 +161,7 @@ function EBook() {
           });
         } else {
           increaseTotalReadDaily(book._id);
-          router.replace(`/reader/${book._id}`);
+          router.replace(`/reader/${book._id}`, undefined, { shallow: true });
         }
       }
     }
@@ -374,7 +374,7 @@ function EBook() {
                   </div>
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    <Link href={"/book-category/tamlykynang"} shallow>
+                    <Link href={"/book-category/tamlykynang"} prefetch={false}  shallow>
                       <button className={styles.tag}>
                         Tâm lý - Kỹ năng sống
                       </button>

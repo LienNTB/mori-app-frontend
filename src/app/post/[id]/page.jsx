@@ -154,7 +154,8 @@ const Post = () => {
               <div className={styles.top}>
                 <div className={styles.postInfo}>
                   <div className={styles.postItem}>
-                    <img className={styles.imgAvt} src={post.account.avatar ? post.account.avatar : tempImg} alt="user avt" />
+                    <img className={styles.imgAvt} 
+                    src={post.account.avatar ? post.account.avatar : tempImg} alt="user avt" />
                     <div className={styles.name}>
                       {post?.account?.displayName}
                     </div>

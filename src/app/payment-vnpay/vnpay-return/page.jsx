@@ -182,7 +182,7 @@ const VNpayreturn = () => {
           </table>
         </div>
         <p className={styles.linkContainer}>
-          <a href="/" className={styles.button}>
+          <a href="/" className={styles.button} prefetch={false} >
             Về trang chủ
           </a>
         </p>

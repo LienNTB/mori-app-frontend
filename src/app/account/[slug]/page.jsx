@@ -248,7 +248,7 @@ const Profile = () => {
             </div>
             {/* <Toaster/> */}
             {currentAccount.username && (
-              <Link href="/change-password">
+              <Link href="/change-password" prefetch={false} >
                 <button className={styles.changePasswordButton}>
                   Thay đổi mật khẩu
                 </button>

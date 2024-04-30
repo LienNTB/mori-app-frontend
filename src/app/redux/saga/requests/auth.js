@@ -38,3 +38,22 @@ export const forgetPasswordRequest = async (email) => {
       console.log("error:", error);
     });
 };
+
+export const checkTokenRequest = async (token) => {
+  const request = {
+    token: token,
+  };
+  return fetch(`${type.BACKEND_URL}/api/auth/check-token`, {
+    method: "POST",
+    headers: type.requestHeader,
+
+    body: JSON.stringify(request),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      console.log("error:", error);
+    });
+};

@@ -22,6 +22,7 @@ import { getAllComments, setComments } from '@/app/redux/actions/comment'
 import toast from 'react-hot-toast'
 import { FacebookButton, FacebookCount } from "react-social";
 import HeaderCommunity from '@/components/HeaderCommunity/Header'
+import { createNewNotificationRequest } from '@/app/redux/saga/requests/notification'
 
 const Post = () => {
   const dispatch = useDispatch()
@@ -61,6 +62,21 @@ const Post = () => {
               if (resp.message) {
                 resolve("Thêm bình luận thành công!");
                 dispatch(getAllComments(currentAccount._id, post._id))
+
+                const createNotificationRequest = {
+                  account: post.account._id,
+                  post: post._id,
+                  action: "comment",
+                  message: commentInput,
+                  performedBy: currentAccount._id
+                }
+                console.log("createNotificationRequest", createNotificationRequest)
+                createNewNotificationRequest(post.account._id,
+                  post._id,
+                  "comment",
+                  currentAccount._id, commentInput).then(resp => {
+                    console.log("noti", resp)
+                  })
               } else {
                 reject(resp.error);
               }
@@ -85,6 +101,21 @@ const Post = () => {
             if (resp.message) {
               resolve(resp.message);
               getPostData()
+              if (resp.message !== "Unhearted!") {
+                const createNotificationRequest = {
+                  account: post.account._id,
+                  post: post._id,
+                  action: "like",
+                  performedBy: currentAccount._id
+                }
+                console.log("createNotificationRequest", createNotificationRequest)
+                createNewNotificationRequest(post.account._id,
+                  post._id,
+                  "like",
+                  currentAccount._id, "").then(resp => {
+                    console.log("noti", resp)
+                  })
+              }
             } else {
               reject("Like bài viết thất bại!");
             }
@@ -108,6 +139,19 @@ const Post = () => {
         getPostData()
       }
     })
+    const createNotificationRequest = {
+      account: post.account._id,
+      post: post._id,
+      action: "share",
+      performedBy: currentAccount._id
+    }
+    console.log("createNotificationRequest", createNotificationRequest)
+    createNewNotificationRequest(post.account._id,
+      post._id,
+      "share",
+      currentAccount._id, "").then(resp => {
+        console.log("noti", resp)
+      })
   }
   const getPostData = () => {
     getPostByIdRequest(id).then(resp => {
@@ -154,8 +198,8 @@ const Post = () => {
               <div className={styles.top}>
                 <div className={styles.postInfo}>
                   <div className={styles.postItem}>
-                    <img className={styles.imgAvt} 
-                    src={post.account.avatar ? post.account.avatar : tempImg} alt="user avt" />
+                    <img className={styles.imgAvt}
+                      src={post.account.avatar ? post.account.avatar : tempImg} alt="user avt" />
                     <div className={styles.name}>
                       {post?.account?.displayName}
                     </div>

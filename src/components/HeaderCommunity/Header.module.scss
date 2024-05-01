@@ -148,6 +148,11 @@
         top: 57px;
         right: 0;
         z-index: 3;
+        .newNotiIcon {
+          width: 12px !important;
+          height: 12px !important;
+          color: rgb(4, 81, 247);
+        }
       }
     }
   }

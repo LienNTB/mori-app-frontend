@@ -4,7 +4,6 @@ export const addNoteForBookRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/note/add-note`, {
     method: "POST",
     headers: type.requestHeader,
-
     body: JSON.stringify(request),
   })
     .then((response) => {

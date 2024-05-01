@@ -7,14 +7,14 @@ export function getTimeElapsed(createdAtString) {
   const elapsedSeconds = Math.floor(elapsedMillis / 1000);
 
   if (elapsedSeconds < 60) {
-    return `${elapsedSeconds} seconds ago`;
+    return `${elapsedSeconds} giây trước`;
   }
 
   const elapsedMinutes = Math.floor(elapsedSeconds / 60);
   if (elapsedMinutes < 60) {
-    return `${elapsedMinutes} minutes ago`;
+    return `${elapsedMinutes} phút trước`;
   }
 
   const elapsedHours = Math.floor(elapsedMinutes / 60);
-  return `${elapsedHours} hours ago`;
+  return `${elapsedHours} giờ trước`;
 }

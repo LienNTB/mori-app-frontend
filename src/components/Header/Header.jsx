@@ -5,17 +5,17 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from "next/image";
 import logo from '../../../public/logo-nobg.png'
-import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useState } from 'react'
 import { searchBooks, getBooksByCate } from '@/app/redux/actions/book'
 import { useDispatch } from 'react-redux'
-import { faBars, faCartArrowDown, faCartFlatbed, faCartShopping, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faBell, faCircle, faSignOut, faUser } from '@fortawesome/free-solid-svg-icons'
 import { getBookCategoryRequest } from '@/app/redux/saga/requests/category'
 import { googleLogout } from '@react-oauth/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrashCan
-} from "@fortawesome/free-solid-svg-icons";
+import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
+import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
+import { getNotificationsRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
+import * as timeUtils from '../../utils/timeUtils'
 
 const Header = () => {
   const dispatch = useDispatch()
@@ -25,7 +25,25 @@ const Header = () => {
   const [authenticated, setAuthenticated] = useState(false)
   const [categories, setCategories] = useState(null)
   const router = useRouter();
+  const [currentAccount, setCurrentAccount] = useState("")
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false)
+  const [notifications, setNotifications] = useState([])
 
+  const getNotificationsData = () => {
+    getNotificationsRequest(currentAccount._id)
+      .then(resp => {
+        setNotifications(resp.data.reverse())
+      })
+  }
+  useEffect(() => {
+    if (currentAccount) {
+      getNotificationsData()
+    }
+  }, [currentAccount])
+  useEffect(() => {
+    setCurrentAccount(JSON.parse(localStorage.getItem("user")))
+  }, [])
   const handleOpenMenu = async () => {
     setIsOpenListbox(p => !p)
 
@@ -45,6 +63,11 @@ const Header = () => {
     setAuthenticated(null)
     localStorage.removeItem("user")
     window.location.replace("/login", undefined, { shallow: true })
+  }
+  const handleMarkAsRead = (id) => {
+    markNotificationaAsReadRequest(id).then(resp => {
+      console.log(resp)
+    })
   }
 
   useEffect(() => {
@@ -77,20 +100,98 @@ const Header = () => {
               </div>
             </Link>
             <div className={styles.right} >
-              <Link href={"/account/profile"} prefetch={false}>
-                Tài khoản của tôi
-              </Link>
-            </div>
-            <Link className={styles.right} href={"/cart"} prefetch={false}>
-              <FontAwesomeIcon
-                icon={faCartShopping}
-                className="cursor-pointer"
-                width={20}
-              />
-            </Link>
+              <div className={styles.notificationBtn}
+                onClick={() => {
+                  setIsAccountMenuOpen(false);
+                  setIsNotificationMenuOpen(p => !p)
+                }}
+              >
+                <FontAwesomeIcon icon={faBell} />
+              </div>
+              <div className={styles.accountAvt}
+                onClick={() => {
+                  setIsNotificationMenuOpen(false);
+                  setIsAccountMenuOpen(p => !p)
+                }}
+              >
+                <img src={currentAccount.avatar.includes("googleusercontent") ?
+                  currentAccount.avatar
+                  : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`}
+                  alt="avt" />
+              </div>
+              {isAccountMenuOpen && <div className={styles.menuAccount}>
+                <ListboxWrapper>
+                  <Listbox variant="flat" aria-label="Listbox menu with sections">
+                    <ListboxSection >
+                      <ListboxItem
+                        key="new"
+                        startContent={<FontAwesomeIcon icon={faUser} />}
+                        onClick={() => router.replace("/account/profile", undefined, { shallow: true })}
+                      >
+                        Tài khoản của tôi
+                      </ListboxItem>
+                      <ListboxItem
+                        key="new"
+                        startContent={<FontAwesomeIcon icon={faSignOut} />}
+                        onClick={() => handleSignOut()}
+                      >
+                        Đăng xuất
+                      </ListboxItem>
+                    </ListboxSection>
 
-            <div className={styles.right} onClick={() => handleSignOut()}>
-              Đăng xuất
+                  </Listbox>
+                </ListboxWrapper>
+              </div>}
+
+              {isNotificationMenuOpen && <div className={styles.menuNotification}>
+                <ListboxWrapper >
+                  <Listbox variant="flat" aria-label="Listbox menu with sections" className={"max-h-80 overflow-y-scroll"}>
+                    <ListboxSection title="Thông báo">
+                      {
+                        notifications.length == 0 ?
+                          <ListboxSection title="Thông báo">
+                            <ListboxItem
+                              key="new"
+                            >
+                              Bạn chưa có thông báo nào.
+                            </ListboxItem>
+                          </ListboxSection> :
+
+                          notifications.map(noti => (
+                            <ListboxItem
+                              key="new"
+                              onClick={() => {
+                                !noti.isRead && handleMarkAsRead(noti._id);
+                                router.replace(`/post/${noti.post._id}`, undefined, { shallow: true })
+                              }}
+                            >
+                              <div className="flex gap-2 justify-between items-center">
+                                <div className="flex gap-2 items-center">
+                                  <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]" src={currentAccount.avatar.includes("googleusercontent") ?
+                                    currentAccount.avatar
+                                    : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                                  <div className="flex flex-col">
+                                    <span className="text-sm/[17px] font-medium ">{noti.performedBy.displayName}</span>
+                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[207px] overflow-hidden whitespace-normal max-h-9`}>
+                                      {noti.action === "like" ? "Đã thích bài viết của bạn." :
+                                        noti.action === "share" ? "Đã chia sẻ bài viết của bạn." :
+                                          `Đã bình luận bài viết của bạn: ${noti.message}`}
+                                    </span>
+                                    <span className='text-sm/[12px] text-sky-600 font-medium my-1'>
+                                      {timeUtils.getTimeElapsed(noti.createdAt)}
+                                    </span>
+                                  </div>
+                                </div>
+                                {!noti.isRead && <FontAwesomeIcon className={styles.newNotiIcon} icon={faCircle} />}
+
+                              </div>
+                            </ListboxItem>
+                          ))
+                      }
+                    </ListboxSection>
+                  </Listbox>
+                </ListboxWrapper>
+              </div>}
             </div>
           </>)
             : (
@@ -209,13 +310,10 @@ const Header = () => {
                 {!categories ? <>...</> :
                   <Listbox
                     aria-label="Dynamic Actions"
-                    // onAction={(key) => alert(key)}
                     className={styles.listboxContent}
                   >
-
                     {
                       categories.map(item => (
-
                         <ListboxItem
                           key={item.name}
                           color={"default"}

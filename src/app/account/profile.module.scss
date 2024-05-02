@@ -22,7 +22,13 @@
           .accountInfo {
             display: flex;
             flex-direction: column;
+            .top {
+              display: flex;
+              flex-direction: row;
+              margin-bottom: 5px;
+            }
             .title {
+              margin-right: 20px;
               font-size: 1.5rem;
               margin-bottom: 0.4rem;
             }
@@ -40,6 +46,17 @@
                 align-items: center;
                 margin-right: 1.25rem;
                 margin-bottom: 0.2rem;
+              }
+            }
+            .followInfo {
+              font-size: 1rem;
+              display: flex;
+              flex-direction: row;
+              .followItem {
+                margin-right: 20px;
+                span {
+                  font-weight: 600;
+                }
               }
             }
           }

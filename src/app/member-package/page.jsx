@@ -52,13 +52,14 @@ const MemberPackage = () => {
 
   const handleMemberRegisterBtnOnclick = () => {
     redirectLogin();
-    if (currentDate < expiredDate) {
-      toast.error(
-        "Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!"
-      );
-      console.log("The expiration date is still valid."); // Perform actions for a valid date
-    }
-    else
+
+    // if (currentDate < expiredDate) {
+    //   toast.error(
+    //     "Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!"
+    //   );
+    //   console.log("The expiration date is still valid."); // Perform actions for a valid date
+    // }
+    // else
     if (membertype) {
       const membership = {
         user: currentAccount._id,
@@ -70,10 +71,9 @@ const MemberPackage = () => {
       let price = 0;
       var type = null;
       let productId = null;
-      let description = null;
-    
+      let description = ""
       membershipTypes.map((membershipType) => {
-        if (membershipType.name == membertype) {  
+        if (membershipType.name == membertype) {
           price = membershipType.price;
           description = membershipType.description;
           productId = membershipType._id;

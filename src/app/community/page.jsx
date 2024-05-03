@@ -15,19 +15,26 @@ import * as type from '../redux/types'
 
 const Community = () => {
   const [postList, setPostList] = useState([])
-  console.log("postList", postList)
-  console.log("image test", `${type.BACKEND_URL}/postimg/${postList[0]?.image}`)
   const [isLoading, setIsLoading] = useState(false)
+  const [lastPost, setLastPost] = useState()
   useEffect(() => {
     setIsLoading(true)
     getAllPostRequest().then(resp => {
       setIsLoading(false)
       setPostList(resp.posts)
+      setLastPost(resp.posts.length > 0 ? resp.posts.length - 1 : 0)
+      console.log("postList", resp.posts)
+      console.log("lastPost", resp.posts[resp.posts.length - 1])
     })
       .catch(err => {
         console.log("err", err)
       })
   }, [])
+
+  const isGoogleAvatar = (avatar) => {
+    return avatar.startsWith('https://lh3.googleusercontent');
+  }
+
   return (
     <div className={styles.communityContainer}>
       <HeaderCommunity />
@@ -37,50 +44,58 @@ const Community = () => {
           :
           <>
             {
-              postList.length !== 0 ?
+              postList.length > 0 ?
                 <div >
                   <div className={styles.mainPost}>
-                    <img className={styles.imgPost} src={postList[0]?.image ? `${type.BACKEND_URL}/api/postimg/${postList[0]?.image}` : tempImg} alt="main post img" />
+                    <img className={styles.imgPost} src={postList[lastPost]?.image ? `${type.BACKEND_URL}/api/postimg/${postList[lastPost]?.image}` : tempImg} alt="main post img" />
                     <div className={styles.postInfo}>
                       <div className={styles.postItem}>
-                        <img className={styles.userAvt} src={postList[0].account?.avatar ? postList[0].account.avatar : tempImg} alt="user avt" />
+                        <img className={styles.userAvt} 
+                          src={isGoogleAvatar(postList[lastPost].account?.avatar) ? 
+                          postList[lastPost].account.avatar : 
+                          `${type.BACKEND_URL}/api/accountimg/${postList[lastPost].account.avatar}`} 
+                          alt="user avt" />
                         <div className={styles.name}>
-                          {postList[0]?.account?.displayName}
+                          {postList[lastPost]?.account?.displayName}
                         </div>
                       </div>
                       <div className={styles.postItem}>
-                        {new Date(postList[0].created_at).toLocaleDateString('en-GB')}
+                        {new Date(postList[lastPost].created_at).toLocaleDateString('en-GB')}
                       </div>
                       <div className={styles.postItem}>
                         {
-                          postList[0].tag.map(tagItem => (
+                          postList[lastPost].tag.map(tagItem => (
                             <div className={styles.tagItem}>
-                              <Tag link={`/${tagItem.name}`} name={tagItem.description} className={styles.tagItem} />
+                              <Tag link={`/book-category/${tagItem.name}`} name={tagItem.description} className={styles.tagItem} />
                             </div>
                           ))
                         }
                       </div>
                     </div>
-                    <Link href={`/post/${postList[0]._id}`} prefetch={false} >
+                    <Link href={`/post/${postList[lastPost]._id}`} prefetch={false} >
                       <div className={styles.postTitle}>
-                        {postList[0].title}
+                        {postList[lastPost].title}
 
                       </div>
                     </Link>
                     <div className={styles.postBody}>
-                      {ReactHtmlParser(postList[0].content)}
+                      {ReactHtmlParser(postList[lastPost].content)}
                     </div>
                   </div>
                   <div className={styles.postList}>
                     {
                       postList.map((post, index) => {
                         return (
-                          index != 0 &&
+                          index != lastPost &&
                           <div className={styles.postListItem}>
                             <img className={styles.imgPost} src={post?.image ? `${type.BACKEND_URL}/api/postimg/${post?.image}` : tempImg} alt="main post img" />
                             <div className={styles.postInfo}>
                               <div className={styles.postItem}>
-                                <img className={styles.userAvt} src={post.account?.avatar ? post.account.avatar : tempImg} alt="user avt" />
+                              <img
+                                className={styles.userAvt}
+                                src={isGoogleAvatar(post.account.avatar) ? post.account.avatar : `${type.BACKEND_URL}/api/accountimg/${post.account.avatar}`}
+                                alt="user avt"
+                              />
                                 <div className={styles.name}>
                                   {post?.account?.displayName}
                                 </div>
@@ -93,7 +108,7 @@ const Community = () => {
                               {
                                 post.tag.map(tagItem => (
                                   <div className={styles.tagItem}>
-                                    <Tag link={`/${tagItem.name}`} name={tagItem.description} className={styles.tagItem} />
+                                    <Tag link={`/book-category/${tagItem.name}`} prefetch={false} shallow  name={tagItem.description} className={styles.tagItem} />
                                   </div>
                                 ))
                               }

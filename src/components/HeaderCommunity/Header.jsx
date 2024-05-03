@@ -142,13 +142,11 @@ const HeaderCommunity = () => {
                       <ListboxSection title="Thông báo">
                         {
                           notifications.length == 0 ?
-                            <ListboxSection title="Thông báo">
                               <ListboxItem
                                 key="new"
                               >
                                 Bạn chưa có thông báo nào.
-                              </ListboxItem>
-                            </ListboxSection> :
+                              </ListboxItem> :
 
                             notifications.map(noti => (
                               <ListboxItem

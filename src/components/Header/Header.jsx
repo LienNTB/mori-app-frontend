@@ -35,6 +35,7 @@ const Header = () => {
     getNotificationsRequest(currentAccount._id)
       .then(resp => {
         setNotifications(resp.data.reverse())
+        console.log("notifications", resp.data.reverse());
       })
   }
   useEffect(() => {
@@ -144,7 +145,7 @@ const Header = () => {
                 </ListboxWrapper>
               </div>}
 
-              {isNotificationMenuOpen && <div className={styles.menuNotification}>
+              {currentAccount && isNotificationMenuOpen && <div className={styles.menuNotification}>
                 <ListboxWrapper >
                   <Listbox variant="flat" aria-label="Listbox menu with sections" className={"max-h-80 overflow-y-scroll"}>
                     <ListboxSection title="Thông báo">

@@ -30,7 +30,7 @@ const Post = () => {
   const id = params.id
   const [post, setPost] = useState(null)
   const [currentAccount, setCurrentAccount] = useState(null)
-  console.log('post', post)
+  // console.log('post', post)
   const isLoadingComments = useSelector((state) => state.comments.loading);
   const comments = useSelector((state) => state.comments.comments);
   const [commentInput, setCommentInput] = useState("")
@@ -58,7 +58,7 @@ const Post = () => {
         new Promise((resolve, reject) => {
           addNewCommentRequest(request)
             .then((resp) => {
-              console.log("resp")
+              // console.log("resp")
               if (resp.message) {
                 resolve("Thêm bình luận thành công!");
                 dispatch(getAllComments(currentAccount._id, post._id))
@@ -70,12 +70,12 @@ const Post = () => {
                   message: commentInput,
                   performedBy: currentAccount._id
                 }
-                console.log("createNotificationRequest", createNotificationRequest)
+                // console.log("createNotificationRequest", createNotificationRequest)
                 createNewNotificationRequest(post.account._id,
                   post._id,
                   "comment",
                   currentAccount._id, commentInput).then(resp => {
-                    console.log("noti", resp)
+                    // console.log("noti", resp)
                   })
               } else {
                 reject(resp.error);
@@ -108,12 +108,12 @@ const Post = () => {
                   action: "like",
                   performedBy: currentAccount._id
                 }
-                console.log("createNotificationRequest", createNotificationRequest)
+                // console.log("createNotificationRequest", createNotificationRequest)
                 createNewNotificationRequest(post.account._id,
                   post._id,
                   "like",
                   currentAccount._id, "").then(resp => {
-                    console.log("noti", resp)
+                    // console.log("noti", resp)
                   })
               }
             } else {
@@ -134,7 +134,7 @@ const Post = () => {
   }
   const handleSharePost = () => {
     sharePostRequest(post._id, currentAccount._id).then(resp => {
-      console.log("resp", resp)
+      // console.log("resp", resp)
       if (resp.message) {
         getPostData()
       }
@@ -145,12 +145,12 @@ const Post = () => {
       action: "share",
       performedBy: currentAccount._id
     }
-    console.log("createNotificationRequest", createNotificationRequest)
+    // console.log("createNotificationRequest", createNotificationRequest)
     createNewNotificationRequest(post.account._id,
       post._id,
       "share",
       currentAccount._id, "").then(resp => {
-        console.log("noti", resp)
+        // console.log("noti", resp)
       })
   }
   const getPostData = () => {
@@ -179,7 +179,7 @@ const Post = () => {
 
   useEffect(() => {
     if (currentAccount && post) {
-      console.log("dispatch(getAllComments(user._id, post._id))")
+      // console.log("dispatch(getAllComments(user._id, post._id))")
       dispatch(getAllComments(currentAccount._id, post._id))
     }
   }, [post])
@@ -199,7 +199,9 @@ const Post = () => {
                 <div className={styles.postInfo}>
                   <div className={styles.postItem}>
                     <img className={styles.imgAvt}
-                      src={post.account.avatar ? post.account.avatar : tempImg} alt="user avt" />
+                      src={post?.account.avatar.includes("googleusercontent") ?
+                      post.account.avatar
+                      : `${types.BACKEND_URL}/api/accountimg/${post.account.avatar}`} alt="user avt" />
                     <div className={styles.name}>
                       {post?.account?.displayName}
                     </div>

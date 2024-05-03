@@ -150,13 +150,11 @@ const Header = () => {
                     <ListboxSection title="Thông báo">
                       {
                         notifications.length == 0 ?
-                          <ListboxSection title="Thông báo">
                             <ListboxItem
                               key="new"
                             >
                               Bạn chưa có thông báo nào.
-                            </ListboxItem>
-                          </ListboxSection> :
+                            </ListboxItem> :
 
                           notifications.map(noti => (
                             <ListboxItem
@@ -168,9 +166,9 @@ const Header = () => {
                             >
                               <div className="flex gap-2 justify-between items-center">
                                 <div className="flex gap-2 items-center">
-                                  <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]" src={currentAccount.avatar.includes("googleusercontent") ?
-                                    currentAccount.avatar
-                                    : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                                  <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]" src={noti.performedBy.avatar.includes("googleusercontent") ?
+                                    noti.performedBy.avatar
+                                    : `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`} />
                                   <div className="flex flex-col">
                                     <span className="text-sm/[17px] font-medium ">{noti.performedBy.displayName}</span>
                                     <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[207px] overflow-hidden whitespace-normal max-h-9`}>

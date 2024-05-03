@@ -75,6 +75,11 @@ const Header = () => {
   useEffect(() => {
     setAuthenticated(localStorage.getItem("user"))
   }, [])
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0); 
+  useEffect(() => {
+      const unreadCount = notifications.filter(noti => !noti.isRead).length;
+      setUnreadNotificationCount(unreadCount);
+  }, [notifications]);
   return (
     <div className={styles.container}>
       <div className={styles.topMenu}>
@@ -102,13 +107,21 @@ const Header = () => {
               </div>
             </Link>
             <div className={styles.right} >
-              <div className={styles.notificationBtn}
-                onClick={() => {
-                  setIsAccountMenuOpen(false);
-                  setIsNotificationMenuOpen(p => !p)
-                }}
-              >
-                <FontAwesomeIcon icon={faBell} />
+            <div className={styles.right}>
+                {unreadNotificationCount > 0 && (
+                  <div className={styles.notificationCount}>
+                    {unreadNotificationCount}
+                  </div>
+                )}
+                <div
+                  className={styles.notificationBtn}
+                  onClick={() => {
+                    setIsAccountMenuOpen(false);
+                    setIsNotificationMenuOpen(p => !p);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faBell} />
+                </div>
               </div>
               <div className={styles.accountAvt}
                 onClick={() => {

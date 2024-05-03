@@ -73,6 +73,11 @@ const HeaderCommunity = () => {
     setAuthenticated(localStorage.getItem("user"))
     setCurrentAccount(JSON.parse(localStorage.getItem("user")))
   }, [])
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0); 
+  useEffect(() => {
+      const unreadCount = notifications.filter(noti => !noti.isRead).length;
+      setUnreadNotificationCount(unreadCount);
+  }, [notifications]);
   return (
     <div className={styles.container}>
       <div className={styles.topMenu}>
@@ -91,25 +96,38 @@ const HeaderCommunity = () => {
                   Tạo post mới
                 </Link>
               </div>
-              <div className={styles.right} >
-                <div className={styles.notificationBtn}
-                  onClick={() => {
-                    setIsAccountMenuOpen(false);
-                    setIsNotificationMenuOpen(p => !p)
-                  }}
-                >
-                  <FontAwesomeIcon icon={faBell} />
+              <div className={styles.right}>
+                <div className={styles.right}>
+                  {unreadNotificationCount > 0 && (
+                    <div className={styles.notificationCount}>
+                      {unreadNotificationCount}
+                    </div>
+                  )}
+                  <div
+                    className={styles.notificationBtn}
+                    onClick={() => {
+                      setIsAccountMenuOpen(false);
+                      setIsNotificationMenuOpen(p => !p);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faBell} />
+                  </div>
                 </div>
-                <div className={styles.accountAvt}
+                <div
+                  className={styles.accountAvt}
                   onClick={() => {
                     setIsNotificationMenuOpen(false);
-                    setIsAccountMenuOpen(p => !p)
+                    setIsAccountMenuOpen(p => !p);
                   }}
                 >
-                  <img src={currentAccount.avatar.includes("googleusercontent") ?
-                    currentAccount.avatar
-                    : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`}
-                    alt="avt" />
+                  <img
+                    src={
+                      currentAccount.avatar.includes("googleusercontent")
+                        ? currentAccount.avatar
+                        : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`
+                    }
+                    alt="avt"
+                  />
                 </div>
                 {isAccountMenuOpen && <div className={styles.menuAccount}>
                   <ListboxWrapper>

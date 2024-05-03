@@ -16,6 +16,7 @@ import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react"
 import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
 import { getNotificationsRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
+import * as types from "@/app/redux/types"
 
 const Header = () => {
   const dispatch = useDispatch()

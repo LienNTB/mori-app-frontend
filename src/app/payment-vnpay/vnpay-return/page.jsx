@@ -7,6 +7,7 @@ import Footer from "@/components/Footer/Footer";
 import { useRouter } from "next/navigation";
 import { Toaster, toast } from "react-hot-toast";
 import * as request from "@/app/redux/saga/requests/membership";
+import Link from "next/link";
 import { createTransactionRequest } from "@/app/redux/saga/requests/transaction";
 
 const VNpayreturn = () => {
@@ -182,9 +183,9 @@ const VNpayreturn = () => {
           </table>
         </div>
         <p className={styles.linkContainer}>
-          <a href="/" className={styles.button} prefetch={false} >
+          <Link href="/homepage" className={styles.button} prefetch={false} >
             Về trang chủ
-          </a>
+          </Link>
         </p>
       </div>
       <Footer />

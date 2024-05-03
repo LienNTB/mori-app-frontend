@@ -95,7 +95,6 @@ const HomePage = () => {
               title="Sách miễn phí"
               href="/book-category/free"
               className={styles.getmorebtn}
-              prefetch={false}
             >
               Xem thêm
             </a>
@@ -124,7 +123,6 @@ const HomePage = () => {
               title="Sách hội viên"
               href="/book-category/member"
               className={styles.getmorebtn}
-              prefetch={false}
             >
               Xem thêm
             </a>
@@ -153,7 +151,6 @@ const HomePage = () => {
               title="Sách mua lẻ"
               href="/book-category/purchase"
               className={styles.getmorebtn}
-              prefetch={false}
             >
               Xem thêm
             </a>

@@ -225,7 +225,7 @@ function Book() {
   const checkBuyBook = () => {
     if (userTrans) {
       userTrans.map((userTran) => {
-        if (userTran.product === book._id) {
+        if (userTran.product === book._id ) {
           return true;
         }
       });
@@ -234,7 +234,7 @@ function Book() {
   };
 
   const handleBuyEbook = () => {
-    if (!checkBuyBook) {
+    if (!checkBuyBook()) {
       const price = book.price;
       const productId = book._id;
       var description = "Mua lẻ sách " + book.name;

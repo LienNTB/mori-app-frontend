@@ -56,7 +56,8 @@ const HeaderCommunity = () => {
   const getNotificationsData = () => {
     getNotificationsRequest(currentAccount._id)
       .then(resp => {
-        setNotifications(resp.data.reverse())
+        console.log("notifications", [...resp.data].reverse());
+        setNotifications([...resp.data].reverse())
       })
   }
   const handleMarkAsRead = (id) => {
@@ -73,10 +74,10 @@ const HeaderCommunity = () => {
     setAuthenticated(localStorage.getItem("user"))
     setCurrentAccount(JSON.parse(localStorage.getItem("user")))
   }, [])
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0); 
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   useEffect(() => {
-      const unreadCount = notifications.filter(noti => !noti.isRead).length;
-      setUnreadNotificationCount(unreadCount);
+    const unreadCount = notifications.filter(noti => !noti.isRead).length;
+    setUnreadNotificationCount(unreadCount);
   }, [notifications]);
   return (
     <div className={styles.container}>
@@ -160,11 +161,11 @@ const HeaderCommunity = () => {
                       <ListboxSection title="Thông báo">
                         {
                           notifications.length == 0 ?
-                              <ListboxItem
-                                key="new"
-                              >
-                                Bạn chưa có thông báo nào.
-                              </ListboxItem> :
+                            <ListboxItem
+                              key="new"
+                            >
+                              Bạn chưa có thông báo nào.
+                            </ListboxItem> :
 
                             notifications.map(noti => (
                               <ListboxItem
@@ -176,9 +177,9 @@ const HeaderCommunity = () => {
                               >
                                 <div className="flex gap-2 justify-between items-center">
                                   <div className="flex gap-2 items-center">
-                                    <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]" src={currentAccount.avatar.includes("googleusercontent") ?
-                                      currentAccount.avatar
-                                      : `${types.BACKEND_URL}/api/accountimg/${currentAccount.avatar}`} />
+                                    <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]" src={noti.performedBy.avatar.includes("googleusercontent") ?
+                                      noti.performedBy.avatar
+                                      : `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`} />
                                     <div className="flex flex-col">
                                       <span className="text-sm/[17px] font-medium ">{noti.performedBy.displayName}</span>
                                       <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[207px] overflow-hidden whitespace-normal max-h-9`}>

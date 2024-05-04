@@ -34,8 +34,8 @@ const Header = () => {
   const getNotificationsData = () => {
     getNotificationsRequest(currentAccount._id)
       .then(resp => {
-        setNotifications(resp.data.reverse())
-        console.log("notifications", resp.data.reverse());
+        setNotifications([...resp.data].reverse())
+        console.log("notifications", [...resp.data].reverse());
       })
   }
   useEffect(() => {
@@ -75,10 +75,10 @@ const Header = () => {
   useEffect(() => {
     setAuthenticated(localStorage.getItem("user"))
   }, [])
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0); 
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   useEffect(() => {
-      const unreadCount = notifications.filter(noti => !noti.isRead).length;
-      setUnreadNotificationCount(unreadCount);
+    const unreadCount = notifications.filter(noti => !noti.isRead).length;
+    setUnreadNotificationCount(unreadCount);
   }, [notifications]);
   return (
     <div className={styles.container}>
@@ -107,7 +107,7 @@ const Header = () => {
               </div>
             </Link>
             <div className={styles.right} >
-            <div className={styles.right}>
+              <div className={styles.right}>
                 {unreadNotificationCount > 0 && (
                   <div className={styles.notificationCount}>
                     {unreadNotificationCount}
@@ -164,11 +164,11 @@ const Header = () => {
                     <ListboxSection title="Thông báo">
                       {
                         notifications.length == 0 ?
-                            <ListboxItem
-                              key="new"
-                            >
-                              Bạn chưa có thông báo nào.
-                            </ListboxItem> :
+                          <ListboxItem
+                            key="new"
+                          >
+                            Bạn chưa có thông báo nào.
+                          </ListboxItem> :
 
                           notifications.map(noti => (
                             <ListboxItem

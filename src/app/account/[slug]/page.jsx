@@ -25,13 +25,15 @@ import {
   TableBody,
   TableRow,
   Button,
+  useDisclosure,
 } from "@nextui-org/react";
 import { getMembershipById } from "@/app/redux/actions/membership";
 import { getReadHistory } from "@/app/redux/actions/book";
-import bookImg from "../../../../public/book.png";
 import * as types from "@/app/redux/types";
 import { getPostByUserIdRequest } from "@/app/redux/saga/requests/post";
 import { getUserTransactionsRequest } from "@/app/redux/saga/requests/transaction";
+import FollowerModal from "@/components/Modals/FollowerModal/FollowerModal";
+import FollowingModal from "@/components/Modals/FollowingModal/FollowingModal";
 
 const Profile = () => {
   const params = useParams();
@@ -51,6 +53,8 @@ const Profile = () => {
   const [click, setClick] = useState(0);
   const [userTrans, setUserTrans] = useState();
   const dispatch = useDispatch();
+  const { isOpen: isOpenFollower, onOpen: onOpenFollower, onOpenChange: onOpenChangeFollower } = useDisclosure();
+  const { isOpen: isOpenFollowing, onOpen: onOpenFollowing, onOpenChange: onOpenChangeFollowing } = useDisclosure();
 
   function getBookType(book) {
     if (book.access_level == 2) {
@@ -80,6 +84,9 @@ const Profile = () => {
     setClick((p) => p + 1);
   };
 
+  const handleFollowUser = () => {
+
+  }
   if (!currentAccount) {
     redirect("/login");
   }
@@ -136,17 +143,15 @@ const Profile = () => {
               <div className={styles.accountInfo}>
                 <div className={styles.top}>
                   <div className={styles.title}>{currentAccount.displayName}</div>
-                  <Button color="primary" variant="flat">
-                    Theo dõi
-                  </Button>
+
                 </div>
 
                 <div className={styles.followInfo}>
-                  <div className={styles.followItem}>
+                  <div className={styles.followItem} onClick={() => onOpenFollower()}>
                     <span>245 </span>
                     Người theo dõi
                   </div>
-                  <div className={styles.followItem}>
+                  <div className={styles.followItem} onClick={() => onOpenFollowing()}>
                     <span>245 </span>
                     Đang theo dõi
                   </div>
@@ -278,7 +283,7 @@ const Profile = () => {
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
                           <Link
                             href={`/${getBookType(book.book)}/${book.book._id}`}
-                            prefetch={false} 
+                            prefetch={false}
                             shallow
                           >
                             {book.book.name}
@@ -551,6 +556,8 @@ const Profile = () => {
       </div>
       <Footer />
       <ToastContainerWrapper />
+      <FollowerModal isOpen={isOpenFollower} onOpenChange={onOpenChangeFollower} />
+      <FollowingModal isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} />
     </div>
   );
 };

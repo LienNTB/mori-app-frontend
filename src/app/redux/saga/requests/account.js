@@ -13,6 +13,16 @@ export const getAccountsRequest = async (searchValue) => {
       throw error;
     });
 };
+export const getAccountByIdRequest = async (id) => {
+  return fetch(`${type.BACKEND_URL}/api/account/get-account/${id}`, {
+    method: "GET",
+    headers: type.requestHeader,
+  })
+    .then((response) => response.json())
+    .catch((error) => {
+      throw error;
+    });
+};
 export const createAccountRequest = async (account) => {
   console.log("type", type);
   return fetch(`${type.BACKEND_URL}/api/account/add-account`, {

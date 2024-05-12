@@ -28,6 +28,20 @@ export const getAllEBookRequest = async () => {
     });
 };
 
+export const findBookByNameRequest = async (searchValue) => {
+  return fetch(`${type.BACKEND_URL}/api/book/search?term=${searchValue}`, {
+    method: "GET",
+    headers: type.requestHeader,
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
 export const getAllAudioBookRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book/audio-book`, {
     method: "GET",

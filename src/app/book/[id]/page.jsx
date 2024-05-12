@@ -64,7 +64,7 @@ function Book() {
   const booksByCate = useSelector((state) => state.books.booksByCate);
   const isLoadingReview = useSelector((state) => state.reviews.loading);
   const reviews = useSelector((state) => state.reviews.reviews);
-  let currentAccount = JSON.parse(localStorage.getItem("user"));
+  let [currentAccount, setCurrentAccount] = useState(null)
   const [rating, setRating] = useState(5);
   const [content, setContent] = useState("");
   const router = useRouter();
@@ -101,8 +101,6 @@ function Book() {
       setUserTrans(resp.transactions);
     });
   };
-
-  // console.log("currentReviewContent", currentReviewContent);
   const handleUpdateReview = () => {
     toast.promise(
       new Promise((resolve, reject) => {
@@ -225,7 +223,7 @@ function Book() {
   const checkBuyBook = () => {
     if (userTrans) {
       userTrans.map((userTran) => {
-        if (userTran.product === book._id ) {
+        if (userTran.product === book._id) {
           return true;
         }
       });
@@ -274,6 +272,9 @@ function Book() {
       dispatch(getBooksByCate(book.tags[0]));
     }
   }, [book]);
+  useEffect(() => {
+    setCurrentAccount(JSON.parse(localStorage.getItem("user")))
+  }, [])
 
   if (isLoading) {
     return <Loading />;
@@ -341,7 +342,7 @@ function Book() {
 
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    <Link href={"/book-category/tamlykynang"} prefetch={false}  shallow>
+                    <Link href={"/book-category/tamlykynang"} prefetch={false} shallow>
                       <button className={styles.tag}>
                         Tâm lý - Kỹ năng sống
                       </button>
@@ -491,8 +492,8 @@ function Book() {
                                 />
 
                                 {isOpenReviewOption &&
-                                review.user._id === currentAccount?._id &&
-                                review._id === isOpenReview._id ? (
+                                  review.user._id === currentAccount?._id &&
+                                  review._id === isOpenReview._id ? (
                                   // {isOpenReviewOption && isOpenReview._id === review._id
                                   <div className={styles.actionWrapper}>
                                     <div

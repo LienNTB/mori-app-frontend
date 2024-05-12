@@ -1,11 +1,28 @@
 @import "../../../assets/styles/globalstyle.scss";
 .postContainer {
   margin: 50px 0px;
+  .moreProducts {
+    .header {
+      padding: 20px 20px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+  }
   .postContentWrapper {
     section {
       margin: 50px;
     }
     .postMain {
+      .bookRedirect {
+        margin-bottom: 20px;
+        font-size: 20px;
+        transition: all 0.2s linear;
+        div {
+          color: rgb(0, 38, 255) !important;
+        }
+        &:hover {
+        }
+      }
       .top {
         display: flex;
         flex-direction: row;
@@ -14,6 +31,7 @@
           display: flex;
           flex-direction: row;
           justify-content: space-between;
+          align-items: center;
           span {
             margin: 0 7px;
           }
@@ -38,6 +56,8 @@
           .blackShare {
             height: fit-content;
             transition: all 0.1s linear;
+            margin-right: 20px;
+
             &:hover {
               cursor: pointer;
               color: rgb(0, 132, 255);
@@ -46,6 +66,8 @@
           .blueShare {
             height: fit-content;
             color: rgb(0, 132, 255);
+            margin-right: 20px;
+
             &:hover {
               cursor: pointer;
             }
@@ -146,5 +168,14 @@
         }
       }
     }
+  }
+  .splideType1 {
+    display: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  .splideType1 {
+    display: none;
   }
 }

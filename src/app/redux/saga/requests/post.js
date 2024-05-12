@@ -28,6 +28,20 @@ export const createNewPostRequest = async (postRequest) => {
       throw error;
     });
 };
+export const editPostRequest = async (postRequest, id) => {
+  return fetch(`${type.BACKEND_URL}/api/post/${id}`, {
+    method: "PUT",
+    headers: type.requestHeader,
+    body: JSON.stringify(postRequest),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
 export const deletePostByIdRequest = async (postId) => {
   return fetch(`${type.BACKEND_URL}/api/post/${postId}`, {
     method: "DELETE",

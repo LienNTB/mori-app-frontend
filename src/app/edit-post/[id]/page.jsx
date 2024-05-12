@@ -1,30 +1,36 @@
 "use client"
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import styles from './NewPost.module.scss'
+import styles from './EditPost.module.scss'
 import HeaderCommunity from '@/components/HeaderCommunity/Header'
-import { createNewPostRequest, uploadPostImageRequest } from '../redux/saga/requests/post'
-import { useRouter } from 'next/navigation'
+import { createNewPostRequest, editPostRequest, getPostByIdRequest, uploadPostImageRequest } from '../../redux/saga/requests/post'
+import { useParams, useRouter } from 'next/navigation'
 import { Toaster, toast } from "react-hot-toast";
 import { Chip, Listbox, ListboxItem } from "@nextui-org/react";
 import {
   Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure,
   Dropdown, DropdownTrigger, DropdownMenu, DropdownItem
 } from "@nextui-org/react";
-import { getAllTagsRequest } from '../redux/saga/requests/tag';
+import { getAllTagsRequest } from '../../redux/saga/requests/tag';
 import dynamic from 'next/dynamic';
-import { findBookByNameRequest } from '../redux/saga/requests/book'
+import { findBookByNameRequest } from '../../redux/saga/requests/book'
 import Loading from '@/components/Loading/Loading'
 import { ListboxWrapper } from '@/components/ListboxWrapper/ListboxWrapper'
+import tempImg from '../../../../public/book.png'
+import * as type from '../../redux/types'
+
 
 const RichTextEditor = dynamic(
   () =>
-    import('../../components/RichTextEditor/RichTextEditor').then(
+    import('../../../components/RichTextEditor/RichTextEditor').then(
       (mod) => mod.default
     ),
   { ssr: false }
 )
 
-const NewPost = () => {
+const EditPost = () => {
+  const params = useParams();
+  const id = params.id;
+  const [post, setPost] = useState(null);
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState("")
   const router = useRouter()
@@ -40,21 +46,21 @@ const NewPost = () => {
   );
   const [selectedTags, setSelectedTags] = useState([])
   const [postBodyContent, setPostBodyContent] = useState('');
-  const [selectedImage, setSelectedImage] = useState("")
+  const [selectedImage, setSelectedImage] = useState("");
+  const [postImage, setPostImage] = useState("")
   const [searchTerm, setSearchTerm] = useState('');
   const inputRef = useRef(null);
   const [isSearchingBooks, setIsSearchingBooks] = useState(false);
   const [isOpenSearchBox, setIsOpenSearchBox] = useState(false)
   const [selectedSearchingBook, setSelectedSearchingBook] = useState(null)
   const [filteredBooks, setFilteredBooks] = useState([]);
-  console.log("selectedTags", selectedTags)
   const handleClose = (tagToRemove) => {
     setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
     if (selectedTags.length === 1) {
       setSelectedTags([]);
     }
   };
-  const handleCreatePost = () => {
+  const handleEditPost = () => {
     if (!user) {
       router.replace('/login', undefined, { shallow: true })
     }
@@ -68,36 +74,62 @@ const NewPost = () => {
 
     toast.promise(
       new Promise((resolve, reject) => {
-        uploadPostImageRequest(selectedImage).then(respUploadImg => {
-          if (respUploadImg.error) {
-            reject(respUploadImg.error)
+        // update post without image
+        if (selectedImage == "") {
+          const postRequest = {
+            account: (user._id.toString()),
+            title: title,
+            content: postBodyContent,
+            tag: tagRequest,
+            book: selectedSearchingBook ? selectedSearchingBook._id : null
           }
-          else {
-            const postRequest = {
-              account: (user._id.toString()),
-              title: title,
-              content: postBodyContent,
-              tag: tagRequest,
-              image: respUploadImg.filename,
-              book: selectedSearchingBook ? selectedSearchingBook._id : null
+          editPostRequest(postRequest, id)
+            .then((respEditPost) => {
+              if (respEditPost.message) {
+                resolve(respEditPost.message);
+                router.replace("/community", undefined, { shallow: true })
+              } else {
+                console.log("respEditPost.error", respEditPost.error.toString())
+                reject(respEditPost.error);
+              }
+            })
+            .catch((err) => {
+              reject("Cập nhật bài viết thất bại! Vui lòng thử lại!")
+              console.log("err", err);
+            });
+        }
+        // update post with image
+        else {
+          uploadPostImageRequest(selectedImage).then(respUploadImg => {
+            if (respUploadImg.error) {
+              reject(respUploadImg.error)
             }
-            console.log("postRequest", postRequest)
-            createNewPostRequest(postRequest)
-              .then((respCreatePost) => {
-                if (respCreatePost.message) {
-                  resolve(respCreatePost.message);
-                  router.replace("/community", undefined, { shallow: true })
-                } else {
-                  console.log("respCreatePost.error", respCreatePost.error.toString())
-                  reject(respCreatePost.error);
-                }
-              })
-              .catch((err) => {
-                reject("Tạo bài viết thất bại! Vui lòng thử lại!")
-                console.log("err", err);
-              });
-          }
-        })
+            else {
+              const postRequest = {
+                account: (user._id.toString()),
+                title: title,
+                content: postBodyContent,
+                tag: tagRequest,
+                image: respUploadImg.filename,
+                book: selectedSearchingBook ? selectedSearchingBook._id : null
+              }
+              editPostRequest(postRequest)
+                .then((respEditPost) => {
+                  if (respEditPost.message) {
+                    resolve(respEditPost.message);
+                    router.replace("/community", undefined, { shallow: true })
+                  } else {
+                    console.log("respEditPost.error", respEditPost.error.toString())
+                    reject(respEditPost.error);
+                  }
+                })
+                .catch((err) => {
+                  reject("Cập nhật bài viết thất bại! Vui lòng thử lại!")
+                  console.log("err", err);
+                });
+            }
+          })
+        }
       }),
       {
         loading: "Processing...",
@@ -117,18 +149,22 @@ const NewPost = () => {
     }
 
   };
-  const handleClickOutside = (event) => {
-    if (inputRef.current && !inputRef.current.contains(event.target)) {
-      setFilteredBooks(books); // Reset on outside click
-    }
-  };
-
   const loadTagData = () => {
     getAllTagsRequest().then(resp => {
       console.log("resp", resp.allTags)
       setTags(resp.allTags)
     })
   }
+  const getPostData = () => {
+    getPostByIdRequest(id).then((resp) => {
+      console.log("resp.post", resp.post)
+      setPost(resp.post);
+      setSelectedSearchingBook(resp.post.book ? resp.post.book : null)
+      setSelectedTags(resp.post.tag.map(tagItem => tagItem.description))
+      setPostImage(resp.post.image);
+      setTitle(resp.post.title)
+    });
+  };
 
   useEffect(() => {
     // handle search for book names everytime search value change
@@ -149,7 +185,8 @@ const NewPost = () => {
     if (!userData) {
       router.replace('/login', undefined, { shallow: true })
     }
-    loadTagData()
+    loadTagData();
+    getPostData();
   }, [])
   return (
     <div className={styles.newPostContainer}>
@@ -157,7 +194,7 @@ const NewPost = () => {
       <HeaderCommunity />
       <div className={styles.newPostContent}>
         <div className={styles.newPostTitle}>
-          Tạo bài viết mới
+          Chỉnh sửa bài viết
         </div>
         <div className={styles.bookInput}>
           <div className={styles.top}>
@@ -173,10 +210,11 @@ const NewPost = () => {
         <div className={styles.postTitle}>
           <span>Hình ảnh bài viết: </span>
           <input type="file" onChange={(e) => setSelectedImage(e.target.files[0])} />
+          <img className={styles.postImg} src={post?.image ? `${type.BACKEND_URL}/api/postimg/${postImage}` : tempImg} alt="main post img" />
         </div>
         <div className={styles.inputTitle}>
           <span>Tiêu đề bài viết: </span>
-          <input type="text" placeholder='Nhập tiêu đề...' onChange={(e) => setTitle(e.target.value)} />
+          <input type="text" placeholder='Nhập tiêu đề...' onChange={(e) => setTitle(e.target.value)} value={title} />
         </div>
         <div className={styles.tagInput}>
           <div className={styles.top}>
@@ -197,9 +235,9 @@ const NewPost = () => {
             </div>
           </div>
         </div>
-        <RichTextEditor setPostBodyContent={setPostBodyContent} />
-        <div className={styles.submitBtn} onClick={handleCreatePost}>
-          Gửi
+        <RichTextEditor setPostBodyContent={setPostBodyContent} postBody={post?.content} />
+        <div className={styles.submitBtn} onClick={handleEditPost}>
+          Cập nhật
         </div>
       </div>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -301,5 +339,5 @@ const NewPost = () => {
   )
 }
 
-export default NewPost
+export default EditPost
 

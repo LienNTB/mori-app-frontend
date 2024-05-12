@@ -1,13 +1,17 @@
 import React from 'react'
-import { Editor, EditorState, getDefaultKeyBinding, RichUtils, convertToRaw } from 'draft-js'
+import { Editor, EditorState, getDefaultKeyBinding, RichUtils, convertToRaw, convertFromHTML, ContentState } from 'draft-js'
 import './RichTextEditor.css'
 import '../../../node_modules/draft-js/dist/Draft.css'
 import { stateToHTML } from "draft-js-export-html";
 
 class RichTextEditor extends React.Component {
+
   constructor(props) {
     super(props);
-    this.state = { editorState: EditorState.createEmpty() };
+    this.state = {
+      editorState: EditorState.createEmpty(),
+      editorContentHtml: ''
+    };
     this.onChange = editorState => {
       this.setState({
         editorState,
@@ -21,6 +25,32 @@ class RichTextEditor extends React.Component {
     this.mapKeyToEditorCommand = this._mapKeyToEditorCommand.bind(this);
     this.toggleBlockType = this._toggleBlockType.bind(this);
     this.toggleInlineStyle = this._toggleInlineStyle.bind(this);
+  }
+  componentDidUpdate(prevProps) {
+    console.log('this.props.postBody', this.props.postBody)
+    // Check for prop change and update state only when necessary
+    if (prevProps.postBody !== this.props.postBody) {
+      if (this.props.postBody) {
+        const sampleMarkup =
+          this.props.postBody
+        const blocksFromHTML = convertFromHTML(sampleMarkup);
+        const state = ContentState.createFromBlockArray(
+          blocksFromHTML.contentBlocks,
+          blocksFromHTML.entityMap,
+        );
+        this.setState({
+          editorState: EditorState.createWithContent(state),
+          editorContentHtml: (this.props.postBody)
+
+        });
+      } else {
+        // Handle case where props.postBody becomes undefined again
+        this.setState({
+          editorState: EditorState.createEmpty(),
+          editorContentHtml: '',
+        });
+      }
+    }
   }
 
 
@@ -67,6 +97,8 @@ class RichTextEditor extends React.Component {
   }
 
   render() {
+    console.log('props.postBody ', this.props.postBody)
+
     const { editorState } = this.state;
     // console.log("editorContentHtml", this.state.editorContentHtml)
     // If the user changes block type before entering any text, we can

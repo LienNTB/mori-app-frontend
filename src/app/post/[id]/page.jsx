@@ -16,7 +16,7 @@ import {
 } from "@/app/redux/saga/requests/post";
 import { useParams } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
-import { faHeart, faShare } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faHeart, faShare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as types from "../../redux/types";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,6 +27,12 @@ import toast from "react-hot-toast";
 import { FacebookButton, FacebookCount } from "react-social";
 import HeaderCommunity from "@/components/HeaderCommunity/Header";
 import { createNewNotificationRequest } from "@/app/redux/saga/requests/notification";
+import { Splide, SplideSlide } from "@splidejs/react-splide";
+import "@splidejs/react-splide/css";
+import "@splidejs/react-splide/css/sea-green";
+import "@splidejs/react-splide/css/core";
+import { getBooks, getBooksByCate } from "@/app/redux/actions/book";
+import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
 
 const Post = () => {
   const dispatch = useDispatch();
@@ -42,6 +48,10 @@ const Post = () => {
   const [postShares, setPostShares] = useState(0);
   const [isPostLiked, setIsPostLiked] = useState(false);
   const [isPostShared, setIsPostShared] = useState(false);
+  const booksByCate = useSelector((state) => state.books.booksByCate);
+  const allbooks = useSelector((state) => state.books.books);
+
+
   const onCommentInputChange = (value) => {
     setCommentInput(value);
   };
@@ -62,28 +72,16 @@ const Post = () => {
           new Promise((resolve, reject) => {
             addNewCommentRequest(request)
               .then((resp) => {
-                // console.log("resp")
                 if (resp.message) {
                   resolve("Thêm bình luận thành công!");
                   dispatch(getAllComments(currentAccount._id, post._id));
-
-                  const createNotificationRequest = {
-                    account: post.account._id,
-                    post: post._id,
-                    action: "comment",
-                    message: commentInput,
-                    performedBy: currentAccount._id,
-                  };
-                  // console.log("createNotificationRequest", createNotificationRequest)
                   createNewNotificationRequest(
                     post.account._id,
                     post._id,
                     "comment",
                     currentAccount._id,
                     commentInput
-                  ).then((resp) => {
-                    // console.log("noti", resp)
-                  });
+                  )
                 } else {
                   reject(resp.error);
                 }
@@ -116,13 +114,6 @@ const Post = () => {
                 resolve(resp.message);
                 getPostData();
                 if (resp.message !== "Unhearted!") {
-                  const createNotificationRequest = {
-                    account: post.account._id,
-                    post: post._id,
-                    action: "like",
-                    performedBy: currentAccount._id,
-                  };
-                  // console.log("createNotificationRequest", createNotificationRequest)
                   createNewNotificationRequest(
                     post.account._id,
                     post._id,
@@ -130,7 +121,6 @@ const Post = () => {
                     currentAccount._id,
                     ""
                   ).then((resp) => {
-                    // console.log("noti", resp)
                   });
                 }
               } else {
@@ -161,22 +151,13 @@ const Post = () => {
           getPostData();
         }
       });
-      const createNotificationRequest = {
-        account: post.account._id,
-        post: post._id,
-        action: "share",
-        performedBy: currentAccount._id,
-      };
-      // console.log("createNotificationRequest", createNotificationRequest)
       createNewNotificationRequest(
         post.account._id,
         post._id,
         "share",
         currentAccount._id,
         ""
-      ).then((resp) => {
-        // console.log("noti", resp)
-      });
+      )
     } else {
       toast.error("Vui lòng đăng nhập để share bài viết này!", {
         duration: 2000,
@@ -188,8 +169,11 @@ const Post = () => {
       setPost(resp.post);
       setPostLikes(resp.post.likes.length);
       setPostShares(resp.post.shares.length);
+      dispatch(getBooks());
+      dispatch(getBooksByCate(resp.post.tag[0]));
     });
   };
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
@@ -212,16 +196,9 @@ const Post = () => {
 
   useEffect(() => {
     if (currentAccount && post) {
-      // console.log("dispatch(getAllComments(user._id, post._id))")
       dispatch(getAllComments(currentAccount._id, post._id));
     }
   }, [post]);
-
-  // const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
-  // useEffect(() => {
-  //     const unreadCount = notifications.filter(noti => !noti.isRead).length;
-  //     setUnreadNotificationCount(unreadCount);
-  // }, [notifications]);
 
   return (
     <div className={styles.postContainer}>
@@ -231,8 +208,20 @@ const Post = () => {
         <div className={styles.postContentWrapper}>
           <section className={styles.postMain}>
             <div className={styles.title}>{post.title}</div>
+            <div className={styles.bookRedirect}>
+              {post.book ?
+                <Link href={`/book/${post.book._id}`} prefetch={false}>
+                  <div>
+                    Đọc sách "{post.book.name}" tại đây
+                  </div>
+                </Link>
+                :
+                <></>
+              }
+            </div>
             <div className={styles.top}>
               <div className={styles.postInfo}>
+
                 <div className={styles.postItem}>
                   <img
                     className={styles.imgAvt}
@@ -256,6 +245,7 @@ const Post = () => {
                   ))}
                 </div>
               </div>
+
               <div className={styles.actionList}>
                 <span>{postLikes}</span>
                 <div
@@ -288,8 +278,18 @@ const Post = () => {
                     />
                   </div>
                 </FacebookButton>
+                {currentAccount._id == post.account._id &&
+                  <Link href={`/edit-post/${post._id}`}>
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      class="cursor-pointer"
+                      width={20}
+                    />
+                  </Link>
+                }
               </div>
             </div>
+
             <img
               className={styles.imgPost}
               src={
@@ -299,6 +299,17 @@ const Post = () => {
               }
               alt="main post img"
             />
+            <div className={styles.bookRedirect}>
+              {post.book ?
+                <Link href={`/book/${post.book._id}`} prefetch={false}>
+                  <div>
+                    Đọc sách "{post.book.name}" tại đây
+                  </div>
+                </Link>
+                :
+                <></>
+              }
+            </div>
             <div className={styles.postBody}>
               {ReactHtmlParser(post.content)}
             </div>
@@ -315,6 +326,61 @@ const Post = () => {
               comments={comments}
               onCommentsUpdate={onCommentsUpdate}
             />
+          )}
+          {!booksByCate ? (
+            <Loading />
+          ) : (
+            <section className={styles.moreProducts}>
+              <div className={styles.header}>Đọc sách hay nhất tại Mori</div>
+              <Splide
+                className={styles.splideType1}
+                options={{
+                  type: "loop",
+                  perPage: 3,
+                  perMove: 1,
+                }}
+                aria-label="My Favorite Images"
+              >
+                {!booksByCate ? (
+                  <Loading />
+                ) : (
+                  booksByCate.length != 0 ? booksByCate.map((book) => (
+                    <SplideSlide>
+                      <BookItemSplide itemsPerRow={3} book={book} />
+                    </SplideSlide>
+                  )) :
+                    allbooks.map((book) => (
+                      <SplideSlide>
+                        <BookItemSplide itemsPerRow={3} book={book} />
+                      </SplideSlide>
+                    ))
+                )}
+              </Splide>
+              <Splide
+                className={styles.splideType2}
+                options={{
+                  type: "loop",
+                  perPage: 3,
+                  perMove: 1,
+                }}
+                aria-label="My Favorite Images"
+              >
+                {!booksByCate ? (
+                  <Loading />
+                ) : (
+                  booksByCate.length !== 0 ? booksByCate.map((book) => (
+                    <SplideSlide>
+                      <BookItemSplide itemsPerRow={3} book={book} />
+                    </SplideSlide>
+                  )) :
+                    allbooks.map((book) => (
+                      <SplideSlide>
+                        <BookItemSplide itemsPerRow={3} book={book} />
+                      </SplideSlide>
+                    ))
+                )}
+              </Splide>
+            </section>
           )}
           <section className={styles.similarPostWrapper}>
             <div className={styles.title}>Bài viết được đề xuất</div>

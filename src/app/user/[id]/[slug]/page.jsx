@@ -34,17 +34,19 @@ import FollowingModal from "@/components/Modals/FollowingModal/FollowingModal";
 import { followUserRequest, isFollowingRequest, unfollowUserRequest } from "@/app/redux/saga/requests/follow";
 import { getAccountByIdRequest } from "@/app/redux/saga/requests/account";
 import UnfollowConfirmModal from "@/components/Modals/UnfollowConfirmModal/UnfollowConfirmModal";
+import Loading from "@/components/Loading/Loading";
 
 const Profile = () => {
   const params = useParams();
   const id = params.slug;
   const userId = params.id;
   const [currentTopic, setCurrentTopic] = useState(id);
-  const currentAccount = JSON.parse(localStorage.getItem("user"));
+  const [currentAccount, setCurrentAccount] = useState(null)
   const [user, setUser] = useState(null)
   const [postList, setPostList] = useState([]);
   const [isLoadingPostList, setIsLoadingPostList] = useState(false);
-  const [click, setClick] = useState(0);
+  const booksLibrary = useSelector((state) => state.myLibrary.bookList);
+  const isLoading = useSelector((state) => state.myLibrary.loading);
   const dispatch = useDispatch();
   const { isOpen: isOpenFollower, onOpen: onOpenFollower, onOpenChange: onOpenChangeFollower } = useDisclosure();
   const { isOpen: isOpenFollowing, onOpen: onOpenFollowing, onOpenChange: onOpenChangeFollowing } = useDisclosure();
@@ -65,7 +67,6 @@ const Profile = () => {
       }))
   }
   const handleUnfollowUser = () => {
-    console.log("handleUnfollowUser", handleUnfollowUser)
     const request = {
       follower: currentAccount._id,
       following: userId
@@ -109,12 +110,18 @@ const Profile = () => {
   useEffect(() => {
     if (user) {
       getPostData();
+    }
+  }, [user]);
+  useEffect(() => {
+    if (currentAccount) {
+      getUserData()
+      getIsFollowingData();
 
     }
-  }, [user])
+  }, [currentAccount])
   useEffect(() => {
-    getUserData()
-    getIsFollowingData()
+    setCurrentAccount(JSON.parse(localStorage.getItem("user")))
+    dispatch(getBooksFromMyLibrary(userId));
   }, []);
 
   return (
@@ -188,6 +195,12 @@ const Profile = () => {
               <Link href={`/user/${userId}/profile`}>Thông tin cá nhân</Link>
             </div>
             <div
+              className={`${styles.navItem} ${currentTopic === "library" ? styles.active : ""
+                }`}
+            >
+              <Link href={`/user/${userId}/library`}>Thư viện</Link>
+            </div>
+            <div
               className={`${styles.navItem} ${currentTopic === "my-post" ? styles.active : ""
                 }`}
             >
@@ -228,7 +241,7 @@ const Profile = () => {
         {currentTopic == "my-post" ? (
           <section className={styles.myPostInfo}>
             <div className={styles.uHead}>
-              <div className={styles.title}>Bài viết của tôi</div>
+              <div className={styles.title}>Bài viết</div>
             </div>
             <div className={styles.uTable}>
               <div className={styles.myPostList}>
@@ -267,6 +280,79 @@ const Profile = () => {
                   <div className={styles.postTitle}>title</div>
                 </div> */}
               </div>
+            </div>
+          </section>
+        ) : (
+          <></>
+        )}
+        {/* library section */}
+        {currentTopic == "library" ? (
+          <section className={styles.profileInfo}>
+            <div className={styles.libraryHead}>
+              <div className={styles.title}>Tiêu đề sách, truyện</div>
+              {/* <div className="flex flex-wrap gap-4">
+              <Tabs variant="solid" color="primary" aria-label="Tabs variants">
+                <Tab key="sachdangdoc" title="Sách đang đọc" />
+                <Tab key="sachyeuthich" title="Sách yêu thích" />
+              </Tabs>
+            </div> */}
+            </div>
+            <div className={styles.libraryBody}>
+              <table class="table-auto w-full">
+                <thead class="bg-slate-300">
+                  <tr>
+                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                      Book
+                    </th>
+                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                      Name
+                    </th>
+                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                      Author
+                    </th>
+                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {isLoading ? (
+                    <Loading />
+                  ) : (
+                    booksLibrary.map((book) => (
+                      <tr>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          <img
+                            src={`${types.BACKEND_URL}/api/bookimg/${book.book.image}`}
+                            alt="image"
+                            className={styles.bookLibImg}
+                          />
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
+                          <Link
+                            href={`/${getBookType(book.book)}/${book.book._id}`}
+                            prefetch={false}
+                            shallow
+                          >
+                            {book.book.name}
+                          </Link>
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          {book.book.author}
+                        </td>
+                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          <FontAwesomeIcon
+                            icon={faTrashCan}
+                            class="cursor-pointer"
+                            width={20}
+                            onClick={() => handleDeleteBook(book.book)}
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </section>
         ) : (

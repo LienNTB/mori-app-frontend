@@ -31,7 +31,7 @@ import { getPostByUserIdRequest } from "@/app/redux/saga/requests/post";
 import { getUserTransactionsRequest } from "@/app/redux/saga/requests/transaction";
 import FollowerModal from "@/components/Modals/FollowerModal/FollowerModal";
 import FollowingModal from "@/components/Modals/FollowingModal/FollowingModal";
-import { followUserRequest, isFollowingRequest, unfollowUserRequest } from "@/app/redux/saga/requests/follow";
+import { followUserRequest, getAllFollowers, getAllFollowings, isFollowingRequest, unfollowUserRequest } from "@/app/redux/saga/requests/follow";
 import { getAccountByIdRequest } from "@/app/redux/saga/requests/account";
 import UnfollowConfirmModal from "@/components/Modals/UnfollowConfirmModal/UnfollowConfirmModal";
 import Loading from "@/components/Loading/Loading";
@@ -54,6 +54,9 @@ const Profile = () => {
   const [isLoadingUnfollowRequest, setIsLoadingUnfollowRequest] = useState(false)
   const [isFollowing, setIsFollowing] = useState(false)
   const { isOpen: isOpenUnfollowConfirm, onOpen: onOpenUnfollowConfirm, onOpenChange: onOpenChangeUnfollowConfirm, onClose: onCloseChangeUnfollowConfirm } = useDisclosure();
+  const [followers, setFollowers] = useState([])
+  const [followings, setFollowings] = useState([])
+
   const handleFollowUser = () => {
     const request = {
       follower: currentAccount._id,
@@ -107,6 +110,16 @@ const Profile = () => {
       })
   }
 
+  const getFollowersData = () => {
+    getAllFollowers(userId).then((resp) => {
+      setFollowers(resp.data)
+    })
+  }
+  const getFollowingsData = () => {
+    getAllFollowings(userId).then((resp) => {
+      setFollowings(resp.data)
+    })
+  }
   useEffect(() => {
     if (user) {
       getPostData();
@@ -116,12 +129,13 @@ const Profile = () => {
     if (currentAccount) {
       getUserData()
       getIsFollowingData();
-
     }
   }, [currentAccount])
   useEffect(() => {
     setCurrentAccount(JSON.parse(localStorage.getItem("user")))
     dispatch(getBooksFromMyLibrary(userId));
+    getFollowersData();
+    getFollowingsData()
   }, []);
 
   return (
@@ -150,23 +164,25 @@ const Profile = () => {
               <div className={styles.accountInfo}>
                 <div className={styles.top}>
                   <div className={styles.title}>{user?.displayName}</div>
-                  {
-                    isFollowing ?
-                      <Button color="primary" variant="flat" onPress={onOpenChangeUnfollowConfirm} >
-                        {
-                          isLoadingUnfollowRequest ?
-                            <Spinner /> :
-                            "Hủy theo dõi"
-                        }
-                      </Button> :
-                      <Button color="primary" variant="flat" onClick={() => handleFollowUser()}>
-                        {
-                          isLoadingFollowRequest ?
-                            <Spinner /> :
-                            "Theo dõi"
-                        }
-                      </Button>
-                  }
+                  {currentAccount?._id !== userId && <>
+                    {
+                      isFollowing ?
+                        <Button color="primary" variant="flat" onPress={onOpenChangeUnfollowConfirm} >
+                          {
+                            isLoadingUnfollowRequest ?
+                              <Spinner /> :
+                              "Hủy theo dõi"
+                          }
+                        </Button> :
+                        <Button color="primary" variant="flat" onClick={() => handleFollowUser()}>
+                          {
+                            isLoadingFollowRequest ?
+                              <Spinner /> :
+                              "Theo dõi"
+                          }
+                        </Button>
+                    }
+                  </>}
                 </div>
 
                 <div className={styles.followInfo}>
@@ -362,8 +378,8 @@ const Profile = () => {
       </div>
       <Footer />
       <ToastContainerWrapper />
-      <FollowerModal isOpen={isOpenFollower} onOpenChange={onOpenChangeFollower} />
-      <FollowingModal isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} />
+      <FollowerModal isOpen={isOpenFollower} onOpenChange={onOpenChangeFollower} followers={followers} />
+      <FollowingModal isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} followings={followings} />
       <UnfollowConfirmModal isOpen={isOpenUnfollowConfirm}
         onOpenChange={onOpenChangeUnfollowConfirm}
         handleUnfollowUser={handleUnfollowUser}

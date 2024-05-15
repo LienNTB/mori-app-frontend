@@ -1,11 +1,13 @@
-import React from 'react'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Divider, User } from "@nextui-org/react";
+import React, { useState } from 'react'
+import { Modal, ModalContent, ModalHeader, ModalBody, Button, useDisclosure, Divider, Avatar } from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import UnfollowConfirmModal from '../UnfollowConfirmModal/UnfollowConfirmModal';
+import * as types from '../../../app/redux/types'
 
 const FollowingModal = (props) => {
   const { isOpen: isOpenUnfollowConfirm, onOpen: onOpenUnfollowConfirm, onOpenChange: onOpenChangeUnfollowConfirm } = useDisclosure();
+  const [selectedUser, setSelectedUser] = useState(null)
   return (
     <Modal isOpen={props.isOpen} onOpenChange={props.onOpenChange}>
       <ModalContent>
@@ -19,26 +21,33 @@ const FollowingModal = (props) => {
                 <input placeholder='Search' type="" name="" value="" className='w-full' />
               </div>
               <div className='max-h-44 flex flex-col overflow-y-scroll'>
-                <div className='flex justify-between my-2 mr-2 items-center'>
-                  <User
-                    name="Jane Doe"
-                    description="Product Designer"
-                    avatarProps={{
-                      src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
-                    }}
-                  />
-                  <Button size="sm" onPress={onOpenChangeUnfollowConfirm}>
-                    Hủy theo dõi
-                  </Button>
-                </div>
-
+                {
+                  props.followings.length !== 0 ?
+                    props.followings.map(user => (
+                      <div className='flex justify-between items-center mr-2'>
+                        <div className='flex my-2 items-center cursor-pointer' onClick={() => router.replace(`/user/${user._id}/profile`)}>
+                          <Avatar name={user.displayName} src={
+                            user.avatar.includes("googleusercontent") ?
+                              user.avatar
+                              : `${types.BACKEND_URL}/api/accountimg/${user.avatar}`} />
+                          <span className='mx-2'>{user.displayName}</span>
+                        </div>
+                        <Button size="sm" onPress={() => { setSelectedUser(user); onOpenChangeUnfollowConfirm() }}>
+                          Hủy theo dõi
+                        </Button>
+                      </div>
+                    ))
+                    :
+                    <>Người dùng này chưa theo dõi ai.</>
+                }
               </div>
+
             </ModalBody>
 
           </>
         )}
       </ModalContent>
-      <UnfollowConfirmModal isOpen={isOpenUnfollowConfirm} onOpenChange={onOpenChangeUnfollowConfirm} />
+      <UnfollowConfirmModal isOpen={isOpenUnfollowConfirm} onOpenChange={onOpenChangeUnfollowConfirm} user={selectedUser} />
     </Modal>
   )
 }

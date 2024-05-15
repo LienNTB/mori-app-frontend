@@ -34,6 +34,8 @@ import { getPostByUserIdRequest } from "@/app/redux/saga/requests/post";
 import { getUserTransactionsRequest } from "@/app/redux/saga/requests/transaction";
 import FollowerModal from "@/components/Modals/FollowerModal/FollowerModal";
 import FollowingModal from "@/components/Modals/FollowingModal/FollowingModal";
+import { getAllFollowers, getAllFollowings, isFollowingRequest } from "@/app/redux/saga/requests/follow";
+import { getAccountByIdRequest } from "@/app/redux/saga/requests/account";
 
 const Profile = () => {
   const params = useParams();
@@ -43,7 +45,7 @@ const Profile = () => {
   const bookLoading = useSelector((state) => state.books.loading);
   const readHistory = useSelector((state) => state.books.readHistory);
   const isLoading = useSelector((state) => state.myLibrary.loading);
-  const currentAccount = JSON.parse(localStorage.getItem("user"));
+  const [currentAccount, setCurrentAccount] = useState(null)
   const deleteBookResult = useSelector((state) => state.myLibrary.message);
   const membership = useSelector((state) => state.memberships.membership);
   const isLoadingMembership = useSelector((state) => state.memberships.loading);
@@ -55,6 +57,8 @@ const Profile = () => {
   const dispatch = useDispatch();
   const { isOpen: isOpenFollower, onOpen: onOpenFollower, onOpenChange: onOpenChangeFollower } = useDisclosure();
   const { isOpen: isOpenFollowing, onOpen: onOpenFollowing, onOpenChange: onOpenChangeFollowing } = useDisclosure();
+  const [followers, setFollowers] = useState([])
+  const [followings, setFollowings] = useState([])
 
   function getBookType(book) {
     if (book.access_level == 2) {
@@ -84,12 +88,7 @@ const Profile = () => {
     setClick((p) => p + 1);
   };
 
-  const handleFollowUser = () => {
 
-  }
-  if (!currentAccount) {
-    redirect("/login");
-  }
 
   const getPostData = () => {
     setIsLoadingPostList(true);
@@ -107,16 +106,40 @@ const Profile = () => {
     setIsLoadingUserTrans(false);
   };
 
-  useEffect(() => {
-    dispatch(getMembershipById(currentAccount._id));
-    dispatch(getReadHistory(currentAccount._id));
-    getPostData();
-    getUserTransactions();
-  }, []);
+  const getFollowersData = () => {
+    getAllFollowers(currentAccount._id).then((resp) => {
+      setFollowers(resp.data)
+    })
+  }
+  const getFollowingsData = () => {
+    getAllFollowings(currentAccount._id).then((resp) => {
+      setFollowings(resp.data)
+    })
+  }
+
 
   useEffect(() => {
-    dispatch(getBooksFromMyLibrary(currentAccount._id));
-  }, [click]);
+    if (JSON.parse(localStorage.getItem('user'))) {
+      if (currentAccount) {
+        console.log('currentAccount', currentAccount)
+        dispatch(getMembershipById(currentAccount._id));
+        dispatch(getReadHistory(currentAccount._id));
+        getUserTransactions();
+        dispatch(getBooksFromMyLibrary(currentAccount._id));
+        getPostData();
+        getFollowersData();
+        getFollowingsData()
+      }
+    }
+    else {
+      redirect("/login");
+    }
+  }, [currentAccount])
+  useEffect(() => {
+    setCurrentAccount(JSON.parse(localStorage.getItem('user')))
+  }, []);
+
+
   return (
     <div className={styles.profileContainer}>
       <Header />
@@ -124,7 +147,7 @@ const Profile = () => {
         <section className={styles.accountContainer}>
           <div className={styles.accountBody}>
             <div className={styles.accountAvatar}>
-              {currentAccount.avatar ? (
+              {currentAccount?.avatar ? (
                 <img
                   src={
                     currentAccount.avatar.includes("googleusercontent") ?
@@ -142,7 +165,7 @@ const Profile = () => {
             <div className={styles.accountPanel}>
               <div className={styles.accountInfo}>
                 <div className={styles.top}>
-                  <div className={styles.title}>{currentAccount.displayName}</div>
+                  <div className={styles.title}>{currentAccount?.displayName}</div>
 
                 </div>
 
@@ -215,17 +238,17 @@ const Profile = () => {
                 <TableBody>
                   <TableRow key="1">
                     <TableCell>Họ tên</TableCell>
-                    <TableCell>{currentAccount.displayName}</TableCell>
+                    <TableCell>{currentAccount?.displayName}</TableCell>
                   </TableRow>
                   <TableRow key="2">
                     <TableCell>Email</TableCell>
-                    <TableCell>{currentAccount.email}</TableCell>
+                    <TableCell>{currentAccount?.email}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
             </div>
             {/* <Toaster/> */}
-            {currentAccount.username && (
+            {currentAccount?.username && (
               <Link href="/change-password" prefetch={false} >
                 <button className={styles.changePasswordButton}>
                   Thay đổi mật khẩu
@@ -556,8 +579,8 @@ const Profile = () => {
       </div>
       <Footer />
       <ToastContainerWrapper />
-      <FollowerModal isOpen={isOpenFollower} onOpenChange={onOpenChangeFollower} />
-      <FollowingModal isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} />
+      <FollowerModal isOpen={isOpenFollower} onOpenChange={onOpenChangeFollower} followers={followers} />
+      <FollowingModal isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} followings={followings} />
     </div>
   );
 };

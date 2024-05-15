@@ -49,16 +49,18 @@ const Community = () => {
                   <div className={styles.mainPost}>
                     <img className={styles.imgPost} src={postList[lastPost]?.image ? `${type.BACKEND_URL}/api/postimg/${postList[lastPost]?.image}` : tempImg} alt="main post img" />
                     <div className={styles.postInfo}>
-                      <div className={styles.postItem}>
-                        <img className={styles.userAvt} 
-                          src={isGoogleAvatar(postList[lastPost].account?.avatar) ? 
-                          postList[lastPost].account.avatar : 
-                          `${type.BACKEND_URL}/api/accountimg/${postList[lastPost].account.avatar}`} 
-                          alt="user avt" />
-                        <div className={styles.name}>
-                          {postList[lastPost]?.account?.displayName}
+                      <Link href={`/user/${postList[lastPost].account._id}/profile`} prefetch={false}>
+                        <div className={styles.postItem}>
+                          <img className={styles.userAvt}
+                            src={isGoogleAvatar(postList[lastPost].account?.avatar) ?
+                              postList[lastPost].account.avatar :
+                              `${type.BACKEND_URL}/api/accountimg/${postList[lastPost].account.avatar}`}
+                            alt="user avt" />
+                          <div className={styles.name}>
+                            {postList[lastPost]?.account?.displayName}
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                       <div className={styles.postItem}>
                         {new Date(postList[lastPost].created_at).toLocaleDateString('en-GB')}
                       </div>
@@ -75,7 +77,6 @@ const Community = () => {
                     <Link href={`/post/${postList[lastPost]._id}`} prefetch={false} >
                       <div className={styles.postTitle}>
                         {postList[lastPost].title}
-
                       </div>
                     </Link>
                     <div className={styles.postBody}>
@@ -90,16 +91,19 @@ const Community = () => {
                           <div className={styles.postListItem}>
                             <img className={styles.imgPost} src={post?.image ? `${type.BACKEND_URL}/api/postimg/${post?.image}` : tempImg} alt="main post img" />
                             <div className={styles.postInfo}>
-                              <div className={styles.postItem}>
-                              <img
-                                className={styles.userAvt}
-                                src={isGoogleAvatar(post.account.avatar) ? post.account.avatar : `${type.BACKEND_URL}/api/accountimg/${post.account.avatar}`}
-                                alt="user avt"
-                              />
-                                <div className={styles.name}>
-                                  {post?.account?.displayName}
+                              <Link href={`/user/${post.account._id}/profile`} prefetch={false}>
+                                <div className={styles.postItem}>
+                                  <img
+                                    className={styles.userAvt}
+                                    src={isGoogleAvatar(post.account.avatar) ? post.account.avatar : `${type.BACKEND_URL}/api/accountimg/${post.account.avatar}`}
+                                    alt="user avt"
+                                  />
+                                  <div className={styles.name}>
+                                    {post?.account?.displayName}
+                                  </div>
                                 </div>
-                              </div>
+                              </Link>
+
                               <div className={styles.postItem}>
                                 {new Date(post.created_at).toLocaleDateString('en-GB')}
                               </div>
@@ -108,7 +112,7 @@ const Community = () => {
                               {
                                 post.tag.map(tagItem => (
                                   <div className={styles.tagItem}>
-                                    <Tag link={`/book-category/${tagItem.name}`} prefetch={false} shallow  name={tagItem.description} className={styles.tagItem} />
+                                    <Tag link={`/book-category/${tagItem.name}`} prefetch={false} shallow name={tagItem.description} className={styles.tagItem} />
                                   </div>
                                 ))
                               }

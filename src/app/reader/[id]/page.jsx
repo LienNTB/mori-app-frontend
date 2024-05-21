@@ -51,7 +51,8 @@ const Reader = () => {
   const epubViewRef = useRef(null);
   const [showChapterMenu, setShowChapterMenu] = useState(false);
   const [chapters, setChapters] = useState([]);
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isOpen: isOpenChapters, onOpen: onOpenChapters, onOpenChange: onOpenChangeChapters } = useDisclosure();
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -210,15 +211,7 @@ const Reader = () => {
       }
     });
   }, [id]);
-  function darkModeChange() {
-    rendition.themes.register('custom', {
-      body: {
-        color: isDarkMode ? '#9CA3AF' : '#111827',
-        background: isDarkMode ? '#31363F' : '#EEEEEE',
-      },
-    });
-    rendition.themes.select('custom');
-  }
+
 
   // khi selection
   useEffect(() => {
@@ -302,7 +295,7 @@ const Reader = () => {
           <div className={styles.noteList}>
             <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
           </div>
-          <Button className={styles.chapterMenuButton} onClick={handleChapterMenuToggle}>
+          <Button className={styles.chapterMenuButton} onPress={onOpenChapters}>
             Chapters
           </Button>
           <div className={styles.darkModeContainer} >
@@ -478,6 +471,31 @@ const Reader = () => {
               <Button onPress={() => setSelectionMenuOpen(false)}>Close</Button>
               <Button onPress={handleSaveNote}>Save</Button>
             </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isOpenChapters} onOpenChange={onOpenChangeChapters}>
+          <ModalContent>
+            {(onCloseChapters) => (
+              <>
+                <ModalHeader className="flex flex-col gap-1">Chapters</ModalHeader>
+                <ModalBody>
+                  <div className={styles.chapterMenu}>
+                    <ul>
+                      {chapters.map((chapter, index) => (
+                        <li key={index} onClick={() => handleChapterSelect(chapter)}>
+                          {chapter.label}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onCloseChapters}>
+                    Close
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
           </ModalContent>
         </Modal>
       </div>

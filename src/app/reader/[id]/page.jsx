@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { ReactReader } from "react-reader";
+import React, { useEffect, useRef, useState } from "react";
+import { EpubView, ReactReader } from "react-reader";
 import styles from "./reader.module.scss";
 import { getBookByIdRequest } from "@/app/redux/saga/requests/book";
 import { useParams } from "next/navigation";
@@ -16,6 +16,7 @@ import {
   useDisclosure,
   Checkbox,
   Textarea,
+  Switch,
 } from "@nextui-org/react";
 import {
   addNewOrUpdateReadHistory,
@@ -26,6 +27,10 @@ import {
   getNotesForBookByUserRequest,
 } from "@/app/redux/saga/requests/note";
 import * as types from "@/app/redux/types";
+import { faArrowRight, faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Epub from 'epubjs';
+
 
 const Reader = () => {
   const [location, setLocation] = useState(0);
@@ -37,12 +42,16 @@ const Reader = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [scrollBehavior, setScrollBehavior] = React.useState("inside");
   const [currentAccount, setCurrentAccount] = useState(0);
-  const fetcher = (...args) => fetch(...args).then((res) => res.json());
   const [isSelectionMenuOpen, setSelectionMenuOpen] = useState(false);
   const [currentCfiRange, setCurrentCfiRange] = useState(null);
   const [currentContents, setCurrentContents] = useState("");
   const [contentNote, setContentNote] = useState("");
   const [isRenditionReady, setIsRenditionReady] = useState(false);
+  const epubRef = useRef(null);
+  const epubViewRef = useRef(null);
+  const [showChapterMenu, setShowChapterMenu] = useState(false);
+  const [chapters, setChapters] = useState([]);
+  const [isDarkMode, setIsDarkMode] = useState(false)
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -132,6 +141,60 @@ const Reader = () => {
     });
   };
 
+  const loadEpubFile = () => {
+    const epub = new Epub(`${types.BACKEND_URL}/api/bookepub/${book.epub}`);
+    epubRef.current = epub;
+
+    // Get the chapter information
+    epub.ready.then(() => {
+      const chaptersInfo = epub.navigation.toc;
+      setChapters(chaptersInfo);
+
+      // Set the initial location
+      setLocation(epub.locations.start);
+    });
+
+    return () => {
+      epub.destroy();
+    };
+  }
+  const handleNextPage = () => {
+    if (epubViewRef.current) {
+      epubViewRef.current
+        .nextPage()
+        .then(() => {
+          const currentLocation = epubViewRef.current.getCurrentLocationCfi();
+          handlePageChange(currentLocation);
+        })
+        .catch((error) => {
+          console.error('Error navigating to next page:', error);
+        });
+    }
+  };
+
+  const handleChapterMenuToggle = () => {
+    setShowChapterMenu(!showChapterMenu);
+  };
+
+  const handleChapterSelect = async (chapter) => {
+    if (epubViewRef.current && epubViewRef.current.rendition) {
+      try {
+        // Display the selected chapter
+        await epubViewRef.current.rendition.display(chapter.href);
+
+        // Get the current location
+        const currentLocation = await epubViewRef.current.rendition.location.start;
+
+        // Update the location state to move the reader to the selected chapter
+        handlePageChange(currentLocation);
+
+        // Hide the chapter menu
+        setShowChapterMenu(false);
+      } catch (error) {
+        console.error('Error navigating to selected chapter:', error);
+      }
+    }
+  };
   // gọi đầu tiên
   useEffect(() => {
     const currentAccount = JSON.parse(localStorage.getItem("user"));
@@ -147,9 +210,19 @@ const Reader = () => {
       }
     });
   }, [id]);
+  function darkModeChange() {
+    rendition.themes.register('custom', {
+      body: {
+        color: isDarkMode ? '#9CA3AF' : '#111827',
+        background: isDarkMode ? '#31363F' : '#EEEEEE',
+      },
+    });
+    rendition.themes.select('custom');
+  }
 
   // khi selection
   useEffect(() => {
+    console.log("rendition")
     if (rendition) {
       function setRenderSelection(cfiRange, contents) {
         if (rendition) {
@@ -162,6 +235,7 @@ const Reader = () => {
       return () => {
         rendition?.off("selected", setRenderSelection);
       };
+
     }
   }, [setSelections, rendition, selectedHighlighter]);
 
@@ -172,7 +246,7 @@ const Reader = () => {
         setIsRenditionReady(true);
       });
     }
-  }, [rendition]);
+  }, [rendition, isDarkMode]);
 
   useEffect(() => {
     if (isRenditionReady && currentAccount) {
@@ -191,138 +265,222 @@ const Reader = () => {
     }
   }, [isSelectionMenuOpen, currentContents]);
 
+  useEffect(() => {
+    // if book is loaded then load epub data 
+    if (book) {
+      loadEpubFile()
+    }
+  }, [book])
+
+  useEffect(() => {
+    if (epubViewRef.current) {
+      const rendition = epubViewRef.current.rendition;
+      if (rendition) {
+        updateTheme(rendition, isDarkMode);
+      }
+    }
+  }, [isDarkMode]);
+
+  const updateTheme = (rendition, isDarkMode) => {
+    rendition.themes.register('custom', {
+      body: {
+        color: isDarkMode ? '#9CA3AF' : '#111827',
+        background: isDarkMode ? '#31363F' : '#EEEEEE',
+      },
+    });
+    rendition.themes.select('custom');
+  };
+
   return (
     <div className={styles.readerContainer}>
-      <div className={styles.settingContainer}>
-        <div className={styles.noteList}>
-          <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
+      <div style={{
+        background: isDarkMode ? "#31363F" : "#EEEEEE",
+        color: isDarkMode ? '#9CA3AF' : '#111827',
+      }}>
+
+        <div className={styles.settingContainer}>
+          <div className={styles.noteList}>
+            <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
+          </div>
+          <Button className={styles.chapterMenuButton} onClick={handleChapterMenuToggle}>
+            Chapters
+          </Button>
+          <div className={styles.darkModeContainer} >
+            <Switch isSelected={isDarkMode} onValueChange={() => { setIsDarkMode(p => !p); setRendition(rendition) }} >
+            </Switch>
+            <span style={{ color: isDarkMode ? '#9CA3AF' : '#111827', }}> Dark Mode</span>
+          </div>
         </div>
-      </div>
 
-      <div className={styles.bookReaderContainer}>
-        {!book ? (
-          <Loading />
-        ) : (
-          <ReactReader
-            title={book.name}
-            url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
-            location={location}
-            locationChanged={(newPosition) => handlePageChange(newPosition)}
-            getRendition={(p) => setRendition(p)}
-          />
-        )}
-      </div>
-      <Modal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        scrollBehavior={scrollBehavior}
-        placement="center"
-      >
-        <ModalContent>
-          {(onClose) => (
+        <div className={styles.bookReaderContainer}>
+          {!book ? (
+            <Loading />
+          ) : (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                Danh sách ghi chú
-              </ModalHeader>
-              <ModalBody>
-                <div className="border border-stone-400 bg-white min-h-[100px] p-2 rounded">
-                  <ul className="grid grid-cols-1 divide-y divide-stone-400 border-t border-stone-400 -mx-2">
-                    {selections.length === 0 ? (
-                      <>Bạn chưa có ghi chú</>
-                    ) : (
-                      selections.map(
-                        ({ text, cfiRange, content, color }, i) => (
-                          <li key={i} className="p-2">
-                            <span style={{ backgroundColor: color }}>
-                              {text}
-                            </span>
-                            <br />
-                            <span>Ghi chú: {content}</span>
-                            <br />
-                            <button
-                              className="underline hover:no-underline text-sm mx-1"
-                              onClick={() => {
-                                rendition?.display(cfiRange);
-                              }}
-                            >
-                              Show
-                            </button>
+              <div className={styles.leftArrow} onClick={handleNextPage}>
+                <FontAwesomeIcon
+                  icon={faCaretLeft}
+                  className={styles.icon}
+                  width={70}
+                  height={70}
+                />
+              </div>
+              <div className={styles.rightArrow} onClick={handleNextPage}>
+                <FontAwesomeIcon
+                  icon={faCaretRight}
+                  className={styles.icon}
+                  width={70}
+                  height={70}
+                />
+              </div>
+              <EpubView
+                ref={epubViewRef}
+                title={book.name}
+                url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
+                location={location}
+                locationChanged={(newPosition) => handlePageChange(newPosition)}
 
-                            <button
-                              className="underline hover:no-underline text-sm mx-1"
-                              onClick={() => {
-                                rendition?.annotations.remove(
-                                  cfiRange,
-                                  "highlight"
-                                );
-                                setSelections(
-                                  selections.filter((item, j) => j !== i)
-                                );
-                              }}
-                            >
-                              Remove
-                            </button>
-                          </li>
-                        )
-                      )
-                    )}
+                getRendition={rendition => {
+                  rendition.themes.register('custom', {
+                    body: {
+                      color: isDarkMode ? '#9CA3AF' : '#111827',
+                      background: isDarkMode ? "#31363F" : "#EEEEEE",
+                    }
+                  })
+                  rendition.themes.select('custom')
+                }}
+                epubOptions={{ flow: 'scrolled ' }}
+
+              />
+
+
+              {showChapterMenu && (
+                <div className={styles.chapterMenu}>
+                  <ul>
+                    {chapters.map((chapter, index) => (
+                      <li key={index} onClick={() => handleChapterSelect(chapter)}>
+                        {chapter.label}
+                      </li>
+                    ))}
                   </ul>
                 </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
-              </ModalFooter>
+              )}
             </>
+
           )}
-        </ModalContent>
-      </Modal>
-      <Modal
-        isOpen={isSelectionMenuOpen}
-        onOpenChange={() => setSelectionMenuOpen(false)}
-      >
-        <ModalContent>
-          <ModalBody>
-            <div>
-              <div className={styles.colorPicker}>
-                Choose highlight color:
-                {highlighters.map((option) => (
-                  <div
-                    key={option.value}
-                    className={styles.colorOption}
-                    style={{
-                      backgroundColor: option.color,
-                      borderRadius: "50%",
-                      width: "20px",
-                      height: "20px",
-                      cursor: "pointer",
-                      marginleft: "5px",
-                    }}
-                    onClick={() =>
-                      handleSelectHighlighter({
-                        target: { value: option.value },
-                      })
-                    }
-                  />
-                ))}
+        </div>
+        <Modal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          scrollBehavior={scrollBehavior}
+          placement="center"
+        >
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader className="flex flex-col gap-1">
+                  Danh sách ghi chú
+                </ModalHeader>
+                <ModalBody>
+                  <div className="border border-stone-400 bg-white min-h-[100px] p-2 rounded">
+                    <ul className="grid grid-cols-1 divide-y divide-stone-400 border-t border-stone-400 -mx-2">
+                      {selections.length === 0 ? (
+                        <>Bạn chưa có ghi chú</>
+                      ) : (
+                        selections.map(
+                          ({ text, cfiRange, content, color }, i) => (
+                            <li key={i} className="p-2">
+                              <span style={{ backgroundColor: color }}>
+                                {text}
+                              </span>
+                              <br />
+                              <span>Ghi chú: {content}</span>
+                              <br />
+                              <button
+                                className="underline hover:no-underline text-sm mx-1"
+                                onClick={() => {
+                                  rendition?.display(cfiRange);
+                                }}
+                              >
+                                Show
+                              </button>
+
+                              <button
+                                className="underline hover:no-underline text-sm mx-1"
+                                onClick={() => {
+                                  rendition?.annotations.remove(
+                                    cfiRange,
+                                    "highlight"
+                                  );
+                                  setSelections(
+                                    selections.filter((item, j) => j !== i)
+                                  );
+                                }}
+                              >
+                                Remove
+                              </button>
+                            </li>
+                          )
+                        )
+                      )}
+                    </ul>
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onClose}>
+                    Close
+                  </Button>
+                  <Button color="primary" onPress={onClose}>
+                    Action
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+        <Modal
+          isOpen={isSelectionMenuOpen}
+          onOpenChange={() => setSelectionMenuOpen(false)}
+        >
+          <ModalContent>
+            <ModalBody>
+              <div>
+                <div className={styles.colorPicker}>
+                  Choose highlight color:
+                  {highlighters.map((option) => (
+                    <div
+                      key={option.value}
+                      className={styles.colorOption}
+                      style={{
+                        backgroundColor: option.color,
+                        borderRadius: "50%",
+                        width: "20px",
+                        height: "20px",
+                        cursor: "pointer",
+                        marginleft: "5px",
+                      }}
+                      onClick={() =>
+                        handleSelectHighlighter({
+                          target: { value: option.value },
+                        })
+                      }
+                    />
+                  ))}
+                </div>
+                <Textarea
+                  placeholder="Enter your note here..."
+                  value={contentNote}
+                  onChange={(e) => setContentNote(e.target.value)}
+                />
               </div>
-              <Textarea
-                placeholder="Enter your note here..."
-                value={contentNote}
-                onChange={(e) => setContentNote(e.target.value)}
-              />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button onPress={() => setSelectionMenuOpen(false)}>Close</Button>
-            <Button onPress={handleSaveNote}>Save</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            </ModalBody>
+            <ModalFooter>
+              <Button onPress={() => setSelectionMenuOpen(false)}>Close</Button>
+              <Button onPress={handleSaveNote}>Save</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </div>
     </div>
   );
 };

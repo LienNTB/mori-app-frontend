@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { EpubView, ReactReader } from "react-reader";
+import { EpubView, ReactReader, useReader } from "react-reader";
 import styles from "./reader.module.scss";
 import { getBookByIdRequest } from "@/app/redux/saga/requests/book";
 import { useParams } from "next/navigation";
@@ -163,13 +163,11 @@ const Reader = () => {
     if (epubViewRef.current) {
       epubViewRef.current
         .nextPage()
-        .then(() => {
-          const currentLocation = epubViewRef.current.getCurrentLocationCfi();
-          handlePageChange(currentLocation);
-        })
-        .catch((error) => {
-          console.error('Error navigating to next page:', error);
-        });
+    }
+  };
+  const handlePreviousPage = () => {
+    if (epubViewRef.current) {
+      epubViewRef.current.prevPage();
     }
   };
 
@@ -310,7 +308,7 @@ const Reader = () => {
             <Loading />
           ) : (
             <>
-              <div className={styles.leftArrow} onClick={handleNextPage}>
+              <div className={styles.leftArrow} onClick={handlePreviousPage}>
                 <FontAwesomeIcon
                   icon={faCaretLeft}
                   className={styles.icon}
@@ -338,11 +336,12 @@ const Reader = () => {
                     body: {
                       color: isDarkMode ? '#9CA3AF' : '#111827',
                       background: isDarkMode ? "#31363F" : "#EEEEEE",
+
                     }
                   })
                   rendition.themes.select('custom')
                 }}
-                epubOptions={{ flow: 'scrolled ' }}
+              // epubOptions={{ flow: 'scrolled ' }}
 
               />
 

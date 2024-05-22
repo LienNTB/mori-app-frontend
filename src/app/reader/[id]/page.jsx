@@ -52,7 +52,7 @@ const Reader = () => {
   const [showChapterMenu, setShowChapterMenu] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { isOpen: isOpenChapters, onOpen: onOpenChapters, onOpenChange: onOpenChangeChapters } = useDisclosure();
+  const { isOpen: isOpenChapters, onOpen: onOpenChapters, onOpenChange: onOpenChangeChapters, onClose: onCloseChapters } = useDisclosure();
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -186,6 +186,7 @@ const Reader = () => {
 
         // Hide the chapter menu
         setShowChapterMenu(false);
+        onCloseChapters()
       } catch (error) {
         console.error('Error navigating to selected chapter:', error);
       }

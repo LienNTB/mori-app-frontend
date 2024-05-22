@@ -171,9 +171,6 @@ const Reader = () => {
     }
   };
 
-  const handleChapterMenuToggle = () => {
-    setShowChapterMenu(!showChapterMenu);
-  };
 
   const handleChapterSelect = async (chapter) => {
     if (epubViewRef.current && epubViewRef.current.rendition) {
@@ -210,6 +207,9 @@ const Reader = () => {
     });
   }, [id]);
 
+  const handleSelectionChange = () => {
+    console.log("handleSelectionChange")
+  }
 
   // khi selection
   useEffect(() => {
@@ -281,7 +281,6 @@ const Reader = () => {
     });
     rendition.themes.select('custom');
   };
-
   return (
     <div className={styles.readerContainer}>
       <div style={{
@@ -330,7 +329,7 @@ const Reader = () => {
                 url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
                 location={location}
                 locationChanged={(newPosition) => handlePageChange(newPosition)}
-
+                onSelectionChange={handleSelectionChange}
                 getRendition={rendition => {
                   rendition.themes.register('custom', {
                     body: {
@@ -340,6 +339,7 @@ const Reader = () => {
                     }
                   })
                   rendition.themes.select('custom')
+                  setRendition(rendition)
                 }}
               // epubOptions={{ flow: 'scrolled ' }}
 
@@ -375,7 +375,7 @@ const Reader = () => {
                 </ModalHeader>
                 <ModalBody>
                   <div className="border border-stone-400 bg-white min-h-[100px] p-2 rounded">
-                    <ul className="grid grid-cols-1 divide-y divide-stone-400 border-t border-stone-400 -mx-2">
+                    <ul className="grid grid-cols-1 divide-y divide-stone-400 border-stone-400 -mx-2 p-2">
                       {selections.length === 0 ? (
                         <>Bạn chưa có ghi chú</>
                       ) : (
@@ -446,10 +446,11 @@ const Reader = () => {
                       style={{
                         backgroundColor: option.color,
                         borderRadius: "50%",
-                        width: "20px",
-                        height: "20px",
+                        width: selectedHighlighter == option.value ? "25px" : "20px",
+                        height: selectedHighlighter == option.value ? "25px" : "20px",
                         cursor: "pointer",
                         marginleft: "5px",
+                        border: selectedHighlighter == option.value ? "2px solid red" : "none"
                       }}
                       onClick={() =>
                         handleSelectHighlighter({
@@ -460,6 +461,7 @@ const Reader = () => {
                   ))}
                 </div>
                 <Textarea
+                  className={styles.colorPickerTextArea}
                   placeholder="Enter your note here..."
                   value={contentNote}
                   onChange={(e) => setContentNote(e.target.value)}

@@ -42,6 +42,9 @@
   align-items: center;
   margin-top: 15px;
   margin-bottom: 10px;
+  &.colorPickerTextArea {
+    border: none;
+  }
 }
 
 .colorOption {

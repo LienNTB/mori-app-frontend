@@ -196,7 +196,10 @@
 .changePasswordButton:hover {
   background-color: #0ebc0e;
 }
-
+.active {
+  color: #4ebec0 !important;
+  font-weight: 600;
+}
 @media (max-width: 576px) {
   .profileContent {
     margin: 60px 5px !important;

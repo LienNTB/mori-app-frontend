@@ -52,9 +52,6 @@ const HomePage = () => {
         getReadingGoalData(currentAccount._id)
       }
     }
-    else {
-      redirect("/login");
-    }
   }, [currentAccount])
 
 

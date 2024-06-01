@@ -13,11 +13,8 @@ const Page = () => {
   const params = useParams();
 
   useEffect(() => {
-    dispatch(getBooks());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (params.slug) {
+      console.log("params.slug", params.slug)
       if (
         params.slug == "free" ||
         params.slug == "member" ||

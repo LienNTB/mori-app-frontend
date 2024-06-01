@@ -19,7 +19,6 @@ import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
 import readingGoalImg from '../../../public/readinggoal.png'
 const Header = () => {
-  console.log('readingGoalImg', readingGoalImg)
   const dispatch = useDispatch()
   const [isOpenListbox, setIsOpenListbox] = useState(false)
   const [isOpenMenuList, setIsOpenMenuList] = useState(false)
@@ -334,7 +333,7 @@ const Header = () => {
                           key={item.name}
                           color={"default"}
                         >
-                          <a href={`/book-category/${item.tag}`} onClick={() => dispatch(getBooksByCate(`${item.tag}`))}>
+                          <a href={`/book-category/${item.tag}`} prefetch={false} onClick={() => dispatch(getBooksByCate(`${item.tag}`))}>
                             {item.name}
                           </a>
                         </ListboxItem>
@@ -353,6 +352,9 @@ const Header = () => {
           </Link>
           <Link href="/ranking/sachdoc" prefetch={false}>
             <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
+          </Link>
+          <Link href="/community" prefetch={false}>
+            <li className={styles.bottomMenuItem}>Review sách</li>
           </Link>
 
         </ul>

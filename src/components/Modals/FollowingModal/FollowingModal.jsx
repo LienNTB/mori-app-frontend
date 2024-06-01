@@ -32,9 +32,9 @@ const FollowingModal = (props) => {
                               : `${types.BACKEND_URL}/api/accountimg/${user.avatar}`} />
                           <span className='mx-2'>{user.displayName}</span>
                         </div>
-                        <Button size="sm" onPress={() => { setSelectedUser(user); onOpenChangeUnfollowConfirm() }}>
+                        {props.userHaveAccess && <Button size="sm" onPress={() => { setSelectedUser(user); onOpenChangeUnfollowConfirm() }}>
                           Hủy theo dõi
-                        </Button>
+                        </Button>}
                       </div>
                     ))
                     :

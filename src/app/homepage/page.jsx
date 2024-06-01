@@ -54,9 +54,9 @@ const HomePage = () => {
         getReadingGoalData(currentAccount._id)
       }
     }
-    else {
-      router.push("/login");
-    }
+    // else {
+    //   router.push("/login");
+    // }
   }, [currentAccount])
 
 

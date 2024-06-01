@@ -60,9 +60,8 @@ jobs:
         env:
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           REMOTE_SERVER: ${{ secrets.REMOTE_SERVER }}
-          PATH_TO_PROJECT: ${{ secrets.PATH_TO_PROJECT }}
         run: |
-          cd $PATH_TO_PROJECT
+          cd project/MoriApp_20110141_20110335/mori-app-deploy
           docker-compose down
           docker-compose pull
           docker-compose up -d

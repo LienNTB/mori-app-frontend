@@ -15,7 +15,6 @@ import {
   getBooksFromMyLibrary,
 } from "@/app/redux/actions/myLibrary";
 import Loading from "@/components/Loading/Loading";
-import { toast } from "react-toastify";
 import ToastContainerWrapper from "@/components/ToastContainerWrapper/ToastContainerWrapper";
 import {
   TableCell,
@@ -26,6 +25,7 @@ import {
   TableRow,
   Button,
   useDisclosure,
+  Progress,
 } from "@nextui-org/react";
 import { getMembershipById } from "@/app/redux/actions/membership";
 import { getReadHistory } from "@/app/redux/actions/book";
@@ -36,6 +36,9 @@ import FollowerModal from "@/components/Modals/FollowerModal/FollowerModal";
 import FollowingModal from "@/components/Modals/FollowingModal/FollowingModal";
 import { getAllFollowers, getAllFollowings, isFollowingRequest } from "@/app/redux/saga/requests/follow";
 import { getAccountByIdRequest } from "@/app/redux/saga/requests/account";
+import CreateReadingGoalModal from "@/components/Modals/CreateReadingGoalModal/CreateReadingGoalModal";
+import { createReadingGoalRequest, getReadingGoalsByUserId, resetReadingProgressRequest } from "@/app/redux/saga/requests/readingGoal";
+import { Toaster, toast } from "react-hot-toast";
 
 const Profile = () => {
   const params = useParams();
@@ -59,6 +62,9 @@ const Profile = () => {
   const { isOpen: isOpenFollowing, onOpen: onOpenFollowing, onOpenChange: onOpenChangeFollowing } = useDisclosure();
   const [followers, setFollowers] = useState([])
   const [followings, setFollowings] = useState([])
+  const { isOpen: isOpenCreateReadingGoal, onOpen: onOpenCreateReadingGoal,
+    onOpenChange: onOpenChangeCreateReadingGoal, onClose: onCloseCreateReadingGoal } = useDisclosure();
+  const [readingGoals, setReadingGoals] = useState(null)
 
   function getBookType(book) {
     if (book.access_level == 2) {
@@ -117,7 +123,37 @@ const Profile = () => {
     })
   }
 
+  const createReadingGoal = (request) => {
+    console.log("request", request);
+    toast.promise(
+      new Promise((resolve, reject) => {
+        createReadingGoalRequest(request)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.message);
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error,
+      }
+    );
+    onCloseCreateReadingGoal()
+  }
 
+  const getReadingGoalData = (userId) => {
+    getReadingGoalsByUserId(userId).then(resp => {
+      console.log('resp', resp)
+      setReadingGoals(resp)
+    })
+  }
   useEffect(() => {
     if (JSON.parse(localStorage.getItem('user'))) {
       if (currentAccount) {
@@ -128,13 +164,15 @@ const Profile = () => {
         dispatch(getBooksFromMyLibrary(currentAccount._id));
         getPostData();
         getFollowersData();
-        getFollowingsData()
+        getFollowingsData();
+        getReadingGoalData(currentAccount._id)
       }
     }
     else {
       redirect("/login");
     }
   }, [currentAccount])
+
   useEffect(() => {
     setCurrentAccount(JSON.parse(localStorage.getItem('user')))
   }, []);
@@ -143,6 +181,7 @@ const Profile = () => {
   return (
     <div className={styles.profileContainer}>
       <Header />
+      <Toaster />
       <div className={styles.profileContent}>
         <section className={styles.accountContainer}>
           <div className={styles.accountBody}>
@@ -220,6 +259,9 @@ const Profile = () => {
             </div>
             <div className={styles.navItem}>
               <Link href="/account/my-book">Sách đã mua</Link>
+            </div>
+            <div className={styles.navItem}>
+              <Link href="/account/reading-goal">Mục tiêu đọc sách</Link>
             </div>
           </div>
         </section>
@@ -588,11 +630,73 @@ const Profile = () => {
         ) : (
           <></>
         )}
+        {/* profile section */}
+        {currentTopic == "reading-goal" ? (
+          <section className={styles.readingGoalContainer}>
+            <div className={styles.uHead}>
+              <div className={styles.title}>Mục tiêu đọc sách</div>
+            </div>
+            <div>
+              <div className={styles.readingGoalBody}>
+                <div className={styles.readingGoalContent}>
+                  <div className={styles.title}>
+                    Thống kê kết quả đọc sách
+                    <Button color="primary" onClick={() => onOpenCreateReadingGoal()}>Thiết lập mục tiêu đọc sách</Button>
+                  </div>
+                  {
+                    readingGoals ?
+                      <>
+                        {
+                          readingGoals.length !== 0 ?
+                            <>
+                              {
+                                readingGoals.map(goal => (
+                                  <div className={styles.goalItem}>
+                                    <label>Mục tiêu trong
+                                      {goal.timeFrame == "day" ? " ngày"
+                                        : goal.timeFrame == "week" ? " tuần"
+                                          : goal.timeFrame == "month" ? " tháng"
+                                            : " năm"}: đã đọc được {goal.goalType == "pages" ? goal.pagesRead : goal.booksRead.length}/{goal.goalAmount} {goal.goalType == "pages" ? "trang" : "quyển"} sách</label>
+                                    <Progress color={
+                                      goal.timeFrame == "day" ? "primary"
+                                        : goal.timeFrame == "week" ? "secondary"
+                                          : goal.timeFrame == "month" ? "success"
+                                            : "danger"
+                                    } aria-label="Loading..." value={70} />
+                                  </div>
+                                ))
+                              }
+
+                            </> :
+                            <>Bạn chưa có mục tiêu đọc nào. Hãy tạo một mục tiêu đọc sách cho mình nhé!</>
+                        }
+                      </> :
+                      <Loading />
+                  }
+                </div>
+              </div>
+            </div>
+            {/* <Toaster/> */}
+            {currentAccount?.username && (
+              <Link href="/change-password" prefetch={false} >
+                <button className={styles.changePasswordButton}>
+                  Thay đổi mật khẩu
+                </button>
+              </Link>
+            )}
+            {/* <Toaster/> */}
+          </section>
+        ) : (
+          <></>
+        )}
       </div>
       <Footer />
       <ToastContainerWrapper />
       <FollowerModal isOpen={isOpenFollower} onOpenChange={onOpenChangeFollower} followers={followers} />
       <FollowingModal isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} followings={followings} />
+      <CreateReadingGoalModal isOpen={isOpenCreateReadingGoal} onOpenChange={onOpenChangeCreateReadingGoal}
+        createReadingGoal={createReadingGoal} user={currentAccount?._id} />
+
     </div>
   );
 };

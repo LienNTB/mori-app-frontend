@@ -17,8 +17,9 @@ import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
 import { getNotificationsRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
-
+import readingGoalImg from '../../../public/readinggoal.png'
 const Header = () => {
+  console.log('readingGoalImg', readingGoalImg)
   const dispatch = useDispatch()
   const [isOpenListbox, setIsOpenListbox] = useState(false)
   const [isOpenMenuList, setIsOpenMenuList] = useState(false)
@@ -180,11 +181,13 @@ const Header = () => {
                             >
                               <div className="flex gap-2 justify-between items-center">
                                 <div className="flex gap-2 items-center">
-                                  <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]" src={noti.performedBy.avatar.includes("googleusercontent") ?
-                                    noti.performedBy.avatar
-                                    : `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`} />
+                                  <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]"
+                                    src={noti.performedBy ? noti.performedBy.avatar
+                                      : noti.performedBy && noti.performedBy.avatar.includes("googleusercontent") ? `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`
+                                        : { readingGoalImg }
+                                    } />
                                   <div className="flex flex-col">
-                                    <span className="text-sm/[17px] font-medium ">{noti.performedBy.displayName}</span>
+                                    <span className="text-sm/[17px] font-medium ">{noti.performedBy ? noti.performedBy.displayName : "Mục tiêu đọc sách"}</span>
                                     <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[207px] overflow-hidden whitespace-normal max-h-9`}>
                                       {noti.action === "like" ? "Đã thích bài viết của bạn." :
                                         noti.action === "share" ? "Đã chia sẻ bài viết của bạn." :

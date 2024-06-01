@@ -39,8 +39,10 @@ import { getAccountByIdRequest } from "@/app/redux/saga/requests/account";
 import CreateReadingGoalModal from "@/components/Modals/CreateReadingGoalModal/CreateReadingGoalModal";
 import { createReadingGoalRequest, getReadingGoalsByUserId, resetReadingProgressRequest } from "@/app/redux/saga/requests/readingGoal";
 import { Toaster, toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const Profile = () => {
+  const router = useRouter();
   const params = useParams();
   const id = params.slug;
   const [currentTopic, setCurrentTopic] = useState(id);
@@ -169,7 +171,7 @@ const Profile = () => {
       }
     }
     else {
-      redirect("/login");
+      router.push("/login");
     }
   }, [currentAccount])
 

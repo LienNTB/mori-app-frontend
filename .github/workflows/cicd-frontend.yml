@@ -42,11 +42,11 @@ jobs:
 
       - name: Setup SSH (optional)
         env:
+          PATH_TO_PROJECT: project/MoriApp_20110141_20110335/mori-app-deploy
           MORI_SSH_PRIVATE_KEY: ${{ secrets.MORI_SSH_PRIVATE_KEY }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           SSH_SERVER_IP: ${{ secrets.SSH_SERVER_IP }}
           REMOTE_SERVER: ${{ secrets.REMOTE_SERVER }}
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
         run: |
           apk update && apk add openssh-client bash
           eval $(ssh-agent -s)
@@ -56,7 +56,7 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
           ssh $REMOTE_SERVER -p $REMOTE_PORT
           cat << EOF > deploy.sh
-          cd project/MoriApp_20110141_20110335/mori-app-deploy
+          cd "$PATH_TO_PROJECT"
           docker-compose down
           docker-compose pull
           docker-compose up -d

@@ -185,7 +185,7 @@ const Reader = () => {
       const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
       setSentences(sentences);
       setCurrentSentenceIndex(0);
-      setIsReading(true);
+      // setIsReading(true);
     }
   };
 

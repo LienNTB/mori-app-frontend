@@ -406,47 +406,47 @@ const Profile = () => {
                 </thead>
                 <tbody>
                   {!readHistories ? (
-                      <Loading />
-                    ) : (
-                      readHistories.map((readHistory, index) => (
-                        <tr key={index}>
-                          <td className="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                            {readHistory.book && readHistory.book.image ? (
-                              <img
-                                src={`${types.BACKEND_URL}/api/bookimg/${readHistory.book.image}`}
-                                alt="image"
-                                className={styles.bookLibImg}
-                              />
-                            ) : (
-                              <img
-                                src="default-image-path" // Đường dẫn tới hình ảnh mặc định
-                                alt="default image"
-                                className={styles.bookLibImg}
-                              />
-                            )}
-                          </td>
-                          <td className="border-b text-center border-gray-400 px-4 py-2 max-w-200">
-                            {readHistory.book ? (
-                              <Link
-                                href={`/${getBookType(readHistory.book)}/${readHistory.book._id}`}
-                                prefetch={false}
-                                shallow
-                              >
-                                {readHistory.book.name}
-                              </Link>
-                            ) : (
-                              <span>No book name available</span>
-                            )}
-                          </td>
-                          <td className="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                            {readHistory.book ? readHistory.book.author : "No author available"}
-                          </td>
-                          <td className="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                            {readHistory.time}
-                          </td>
-                        </tr>
-                      ))
-                    )}
+                    <Loading />
+                  ) : (
+                    readHistories.map((readHistory, index) => (
+                      <tr key={index}>
+                        <td className="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          {readHistory.book && readHistory.book.image ? (
+                            <img
+                              src={`${types.BACKEND_URL}/api/bookimg/${readHistory.book.image}`}
+                              alt="image"
+                              className={styles.bookLibImg}
+                            />
+                          ) : (
+                            <img
+                              src="default-image-path" // Đường dẫn tới hình ảnh mặc định
+                              alt="default image"
+                              className={styles.bookLibImg}
+                            />
+                          )}
+                        </td>
+                        <td className="border-b text-center border-gray-400 px-4 py-2 max-w-200">
+                          {readHistory.book ? (
+                            <Link
+                              href={`/${getBookType(readHistory.book)}/${readHistory.book._id}`}
+                              prefetch={false}
+                              shallow
+                            >
+                              {readHistory.book.name}
+                            </Link>
+                          ) : (
+                            <span>No book names available</span>
+                          )}
+                        </td>
+                        <td className="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          {readHistory.book ? readHistory.book.author : "No author available"}
+                        </td>
+                        <td className="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                          {readHistory.time}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

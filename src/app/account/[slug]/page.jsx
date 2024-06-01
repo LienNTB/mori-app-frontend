@@ -169,7 +169,7 @@ const Profile = () => {
       }
     }
     else {
-      redirect("/login");
+      router.push("/login");
     }
   }, [currentAccount])
 

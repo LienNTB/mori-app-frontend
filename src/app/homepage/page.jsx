@@ -53,7 +53,7 @@ const HomePage = () => {
       }
     }
     else {
-      redirect("/login");
+      router.push("/login");
     }
   }, [currentAccount])
 

@@ -56,7 +56,6 @@ jobs:
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           REMOTE_SERVER: ${{ secrets.REMOTE_SERVER }}
           PATH_TO_PROJECT: ${{ secrets.PATH_TO_PROJECT }}
-        if: $MORI_SSH_PRIVATE_KEY # Only if private key is provided
         run: |
           cd $PATH_TO_PROJECT
           docker-compose down

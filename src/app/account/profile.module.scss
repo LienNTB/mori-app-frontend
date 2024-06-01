@@ -81,7 +81,8 @@
       }
     }
     .profileInfo,
-    .myPostInfo {
+    .myPostInfo,
+    .readingGoalContainer {
       border-radius: 5px;
       background-color: #ffffff;
       margin-bottom: 10px;
@@ -195,6 +196,27 @@
 
 .changePasswordButton:hover {
   background-color: #0ebc0e;
+}
+
+.readingGoalBody {
+  .readingGoalContent {
+    .title {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .goalItem {
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      label {
+        font-size: 17px;
+        padding-bottom: 7px !important;
+      }
+    }
+  }
 }
 
 @media (max-width: 576px) {

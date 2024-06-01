@@ -53,6 +53,8 @@ const Reader = () => {
   const [chapters, setChapters] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { isOpen: isOpenChapters, onOpen: onOpenChapters, onOpenChange: onOpenChangeChapters, onClose: onCloseChapters } = useDisclosure();
+  const [currentPage, setCurrentPage] = useState(null);
+  const [prevEpubViewRef, setPrevEpubViewRef] = useState()
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -67,8 +69,10 @@ const Reader = () => {
 
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
+    console.log('location.totalProgression', newPosition.totalProgression)
     setLocation(newPosition);
     saveReadPositionToDatabase(newPosition);
+    setCurrentPage(newPosition.totalProgression)
   };
 
   // Hàm để lưu vị trí đọc vào database
@@ -159,11 +163,23 @@ const Reader = () => {
       epub.destroy();
     };
   }
-  const handleNextPage = () => {
+  const isFinalPage = (epubViewRef) => {
+
+  };
+
+  const handleNextPage = async () => {
+    const prevEpubViewRefCurrentPage = epubViewRef.current.location
     if (epubViewRef.current) {
       epubViewRef.current
         .nextPage()
     }
+    console.log('prevEpubViewRefCurrentPage', prevEpubViewRef)
+    console.log('prevEpubViewRefCurrentPage', epubViewRef.current.location)
+    const isLastPage = prevEpubViewRef == epubViewRef.current.location
+    if (isLastPage) {
+      console.log('is last page')
+    }
+    setPrevEpubViewRef(epubViewRef.current.location)
   };
   const handlePreviousPage = () => {
     if (epubViewRef.current) {
@@ -172,17 +188,12 @@ const Reader = () => {
   };
 
 
+
   const handleChapterSelect = async (chapter) => {
     if (epubViewRef.current && epubViewRef.current.rendition) {
       try {
         // Display the selected chapter
         await epubViewRef.current.rendition.display(chapter.href);
-
-        // Get the current location
-        const currentLocation = await epubViewRef.current.rendition.location.start;
-
-        // Update the location state to move the reader to the selected chapter
-        handlePageChange(currentLocation);
 
         // Hide the chapter menu
         setShowChapterMenu(false);
@@ -212,6 +223,18 @@ const Reader = () => {
     console.log("handleSelectionChange")
   }
 
+  useEffect(() => {
+    if (rendition && currentPage) {
+      rendition.currentLocation().then((location) => {
+        console.log("location.totalProgression", location.totalProgression)
+        if (location.totalProgression === currentPage) {
+          // You're on the final page!
+          console.log('Reached the final page.');
+        }
+      });
+    }
+  }, [rendition, currentPage]);
+
   // khi selection
   useEffect(() => {
     console.log("rendition")
@@ -232,6 +255,7 @@ const Reader = () => {
   }, [setSelections, rendition, selectedHighlighter]);
 
   // setIsRenditionReady để check set lại note nếu người dùng đã có note cũ
+  console.log("rendition", rendition)
   useEffect(() => {
     if (rendition) {
       rendition.on("rendered", () => {
@@ -329,8 +353,12 @@ const Reader = () => {
                 title={book.name}
                 url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
                 location={location}
-                locationChanged={(newPosition) => handlePageChange(newPosition)}
+                // locationChanged={(newPosition) => handlePageChange(newPosition)}
                 onSelectionChange={handleSelectionChange}
+                onLoad={(book) => {
+                  setTotalPages(book.pageCount);
+                  console.log("book", book)
+                }}
                 getRendition={rendition => {
                   rendition.themes.register('custom', {
                     body: {

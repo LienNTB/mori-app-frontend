@@ -11,6 +11,7 @@ import * as type from "../redux/types";
 import { getAllBooksRequest } from "../redux/saga/requests/book";
 import { getAllTagsRequest } from "../redux/saga/requests/tag";
 import Loading from "@/components/Loading/Loading";
+import { getReadingGoalsByUserId, resetReadingProgressRequest } from "../redux/saga/requests/readingGoal";
 
 const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,6 +23,40 @@ const HomePage = () => {
   // const endIndex = startIndex + itemsPerPage;
   // const displayedItems = books?.slice(startIndex, endIndex);
   const [booksLoaded, setBooksLoaded] = useState(false);
+  const [readingGoals, setReadingGoals] = useState(null);
+  const [currentAccount, setCurrentAccount] = useState(null)
+
+  const getReadingGoalData = (userId) => {
+    getReadingGoalsByUserId(userId).then(resp => {
+      console.log('resp', resp)
+      setReadingGoals(resp)
+    })
+  }
+  // Handle reset reading goal to check when new day pass every time user enter homepage
+  useEffect(() => {
+    if (readingGoals) {
+      readingGoals.forEach((goal) => {
+        console.log('goal', goal._id)
+        resetReadingProgressRequest(goal._id)
+      })
+    }
+  }, [readingGoals])
+
+  useEffect(() => {
+    setCurrentAccount(JSON.parse(localStorage.getItem('user')))
+  }, []);
+
+  useEffect(() => {
+    if (JSON.parse(localStorage.getItem('user'))) {
+      if (currentAccount) {
+        getReadingGoalData(currentAccount._id)
+      }
+    }
+    else {
+      redirect("/login");
+    }
+  }, [currentAccount])
+
 
   useEffect(() => {
     getAllBooksRequest().then((res) => {
@@ -40,6 +75,7 @@ const HomePage = () => {
       setTags(res.allTags);
     });
   }, []);
+
   return (
     <div className={styles.homePageContainer}>
       <Header />

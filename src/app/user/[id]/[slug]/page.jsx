@@ -6,10 +6,8 @@ import Footer from "@/components/Footer/Footer";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { redirect } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  deleteBookFromLibrary,
   getBooksFromMyLibrary,
 } from "@/app/redux/actions/myLibrary"; import { toast } from "react-toastify";
 import ToastContainerWrapper from "@/components/ToastContainerWrapper/ToastContainerWrapper";
@@ -24,11 +22,8 @@ import {
   useDisclosure,
   Spinner,
 } from "@nextui-org/react";
-import { getMembershipById } from "@/app/redux/actions/membership";
-import { getReadHistory } from "@/app/redux/actions/book";
 import * as types from "@/app/redux/types";
 import { getPostByUserIdRequest } from "@/app/redux/saga/requests/post";
-import { getUserTransactionsRequest } from "@/app/redux/saga/requests/transaction";
 import FollowerModal from "@/components/Modals/FollowerModal/FollowerModal";
 import FollowingModal from "@/components/Modals/FollowingModal/FollowingModal";
 import { followUserRequest, getAllFollowers, getAllFollowings, isFollowingRequest, unfollowUserRequest } from "@/app/redux/saga/requests/follow";

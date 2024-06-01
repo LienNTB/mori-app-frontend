@@ -38,7 +38,7 @@ jobs:
         run: |
           apk update && apk add openssh-client bash
           eval $(ssh-agent -s)
-          bash -c 'ssh-add <(echo ${{ secrets.$MORI_SSH_PRIVATE_KEY }})'
+          bash -c 'ssh-add <(echo ${{ secrets.MORI_SSH_PRIVATE_KEY }})'
           mkdir -p ~/.ssh 
           ssh-keyscan -p ${{ secrets.REMOTE_PORT }} -H ${{ secrets.SSH_SERVER_IP }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts

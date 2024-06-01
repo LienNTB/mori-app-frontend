@@ -56,6 +56,8 @@ const Reader = () => {
   const [showChapterMenu, setShowChapterMenu] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentPage, setCurrentPage] = useState(null);
+  const [prevEpubViewRef, setPrevEpubViewRef] = useState()
   const {
     isOpen: isOpenChapters,
     onOpen: onOpenChapters,
@@ -83,8 +85,10 @@ const Reader = () => {
 
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
+    console.log('location.totalProgression', newPosition.totalProgression)
     setLocation(newPosition);
     saveReadPositionToDatabase(newPosition);
+    setCurrentPage(newPosition.totalProgression)
   };
 
   // Hàm để lưu vị trí đọc vào database
@@ -187,6 +191,13 @@ const Reader = () => {
       setCurrentSentenceIndex(0);
       // setIsReading(true);
     }
+    console.log('prevEpubViewRefCurrentPage', prevEpubViewRef)
+    console.log('prevEpubViewRefCurrentPage', epubViewRef.current.location)
+    const isLastPage = prevEpubViewRef == epubViewRef.current.location
+    if (isLastPage) {
+      console.log('is last page')
+    }
+    setPrevEpubViewRef(epubViewRef.current.location)
   };
 
   const handlePreviousPage = () => {
@@ -217,7 +228,7 @@ const Reader = () => {
     }
   };
 
-  
+
   // gọi đầu tiên
   useEffect(() => {
     const currentAccount = JSON.parse(localStorage.getItem("user"));
@@ -239,6 +250,18 @@ const Reader = () => {
     console.log("handleSelectionChange");
   };
 
+  useEffect(() => {
+    if (rendition && currentPage) {
+      rendition.currentLocation().then((location) => {
+        console.log("location.totalProgression", location.totalProgression)
+        if (location.totalProgression === currentPage) {
+          // You're on the final page!
+          console.log('Reached the final page.');
+        }
+      });
+    }
+  }, [rendition, currentPage]);
+
   // khi selection
   useEffect(() => {
     console.log("rendition");
@@ -258,6 +281,7 @@ const Reader = () => {
   }, [setSelections, rendition, selectedHighlighter]);
 
   // setIsRenditionReady để check set lại note nếu người dùng đã có note cũ
+  console.log("rendition", rendition)
   useEffect(() => {
     if (rendition) {
       rendition.on("rendered", () => {
@@ -338,11 +362,11 @@ const Reader = () => {
   };
 
   const handleReadPage = async () => {
-    if (rendition) {
-      const text = await getCurrentPageText(rendition);
+    if (epubViewRef.current.rendition) {
+      const text = await getCurrentPageText(epubViewRef.current.rendition);
       const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
       setSentences(sentences);
-      console.log("sentences",sentences);
+      console.log("sentences", sentences);
       setCurrentSentenceIndex(0);
       setIsReading(true);
       setIsPaused(false);
@@ -413,7 +437,7 @@ const Reader = () => {
           <div className={styles.noteList}>
             <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
           </div>
-          <Button className="flex flex-col gap-1" onClick={() => handleReadPage(rendition)}>Nghe từ đầu trang hiện tại</Button>
+          <Button className="flex flex-col gap-1" onClick={() => handleReadPage()}>Nghe từ đầu trang hiện tại</Button>
           <Button onClick={handlePauseReading}>Tạm dừng</Button>
           <Button onClick={handleResumeReading}>Tiếp tục</Button>
           <audio ref={audioRef} onEnded={handleAudioEnded} />
@@ -461,7 +485,7 @@ const Reader = () => {
                 title={book.name}
                 url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
                 location={location}
-                locationChanged={(newPosition) => handlePageChange(newPosition)}
+                // locationChanged={(newPosition) => handlePageChange(newPosition)}
                 onSelectionChange={handleSelectionChange}
                 getRendition={(rendition) => {
                   rendition.themes.register("custom", {
@@ -473,7 +497,7 @@ const Reader = () => {
                   rendition.themes.select("custom");
                   setRendition(rendition);
                 }}
-                // epubOptions={{ flow: 'scrolled ' }}
+              // epubOptions={{ flow: 'scrolled ' }}
               />
 
               {showChapterMenu && (

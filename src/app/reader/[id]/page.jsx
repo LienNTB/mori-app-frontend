@@ -56,6 +56,8 @@ const Reader = () => {
   const [showChapterMenu, setShowChapterMenu] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentPage, setCurrentPage] = useState(null);
+  const [prevEpubViewRef, setPrevEpubViewRef] = useState()
   const {
     isOpen: isOpenChapters,
     onOpen: onOpenChapters,
@@ -360,8 +362,8 @@ const Reader = () => {
   };
 
   const handleReadPage = async () => {
-    if (rendition) {
-      const text = await getCurrentPageText(rendition);
+    if (epubViewRef.current.rendition) {
+      const text = await getCurrentPageText(epubViewRef.current.rendition);
       const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
       setSentences(sentences);
       console.log("sentences", sentences);
@@ -435,7 +437,7 @@ const Reader = () => {
           <div className={styles.noteList}>
             <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
           </div>
-          <Button className="flex flex-col gap-1" onClick={() => handleReadPage(rendition)}>Nghe từ đầu trang hiện tại</Button>
+          <Button className="flex flex-col gap-1" onClick={() => handleReadPage()}>Nghe từ đầu trang hiện tại</Button>
           <Button onClick={handlePauseReading}>Tạm dừng</Button>
           <Button onClick={handleResumeReading}>Tiếp tục</Button>
           <audio ref={audioRef} onEnded={handleAudioEnded} />

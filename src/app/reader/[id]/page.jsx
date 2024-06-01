@@ -6,6 +6,7 @@ import { getBookByIdRequest } from "@/app/redux/saga/requests/book";
 import { useParams } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
 import { Toaster, toast } from "react-hot-toast";
+import axios from "axios";
 import {
   Modal,
   ModalContent,
@@ -27,10 +28,13 @@ import {
   getNotesForBookByUserRequest,
 } from "@/app/redux/saga/requests/note";
 import * as types from "@/app/redux/types";
-import { faArrowRight, faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faCaretLeft,
+  faCaretRight,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Epub from 'epubjs';
-
+import Epub from "epubjs";
 
 const Reader = () => {
   const [location, setLocation] = useState(0);
@@ -52,9 +56,19 @@ const Reader = () => {
   const [showChapterMenu, setShowChapterMenu] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { isOpen: isOpenChapters, onOpen: onOpenChapters, onOpenChange: onOpenChangeChapters, onClose: onCloseChapters } = useDisclosure();
-  const [currentPage, setCurrentPage] = useState(null);
-  const [prevEpubViewRef, setPrevEpubViewRef] = useState()
+  const {
+    isOpen: isOpenChapters,
+    onOpen: onOpenChapters,
+    onOpenChange: onOpenChangeChapters,
+    onClose: onCloseChapters,
+  } = useDisclosure();
+
+  const [audioUrl, setAudioUrl] = useState("");
+  const [isReading, setIsReading] = useState(false);
+  const audioRef = useRef(null);
+  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
+  const [sentences, setSentences] = useState([]);
+  const [isPaused, setIsPaused] = useState(false);
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -162,16 +176,18 @@ const Reader = () => {
     return () => {
       epub.destroy();
     };
-  }
-  const isFinalPage = (epubViewRef) => {
-
   };
-
   const handleNextPage = async () => {
-    const prevEpubViewRefCurrentPage = epubViewRef.current.location
-    if (epubViewRef.current) {
-      epubViewRef.current
-        .nextPage()
+    // if (epubViewRef.current) {
+    //   epubViewRef.current.nextPage();
+    // }
+    if (rendition) {
+      rendition.next();
+      const text = await getCurrentPageText(rendition);
+      const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
+      setSentences(sentences);
+      setCurrentSentenceIndex(0);
+      // setIsReading(true);
     }
     console.log('prevEpubViewRefCurrentPage', prevEpubViewRef)
     console.log('prevEpubViewRefCurrentPage', epubViewRef.current.location)
@@ -181,13 +197,12 @@ const Reader = () => {
     }
     setPrevEpubViewRef(epubViewRef.current.location)
   };
+
   const handlePreviousPage = () => {
     if (epubViewRef.current) {
       epubViewRef.current.prevPage();
     }
   };
-
-
 
   const handleChapterSelect = async (chapter) => {
     if (epubViewRef.current && epubViewRef.current.rendition) {
@@ -195,14 +210,23 @@ const Reader = () => {
         // Display the selected chapter
         await epubViewRef.current.rendition.display(chapter.href);
 
+        // Get the current location
+        const currentLocation = await epubViewRef.current.rendition.location
+          .start;
+
+        // Update the location state to move the reader to the selected chapter
+        handlePageChange(currentLocation);
+
         // Hide the chapter menu
         setShowChapterMenu(false);
-        onCloseChapters()
+        onCloseChapters();
       } catch (error) {
-        console.error('Error navigating to selected chapter:', error);
+        console.error("Error navigating to selected chapter:", error);
       }
     }
   };
+
+
   // gọi đầu tiên
   useEffect(() => {
     const currentAccount = JSON.parse(localStorage.getItem("user"));
@@ -213,6 +237,7 @@ const Reader = () => {
         findOneReadHistoryRequest(res.book._id, currentAccount._id).then(
           (res) => {
             setLocation(res.position);
+            console.log("read history", res.position);
           }
         );
       }
@@ -220,8 +245,8 @@ const Reader = () => {
   }, [id]);
 
   const handleSelectionChange = () => {
-    console.log("handleSelectionChange")
-  }
+    console.log("handleSelectionChange");
+  };
 
   useEffect(() => {
     if (rendition && currentPage) {
@@ -237,7 +262,7 @@ const Reader = () => {
 
   // khi selection
   useEffect(() => {
-    console.log("rendition")
+    console.log("rendition");
     if (rendition) {
       function setRenderSelection(cfiRange, contents) {
         if (rendition) {
@@ -250,7 +275,6 @@ const Reader = () => {
       return () => {
         rendition?.off("selected", setRenderSelection);
       };
-
     }
   }, [setSelections, rendition, selectedHighlighter]);
 
@@ -261,6 +285,9 @@ const Reader = () => {
       rendition.on("rendered", () => {
         setIsRenditionReady(true);
       });
+      // rendition.on("relocated", () => {
+      //   setLocation(rendition.currentLocation().start.cfi);
+      // });
     }
   }, [rendition, isDarkMode]);
 
@@ -282,11 +309,11 @@ const Reader = () => {
   }, [isSelectionMenuOpen, currentContents]);
 
   useEffect(() => {
-    // if book is loaded then load epub data 
+    // if book is loaded then load epub data
     if (book) {
-      loadEpubFile()
+      loadEpubFile();
     }
-  }, [book])
+  }, [book]);
 
   useEffect(() => {
     if (epubViewRef.current) {
@@ -298,32 +325,135 @@ const Reader = () => {
   }, [isDarkMode]);
 
   const updateTheme = (rendition, isDarkMode) => {
-    rendition.themes.register('custom', {
+    rendition.themes.register("custom", {
       body: {
-        color: isDarkMode ? '#9CA3AF' : '#111827',
-        background: isDarkMode ? '#31363F' : '#EEEEEE',
+        color: isDarkMode ? "#9CA3AF" : "#111827",
+        background: isDarkMode ? "#31363F" : "#EEEEEE",
       },
     });
-    rendition.themes.select('custom');
+    rendition.themes.select("custom");
   };
+
+
+  //////////// TTS Function
+  const textToSpeech = async (text, speed, voice) => {
+    try {
+      const response = await axios.post(
+        `${types.BACKEND_URL}/api/book/get-book/textToSpeech`,
+        { text, speed, voice }
+      );
+      return response.data.audioUrl;
+    } catch (error) {
+      console.error("Error converting text to speech:", error);
+    }
+  };
+
+  const getCurrentPageText = async (rendition) => {
+    const currentContents = rendition.getContents();
+    let pageText = "";
+
+    currentContents.forEach((content) => {
+      const text = content.document.body.textContent;
+      pageText += text;
+    });
+    return pageText;
+  };
+
+  const handleReadPage = async () => {
+    if (rendition) {
+      const text = await getCurrentPageText(rendition);
+      const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
+      setSentences(sentences);
+      console.log("sentences", sentences);
+      setCurrentSentenceIndex(0);
+      setIsReading(true);
+      setIsPaused(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isReading && sentences.length > 0 && !isPaused) {
+      readCurrentSentence();
+    }
+  }, [isReading, currentSentenceIndex, isPaused]);
+
+  const readCurrentSentence = async () => {
+    if (currentSentenceIndex < sentences.length) {
+      const currentSentence = sentences[currentSentenceIndex];
+      const audioUrl = await textToSpeech(currentSentence);
+      if (audioUrl) {
+        setAudioUrl(audioUrl);
+      }
+    } else {
+      handleNextPage();
+    }
+  };
+
+  useEffect(() => {
+    if (audioUrl && audioRef.current) {
+      audioRef.current.src = audioUrl;
+      audioRef.current.load();
+      audioRef.current.play().catch((error) => {
+        console.error("Error playing audio:", error);
+      });
+    }
+  }, [audioUrl]);
+
+  const handleAudioEnded = () => {
+    if (isReading && currentSentenceIndex < sentences.length - 1) {
+      setCurrentSentenceIndex((prevIndex) => prevIndex + 1);
+    } else {
+      handleNextPage();
+    }
+  };
+
+  const handlePauseReading = () => {
+    setIsPaused(true);
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  };
+
+  const handleResumeReading = () => {
+    setIsPaused(false);
+    if (audioRef.current) {
+      audioRef.current.play().catch((error) => {
+        console.error("Error playing audio:", error);
+      });
+    }
+  };
+
   return (
     <div className={styles.readerContainer}>
-      <div style={{
-        background: isDarkMode ? "#31363F" : "#EEEEEE",
-        color: isDarkMode ? '#9CA3AF' : '#111827',
-      }}>
-
+      <div
+        style={{
+          background: isDarkMode ? "#31363F" : "#EEEEEE",
+          color: isDarkMode ? "#9CA3AF" : "#111827",
+        }}
+      >
         <div className={styles.settingContainer}>
           <div className={styles.noteList}>
             <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
           </div>
+          <Button className="flex flex-col gap-1" onClick={() => handleReadPage(rendition)}>Nghe từ đầu trang hiện tại</Button>
+          <Button onClick={handlePauseReading}>Tạm dừng</Button>
+          <Button onClick={handleResumeReading}>Tiếp tục</Button>
+          <audio ref={audioRef} onEnded={handleAudioEnded} />
           <Button className={styles.chapterMenuButton} onPress={onOpenChapters}>
             Chapters
           </Button>
-          <div className={styles.darkModeContainer} >
-            <Switch isSelected={isDarkMode} onValueChange={() => { setIsDarkMode(p => !p); setRendition(rendition) }} >
-            </Switch>
-            <span style={{ color: isDarkMode ? '#9CA3AF' : '#111827', }}> Dark Mode</span>
+          <div className={styles.darkModeContainer}>
+            <Switch
+              isSelected={isDarkMode}
+              onValueChange={() => {
+                setIsDarkMode((p) => !p);
+                setRendition(rendition);
+              }}
+            ></Switch>
+            <span style={{ color: isDarkMode ? "#9CA3AF" : "#111827" }}>
+              {" "}
+              Dark Mode
+            </span>
           </div>
         </div>
 
@@ -355,31 +485,27 @@ const Reader = () => {
                 location={location}
                 // locationChanged={(newPosition) => handlePageChange(newPosition)}
                 onSelectionChange={handleSelectionChange}
-                onLoad={(book) => {
-                  setTotalPages(book.pageCount);
-                  console.log("book", book)
-                }}
-                getRendition={rendition => {
-                  rendition.themes.register('custom', {
+                getRendition={(rendition) => {
+                  rendition.themes.register("custom", {
                     body: {
-                      color: isDarkMode ? '#9CA3AF' : '#111827',
+                      color: isDarkMode ? "#9CA3AF" : "#111827",
                       background: isDarkMode ? "#31363F" : "#EEEEEE",
-
-                    }
-                  })
-                  rendition.themes.select('custom')
-                  setRendition(rendition)
+                    },
+                  });
+                  rendition.themes.select("custom");
+                  setRendition(rendition);
                 }}
               // epubOptions={{ flow: 'scrolled ' }}
-
               />
-
 
               {showChapterMenu && (
                 <div className={styles.chapterMenu}>
                   <ul>
                     {chapters.map((chapter, index) => (
-                      <li key={index} onClick={() => handleChapterSelect(chapter)}>
+                      <li
+                        key={index}
+                        onClick={() => handleChapterSelect(chapter)}
+                      >
                         {chapter.label}
                       </li>
                     ))}
@@ -387,7 +513,6 @@ const Reader = () => {
                 </div>
               )}
             </>
-
           )}
         </div>
         <Modal
@@ -475,11 +600,16 @@ const Reader = () => {
                       style={{
                         backgroundColor: option.color,
                         borderRadius: "50%",
-                        width: selectedHighlighter == option.value ? "25px" : "20px",
-                        height: selectedHighlighter == option.value ? "25px" : "20px",
+                        width:
+                          selectedHighlighter == option.value ? "25px" : "20px",
+                        height:
+                          selectedHighlighter == option.value ? "25px" : "20px",
                         cursor: "pointer",
                         marginleft: "5px",
-                        border: selectedHighlighter == option.value ? "2px solid red" : "none"
+                        border:
+                          selectedHighlighter == option.value
+                            ? "2px solid red"
+                            : "none",
                       }}
                       onClick={() =>
                         handleSelectHighlighter({
@@ -507,12 +637,17 @@ const Reader = () => {
           <ModalContent>
             {(onCloseChapters) => (
               <>
-                <ModalHeader className="flex flex-col gap-1">Chapters</ModalHeader>
+                <ModalHeader className="flex flex-col gap-1">
+                  Chapters
+                </ModalHeader>
                 <ModalBody>
                   <div className={styles.chapterMenu}>
                     <ul>
                       {chapters.map((chapter, index) => (
-                        <li key={index} onClick={() => handleChapterSelect(chapter)}>
+                        <li
+                          key={index}
+                          onClick={() => handleChapterSelect(chapter)}
+                        >
                           {chapter.label}
                         </li>
                       ))}
@@ -520,7 +655,11 @@ const Reader = () => {
                   </div>
                 </ModalBody>
                 <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onCloseChapters}>
+                  <Button
+                    color="danger"
+                    variant="light"
+                    onPress={onCloseChapters}
+                  >
                     Close
                   </Button>
                 </ModalFooter>

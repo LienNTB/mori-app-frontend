@@ -161,6 +161,10 @@ function EBook() {
           });
         } else {
           increaseTotalReadDaily(book._id);
+          addNewOrUpdateReadHistory({
+            book: book,
+            user: currentAccount._id,
+          });
           router.replace(`/reader/${book._id}`, undefined, { shallow: true });
         }
       }

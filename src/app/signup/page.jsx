@@ -126,7 +126,7 @@ const SignUp = () => {
 
   useEffect(() => {
     if (authenticated) {
-      redirect("/");
+      router.push("/");
     }
   }, [authenticated]);
 

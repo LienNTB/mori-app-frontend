@@ -46,7 +46,7 @@ const Profile = () => {
   const [currentTopic, setCurrentTopic] = useState(id);
   const booksLibrary = useSelector((state) => state.myLibrary.bookList);
   const bookLoading = useSelector((state) => state.books.loading);
-  const readHistory = useSelector((state) => state.books.readHistory);
+  const readHistories = useSelector((state) => state.books.readHistory);
   const isLoading = useSelector((state) => state.myLibrary.loading);
   const [currentAccount, setCurrentAccount] = useState(null)
   const deleteBookResult = useSelector((state) => state.myLibrary.message);
@@ -403,36 +403,48 @@ const Profile = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {!readHistory ? (
-                    <Loading />
-                  ) : (
-                    readHistory.map((book) => (
-                      <tr>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                          <img
-                            src={`${types.BACKEND_URL}/api/bookimg/${book.book.image}`}
-                            alt="image"
-                            className={styles.bookLibImg}
-                          />
-                        </td>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
-                          <Link
-                            href={`/${getBookType(book.book)}/${book.book._id}`}
-                            prefetch={false}
-                            shallow
-                          >
-                            {book.book.name}
-                          </Link>
-                        </td>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                          {book.book.author}
-                        </td>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                          {book.time}
-                        </td>
-                      </tr>
-                    ))
-                  )}
+                  {!readHistories ? (
+                      <Loading />
+                    ) : (
+                      readHistories.map((readHistory, index) => (
+                        <tr key={index}>
+                          <td className="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                            {readHistory.book && readHistory.book.image ? (
+                              <img
+                                src={`${types.BACKEND_URL}/api/bookimg/${readHistory.book.image}`}
+                                alt="image"
+                                className={styles.bookLibImg}
+                              />
+                            ) : (
+                              <img
+                                src="default-image-path" // Đường dẫn tới hình ảnh mặc định
+                                alt="default image"
+                                className={styles.bookLibImg}
+                              />
+                            )}
+                          </td>
+                          <td className="border-b text-center border-gray-400 px-4 py-2 max-w-200">
+                            {readHistory.book ? (
+                              <Link
+                                href={`/${getBookType(readHistory.book)}/${readHistory.book._id}`}
+                                prefetch={false}
+                                shallow
+                              >
+                                {readHistory.book.name}
+                              </Link>
+                            ) : (
+                              <span>No book name available</span>
+                            )}
+                          </td>
+                          <td className="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                            {readHistory.book ? readHistory.book.author : "No author available"}
+                          </td>
+                          <td className="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                            {readHistory.time}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                 </tbody>
               </table>
             </div>

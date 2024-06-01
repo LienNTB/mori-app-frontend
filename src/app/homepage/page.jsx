@@ -12,8 +12,10 @@ import { getAllBooksRequest } from "../redux/saga/requests/book";
 import { getAllTagsRequest } from "../redux/saga/requests/tag";
 import Loading from "@/components/Loading/Loading";
 import { getReadingGoalsByUserId, resetReadingProgressRequest } from "../redux/saga/requests/readingGoal";
+import { useRouter } from "next/navigation";
 
 const HomePage = () => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [books, setBooks] = useState(null);
   const [tags, setTags] = useState(null);
@@ -24,7 +26,7 @@ const HomePage = () => {
   // const displayedItems = books?.slice(startIndex, endIndex);
   const [booksLoaded, setBooksLoaded] = useState(false);
   const [readingGoals, setReadingGoals] = useState(null);
-  const [currentAccount, setCurrentAccount] = useState(null)
+  const [currentAccount, setCurrentAccount] = useState(null);
 
   const getReadingGoalData = (userId) => {
     getReadingGoalsByUserId(userId).then(resp => {

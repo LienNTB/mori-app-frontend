@@ -18,6 +18,7 @@ import {
   Checkbox,
   Textarea,
   Switch,
+  Slider,
 } from "@nextui-org/react";
 import {
   addNewOrUpdateReadHistory,
@@ -71,6 +72,9 @@ const Reader = () => {
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [sentences, setSentences] = useState([]);
   const [isPaused, setIsPaused] = useState(false);
+  const [selectedSliderChaper, setSelectedSliderChapter] = useState(0)
+
+  console.log("chapters", chapters)
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -82,6 +86,13 @@ const Reader = () => {
   const [selectedHighlighter, setSelectedHighlighter] = useState(
     highlighters[0].color
   );
+
+  const handleSliderChange = (val) => {
+    console.log("val", val)
+    console.log('handleSliderChange')
+    setSelectedSliderChapter(val)
+    handleChapterSelect(chapters[val])
+  }
 
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
@@ -104,7 +115,6 @@ const Reader = () => {
 
   const handleSelectHighlighter = (event) => {
     const selectedValue = event.target.value;
-    setSelectedHighlighter(selectedValue);
   };
 
   const handleSaveNote = () => {
@@ -170,7 +180,6 @@ const Reader = () => {
     epub.ready.then(() => {
       const chaptersInfo = epub.navigation.toc;
       setChapters(chaptersInfo);
-
       // Set the initial location
       setLocation(epub.locations.start);
     });
@@ -426,13 +435,11 @@ const Reader = () => {
   };
 
   return (
-    <div className={styles.readerContainer}>
-      <div
-        style={{
-          background: isDarkMode ? "#31363F" : "#EEEEEE",
-          color: isDarkMode ? "#9CA3AF" : "#111827",
-        }}
-      >
+    <>
+      <div className={styles.readerContainer} style={{
+        background: isDarkMode ? "#31363F" : "#EEEEEE",
+        color: isDarkMode ? "#9CA3AF" : "#111827",
+      }}>
         <div className={styles.settingContainer}>
           <div className={styles.noteList}>
             <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
@@ -459,7 +466,7 @@ const Reader = () => {
           </div>
         </div>
 
-        <div className={styles.bookReaderContainer}>
+        <div className={styles.bookReaderContainer} >
           {!book ? (
             <Loading />
           ) : (
@@ -481,6 +488,7 @@ const Reader = () => {
                 />
               </div>
               <EpubView
+                className={styles.epubContainer}
                 ref={epubViewRef}
                 title={book.name}
                 url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
@@ -500,177 +508,193 @@ const Reader = () => {
               // epubOptions={{ flow: 'scrolled ' }}
               />
 
-              {showChapterMenu && (
+
+            </>
+          )}
+        </div>
+        {chapters.length > 0 &&
+          <div className={styles.sliderContainer} style={{
+            background: isDarkMode ? "#31363F" : "#EEEEEE",
+            color: isDarkMode ? "#9CA3AF" : "#111827",
+          }}>
+            <Slider
+              className={styles.sliderContent}
+              label={chapters[selectedSliderChaper].label}
+              hideValue={true}
+              step={1}
+              maxValue={chapters.length - 1}
+              minValue={0}
+              value={selectedSliderChaper}
+              onChange={(val) => handleSliderChange(val)}
+              classNames={{
+                base: "max-w-md",
+                filler: "bg-gradient-to-r from-primary-500 to-secondary-400",
+                thumb: [
+                  "transition-size",
+                  "bg-gradient-to-r from-secondary-400 to-primary-500",
+                  "data-[dragging=true]:shadow-lg data-[dragging=true]:shadow-black/20",
+                  "data-[dragging=true]:w-7 data-[dragging=true]:h-7 data-[dragging=true]:after:h-6 data-[dragging=true]:after:w-6"
+                ],
+                step: "data-[in-range=true]:bg-black/30 dark:data-[in-range=true]:bg-white/50"
+              }}
+
+            />
+          </div>
+        }
+      </div>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        scrollBehavior={scrollBehavior}
+        placement="center"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Danh sách ghi chú
+              </ModalHeader>
+              <ModalBody>
+                <div className="border border-stone-400 bg-white min-h-[100px] p-2 rounded">
+                  <ul className="grid grid-cols-1 divide-y divide-stone-400 border-stone-400 -mx-2 p-2">
+                    {selections.length === 0 ? (
+                      <>Bạn chưa có ghi chú</>
+                    ) : (
+                      selections.map(
+                        ({ text, cfiRange, content, color }, i) => (
+                          <li key={i} className="p-2">
+                            <span style={{ backgroundColor: color }}>
+                              {text}
+                            </span>
+                            <br />
+                            <span>Ghi chú: {content}</span>
+                            <br />
+                            <button
+                              className="underline hover:no-underline text-sm mx-1"
+                              onClick={() => {
+                                rendition?.display(cfiRange);
+                              }}
+                            >
+                              Show
+                            </button>
+
+                            <button
+                              className="underline hover:no-underline text-sm mx-1"
+                              onClick={() => {
+                                rendition?.annotations.remove(
+                                  cfiRange,
+                                  "highlight"
+                                );
+                                setSelections(
+                                  selections.filter((item, j) => j !== i)
+                                );
+                              }}
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        )
+                      )
+                    )}
+                  </ul>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={onClose}>
+                  Action
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Modal
+        isOpen={isSelectionMenuOpen}
+        onOpenChange={() => setSelectionMenuOpen(false)}
+      >
+        <ModalContent>
+          <ModalBody>
+            <div>
+              <div className={styles.colorPicker}>
+                Choose highlight color:
+                {highlighters.map((option) => (
+                  <div
+                    key={option.value}
+                    className={styles.colorOption}
+                    style={{
+                      backgroundColor: option.color,
+                      borderRadius: "50%",
+                      width:
+                        selectedHighlighter == option.value ? "25px" : "20px",
+                      height:
+                        selectedHighlighter == option.value ? "25px" : "20px",
+                      cursor: "pointer",
+                      marginleft: "5px",
+                      border:
+                        selectedHighlighter == option.value
+                          ? "2px solid red"
+                          : "none",
+                    }}
+                    onClick={() =>
+                      handleSelectHighlighter({
+                        target: { value: option.value },
+                      })
+                    }
+                  />
+                ))}
+              </div>
+              <Textarea
+                className={styles.colorPickerTextArea}
+                placeholder="Enter your note here..."
+                value={contentNote}
+                onChange={(e) => setContentNote(e.target.value)}
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button onPress={() => setSelectionMenuOpen(false)}>Close</Button>
+            <Button onPress={handleSaveNote}>Save</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isOpenChapters} onOpenChange={onOpenChangeChapters}>
+        <ModalContent>
+          {(onCloseChapters) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Chapters
+              </ModalHeader>
+              <ModalBody>
                 <div className={styles.chapterMenu}>
                   <ul>
                     {chapters.map((chapter, index) => (
                       <li
                         key={index}
-                        onClick={() => handleChapterSelect(chapter)}
+                        onClick={() => handleSliderChange(index)}
                       >
                         {chapter.label}
                       </li>
                     ))}
                   </ul>
                 </div>
-              )}
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={onCloseChapters}
+                >
+                  Close
+                </Button>
+              </ModalFooter>
             </>
           )}
-        </div>
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          scrollBehavior={scrollBehavior}
-          placement="center"
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  Danh sách ghi chú
-                </ModalHeader>
-                <ModalBody>
-                  <div className="border border-stone-400 bg-white min-h-[100px] p-2 rounded">
-                    <ul className="grid grid-cols-1 divide-y divide-stone-400 border-stone-400 -mx-2 p-2">
-                      {selections.length === 0 ? (
-                        <>Bạn chưa có ghi chú</>
-                      ) : (
-                        selections.map(
-                          ({ text, cfiRange, content, color }, i) => (
-                            <li key={i} className="p-2">
-                              <span style={{ backgroundColor: color }}>
-                                {text}
-                              </span>
-                              <br />
-                              <span>Ghi chú: {content}</span>
-                              <br />
-                              <button
-                                className="underline hover:no-underline text-sm mx-1"
-                                onClick={() => {
-                                  rendition?.display(cfiRange);
-                                }}
-                              >
-                                Show
-                              </button>
-
-                              <button
-                                className="underline hover:no-underline text-sm mx-1"
-                                onClick={() => {
-                                  rendition?.annotations.remove(
-                                    cfiRange,
-                                    "highlight"
-                                  );
-                                  setSelections(
-                                    selections.filter((item, j) => j !== i)
-                                  );
-                                }}
-                              >
-                                Remove
-                              </button>
-                            </li>
-                          )
-                        )
-                      )}
-                    </ul>
-                  </div>
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    Close
-                  </Button>
-                  <Button color="primary" onPress={onClose}>
-                    Action
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
-        <Modal
-          isOpen={isSelectionMenuOpen}
-          onOpenChange={() => setSelectionMenuOpen(false)}
-        >
-          <ModalContent>
-            <ModalBody>
-              <div>
-                <div className={styles.colorPicker}>
-                  Choose highlight color:
-                  {highlighters.map((option) => (
-                    <div
-                      key={option.value}
-                      className={styles.colorOption}
-                      style={{
-                        backgroundColor: option.color,
-                        borderRadius: "50%",
-                        width:
-                          selectedHighlighter == option.value ? "25px" : "20px",
-                        height:
-                          selectedHighlighter == option.value ? "25px" : "20px",
-                        cursor: "pointer",
-                        marginleft: "5px",
-                        border:
-                          selectedHighlighter == option.value
-                            ? "2px solid red"
-                            : "none",
-                      }}
-                      onClick={() =>
-                        handleSelectHighlighter({
-                          target: { value: option.value },
-                        })
-                      }
-                    />
-                  ))}
-                </div>
-                <Textarea
-                  className={styles.colorPickerTextArea}
-                  placeholder="Enter your note here..."
-                  value={contentNote}
-                  onChange={(e) => setContentNote(e.target.value)}
-                />
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button onPress={() => setSelectionMenuOpen(false)}>Close</Button>
-              <Button onPress={handleSaveNote}>Save</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        <Modal isOpen={isOpenChapters} onOpenChange={onOpenChangeChapters}>
-          <ModalContent>
-            {(onCloseChapters) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  Chapters
-                </ModalHeader>
-                <ModalBody>
-                  <div className={styles.chapterMenu}>
-                    <ul>
-                      {chapters.map((chapter, index) => (
-                        <li
-                          key={index}
-                          onClick={() => handleChapterSelect(chapter)}
-                        >
-                          {chapter.label}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </ModalBody>
-                <ModalFooter>
-                  <Button
-                    color="danger"
-                    variant="light"
-                    onPress={onCloseChapters}
-                  >
-                    Close
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
-      </div>
-    </div>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

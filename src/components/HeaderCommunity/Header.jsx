@@ -182,7 +182,8 @@ const HeaderCommunity = () => {
                                       : `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`} />
                                     <div className="flex flex-col">
                                       <span className="text-sm/[17px] font-medium ">{noti.performedBy.displayName}</span>
-                                      <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[207px] overflow-hidden whitespace-normal max-h-9`}>
+                                      <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`}
+                                        style={{ maxHeight: "46px" }}>
                                         {noti.action === "like" ? "Đã thích bài viết của bạn." :
                                           noti.action === "share" ? "Đã chia sẻ bài viết của bạn." :
                                             `Đã bình luận bài viết của bạn: ${noti.message}`}

@@ -36,6 +36,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Epub from "epubjs";
+import { updateReadBooksRequest } from "@/app/redux/saga/requests/readingGoal";
 
 const Reader = () => {
   const [location, setLocation] = useState(0);
@@ -72,9 +73,8 @@ const Reader = () => {
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [sentences, setSentences] = useState([]);
   const [isPaused, setIsPaused] = useState(false);
-  const [selectedSliderChaper, setSelectedSliderChapter] = useState(0)
-
-  console.log("chapters", chapters)
+  const [selectedSliderChaper, setSelectedSliderChapter] = useState(0);
+  const [checkFinalPageCounter, setCheckFinalPageCounter] = useState(0)
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -88,15 +88,13 @@ const Reader = () => {
   );
 
   const handleSliderChange = (val) => {
-    console.log("val", val)
-    console.log('handleSliderChange')
     setSelectedSliderChapter(val)
-    handleChapterSelect(chapters[val])
+    handleChapterSelect(chapters[val]);
+    setCheckFinalPageCounter(p => p + 1)
   }
 
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
-    console.log('location.totalProgression', newPosition.totalProgression)
     setLocation(newPosition);
     saveReadPositionToDatabase(newPosition);
     setCurrentPage(newPosition.totalProgression)
@@ -188,23 +186,32 @@ const Reader = () => {
       epub.destroy();
     };
   };
+
+  const getCurrentChapterIndex = (url) => {
+    const currentChapterIndex = chapters.findIndex((chapter, index) => {
+      return chapter.href === url
+    })
+    return currentChapterIndex
+  }
   const handleNextPage = async () => {
-    // if (epubViewRef.current) {
-    //   epubViewRef.current.nextPage();
-    // }
-    if (rendition) {
-      rendition.next();
-      const text = await getCurrentPageText(rendition);
+
+    if (epubViewRef.current.rendition) {
+
+      // locate to next page
+      await epubViewRef.current.rendition.next().then(() => {
+        // update current progress for slider
+        const currentIndex = getCurrentChapterIndex(epubViewRef.current.rendition.location.start.href);
+        setSelectedSliderChapter(currentIndex);
+        setCheckFinalPageCounter(p => p + 1)
+      })
+
+      // retrieve text from current page
+      const text = await getCurrentPageText(epubViewRef.current.rendition);
       const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
       setSentences(sentences);
       setCurrentSentenceIndex(0);
-      // setIsReading(true);
-    }
-    console.log('prevEpubViewRefCurrentPage', prevEpubViewRef)
-    console.log('prevEpubViewRefCurrentPage', epubViewRef.current.location)
-    const isLastPage = prevEpubViewRef == epubViewRef.current.location
-    if (isLastPage) {
-      console.log('is last page')
+
+
     }
     setPrevEpubViewRef(epubViewRef.current.location)
   };
@@ -237,6 +244,18 @@ const Reader = () => {
     }
   };
 
+  const handleCheckFinalChapter = () => {
+    // check if user is logged in
+    if (!currentAccount) return;
+    if (epubViewRef?.current?.rendition) {
+      const currentIndex = getCurrentChapterIndex(epubViewRef.current.rendition.location.start.href);
+      if (currentIndex === chapters.length - 1) {
+        // if user reach final page then update finish
+        updateReadBooksRequest(currentAccount._id, params.id)
+      }
+    }
+  }
+
 
   // gọi đầu tiên
   useEffect(() => {
@@ -248,32 +267,20 @@ const Reader = () => {
         findOneReadHistoryRequest(res.book._id, currentAccount._id).then(
           (res) => {
             setLocation(res.position);
-            console.log("read history", res.position);
           }
         );
       }
     });
   }, [id]);
 
-  const handleSelectionChange = () => {
-    console.log("handleSelectionChange");
-  };
-
   useEffect(() => {
-    if (rendition && currentPage) {
-      rendition.currentLocation().then((location) => {
-        console.log("location.totalProgression", location.totalProgression)
-        if (location.totalProgression === currentPage) {
-          // You're on the final page!
-          console.log('Reached the final page.');
-        }
-      });
-    }
-  }, [rendition, currentPage]);
+
+    handleCheckFinalChapter()
+  }, [checkFinalPageCounter])
+
 
   // khi selection
   useEffect(() => {
-    console.log("rendition");
     if (rendition) {
       function setRenderSelection(cfiRange, contents) {
         if (rendition) {
@@ -290,7 +297,6 @@ const Reader = () => {
   }, [setSelections, rendition, selectedHighlighter]);
 
   // setIsRenditionReady để check set lại note nếu người dùng đã có note cũ
-  console.log("rendition", rendition)
   useEffect(() => {
     if (rendition) {
       rendition.on("rendered", () => {
@@ -375,7 +381,6 @@ const Reader = () => {
       const text = await getCurrentPageText(epubViewRef.current.rendition);
       const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
       setSentences(sentences);
-      console.log("sentences", sentences);
       setCurrentSentenceIndex(0);
       setIsReading(true);
       setIsPaused(false);
@@ -494,7 +499,7 @@ const Reader = () => {
                 url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
                 location={location}
                 // locationChanged={(newPosition) => handlePageChange(newPosition)}
-                onSelectionChange={handleSelectionChange}
+                // onSelectionChange={handleSelectionChange}
                 getRendition={(rendition) => {
                   rendition.themes.register("custom", {
                     body: {
@@ -519,7 +524,7 @@ const Reader = () => {
           }}>
             <Slider
               className={styles.sliderContent}
-              label={chapters[selectedSliderChaper].label}
+              label={chapters[selectedSliderChaper]?.label}
               hideValue={true}
               step={1}
               maxValue={chapters.length - 1}

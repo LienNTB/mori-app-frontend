@@ -73,9 +73,9 @@ const Reader = () => {
   const [isCurrentSentenceProcessed, setIsCurrentSentenceProcessed] =
     useState(false);
   const audioRef = useRef(null);
-  const [selectedSliderChaper, setSelectedSliderChapter] = useState(0)
+  const [selectedSliderChaper, setSelectedSliderChapter] = useState(0);
 
-  console.log("chapters", chapters)
+  console.log("chapters", chapters);
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -89,11 +89,11 @@ const Reader = () => {
   );
 
   const handleSliderChange = (val) => {
-    console.log("val", val)
-    console.log('handleSliderChange')
-    setSelectedSliderChapter(val)
-    handleChapterSelect(chapters[val])
-  }
+    console.log("val", val);
+    console.log("handleSliderChange");
+    setSelectedSliderChapter(val);
+    handleChapterSelect(chapters[val]);
+  };
 
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
@@ -266,9 +266,6 @@ const Reader = () => {
       rendition.on("rendered", () => {
         setIsRenditionReady(true);
       });
-      // rendition.on("relocated", () => {
-      //   setLocation(rendition.currentLocation().start.cfi);
-      // });
     }
   }, [rendition, isDarkMode]);
 
@@ -355,24 +352,24 @@ const Reader = () => {
       setSentences(filteredSentences);
       console.log("sentences", filteredSentences);
       setCurrentSentenceIndex(0);
-      setIsReading((prevState) => !prevState); // Đảo ngược giá trị của isReading
+      setIsReading((prevState) => !prevState); // Đảo ngược giá trị của isReading để gọi useffect
       setIsPaused(false);
     }
   };
 
   useEffect(() => {
-    if (isReading && sentences.length > 0 && !isPaused) {
+    if (sentences.length > 0 && !isPaused) {
       readCurrentSentence();
     }
   }, [isReading, currentSentenceIndex]);
 
   const readCurrentSentence = async () => {
     if (currentSentenceIndex < sentences.length) {
+      // tách ra gọi api text to speech để có thời gian chờ cho api fpt xử lý
       if (nextAudioUrl) {
         setAudioUrl(nextAudioUrl);
         setNextAudioUrl("");
-
-        setIsCurrentSentenceProcessed(true);
+        setIsCurrentSentenceProcessed(true);// set để gọi useffect thôi
       } else {
         const currentSentence = sentences[currentSentenceIndex];
         let audioUrl = await textToSpeech(currentSentence);
@@ -383,17 +380,27 @@ const Reader = () => {
         }
       }
     } else {
-      handleNextPage();
+      await handleNextPageRead();
     }
   };
 
+  const handleNextPageRead = async () => {
+    if (rendition) {
+      try {
+        await rendition.next();
+        await handleReadPage(); // trở lại set sentences
+      } catch (error) {
+        console.error("Error getting next page text:", error);
+      }
+    }
+  };
+// gọi api text to speech cho câu tiếp
   useEffect(() => {
     if (
       isCurrentSentenceProcessed &&
       currentSentenceIndex + 1 < sentences.length
     ) {
       fetchNextAudioUrl();
-      setIsCurrentSentenceProcessed(false);
     }
   }, [isCurrentSentenceProcessed]);
 
@@ -406,21 +413,38 @@ const Reader = () => {
     }
   };
 
+  const [retryCount, setRetryCount] = useState(0); 
   useEffect(() => {
     if (audioUrl && audioRef.current) {
       audioRef.current.src = audioUrl;
-      audioRef.current.load();
-      audioRef.current.play().catch((error) => {
-        console.error("Error playing audio:", error);
-      });
+      // audioRef.current.play().catch((error) => {
+      //   console.error("Error playing audio:", error);
+      // });
+      const playAudio = async () => {
+        try {
+          audioRef.current.load();
+          await audioRef.current.play();
+          // Phát audio thành công, đặt lại số lần thử lại về 0
+          setRetryCount(0);
+        } catch (error) {
+          console.error("Error playing audio:", error);
+          // Nếu có lỗi khi phát audio, thử lại tối đa 60 lần, mỗi lần cách nhau 1s
+          if (retryCount < 200) {
+            setTimeout(playAudio, 1000);
+            setRetryCount(prevCount => prevCount + 1);
+          }
+        }
+      };
+      playAudio();
     }
   }, [audioUrl]);
 
-  const handleAudioEnded = () => {
-    if (isReading && currentSentenceIndex < sentences.length - 1) {
+  const handleAudioEnded = async () => {
+    if (currentSentenceIndex < sentences.length - 1) {
       setCurrentSentenceIndex((prevIndex) => prevIndex + 1);
     } else {
-      handleNextPageRead();
+      console.log("eeee chuyển trang");
+      await handleNextPageRead();
     }
   };
 
@@ -450,35 +474,15 @@ const Reader = () => {
     }
   };
 
-  const handleNextPageRead = async () => {
-    if (rendition) {
-      try {
-        await rendition.next();
-        const text = await getCurrentPageText(rendition);
-        const sentences = text
-          .replace(/[\n\t]/g, " ")
-          .replace(/\s+/g, " ")
-          .match(/[^\.!\?]+[\.!\?]+/g) || [text];
-        // Lọc ra các câu không chỉ toàn dấu cách hoặc không có ký tự
-        const filteredSentences = sentences.filter(
-          (sentence) => /[^\s.]/.test(sentence.trim()) // Kiểm tra câu không chỉ toàn dấu cách
-        );
-        setSentences(filteredSentences);
-        console.log("sentences", filteredSentences);
-        setSentences(sentences);
-        setCurrentSentenceIndex(0);
-      } catch (error) {
-        console.error("Error getting next page text:", error);
-      }
-    }
-  };
-
   return (
     <>
-      <div className={styles.readerContainer} style={{
-        background: isDarkMode ? "#31363F" : "#EEEEEE",
-        color: isDarkMode ? "#9CA3AF" : "#111827",
-      }}>
+      <div
+        className={styles.readerContainer}
+        style={{
+          background: isDarkMode ? "#31363F" : "#EEEEEE",
+          color: isDarkMode ? "#9CA3AF" : "#111827",
+        }}
+      >
         <div className={styles.settingContainer}>
           <div className={styles.noteList}>
             <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
@@ -505,7 +509,7 @@ const Reader = () => {
           </div>
         </div>
 
-        <div className={styles.bookReaderContainer} >
+        <div className={styles.bookReaderContainer}>
           {!book ? (
             <Loading />
           ) : (
@@ -546,16 +550,17 @@ const Reader = () => {
                 }}
                 // epubOptions={{ flow: 'scrolled ' }}
               />
-
-
             </>
           )}
         </div>
-        {chapters.length > 0 &&
-          <div className={styles.sliderContainer} style={{
-            background: isDarkMode ? "#31363F" : "#EEEEEE",
-            color: isDarkMode ? "#9CA3AF" : "#111827",
-          }}>
+        {chapters.length > 0 && (
+          <div
+            className={styles.sliderContainer}
+            style={{
+              background: isDarkMode ? "#31363F" : "#EEEEEE",
+              color: isDarkMode ? "#9CA3AF" : "#111827",
+            }}
+          >
             <Slider
               className={styles.sliderContent}
               label={chapters[selectedSliderChaper].label}
@@ -572,14 +577,13 @@ const Reader = () => {
                   "transition-size",
                   "bg-gradient-to-r from-secondary-400 to-primary-500",
                   "data-[dragging=true]:shadow-lg data-[dragging=true]:shadow-black/20",
-                  "data-[dragging=true]:w-7 data-[dragging=true]:h-7 data-[dragging=true]:after:h-6 data-[dragging=true]:after:w-6"
+                  "data-[dragging=true]:w-7 data-[dragging=true]:h-7 data-[dragging=true]:after:h-6 data-[dragging=true]:after:w-6",
                 ],
-                step: "data-[in-range=true]:bg-black/30 dark:data-[in-range=true]:bg-white/50"
+                step: "data-[in-range=true]:bg-black/30 dark:data-[in-range=true]:bg-white/50",
               }}
-
             />
           </div>
-        }
+        )}
       </div>
       <Modal
         isOpen={isOpen}
@@ -710,10 +714,7 @@ const Reader = () => {
                 <div className={styles.chapterMenu}>
                   <ul>
                     {chapters.map((chapter, index) => (
-                      <li
-                        key={index}
-                        onClick={() => handleSliderChange(index)}
-                      >
+                      <li key={index} onClick={() => handleSliderChange(index)}>
                         {chapter.label}
                       </li>
                     ))}

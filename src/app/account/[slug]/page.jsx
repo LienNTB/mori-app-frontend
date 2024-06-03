@@ -67,6 +67,7 @@ const Profile = () => {
   const { isOpen: isOpenCreateReadingGoal, onOpen: onOpenCreateReadingGoal,
     onOpenChange: onOpenChangeCreateReadingGoal, onClose: onCloseCreateReadingGoal } = useDisclosure();
   const [readingGoals, setReadingGoals] = useState(null)
+  const [isLoadingReadingGoal, setIsLoadingReadingGoal] = useState(false)
 
   function getBookType(book) {
     if (book.access_level == 2) {
@@ -133,6 +134,7 @@ const Profile = () => {
           .then((resp) => {
             if (resp.message) {
               resolve(resp.message);
+              getReadingGoalData(currentAccount._id)
             } else {
               reject(resp.error);
             }
@@ -149,12 +151,15 @@ const Profile = () => {
     );
     onCloseCreateReadingGoal()
   }
+  console.log("isLoadingReadingGoal", isLoadingReadingGoal)
 
   const getReadingGoalData = (userId) => {
+    setIsLoadingReadingGoal(true)
     getReadingGoalsByUserId(userId).then(resp => {
       console.log('resp', resp)
       setReadingGoals(resp)
     })
+    setIsLoadingReadingGoal(false)
   }
   useEffect(() => {
     if (JSON.parse(localStorage.getItem('user'))) {
@@ -646,7 +651,7 @@ const Profile = () => {
                     <Button color="primary" onClick={() => onOpenCreateReadingGoal()}>Thiết lập mục tiêu đọc sách</Button>
                   </div>
                   {
-                    readingGoals ?
+                    !isLoadingReadingGoal && readingGoals ?
                       <>
                         {
                           readingGoals.length !== 0 ?

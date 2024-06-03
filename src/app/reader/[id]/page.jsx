@@ -36,7 +36,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Epub from "epubjs";
-import { updateReadBooksRequest } from "@/app/redux/saga/requests/readingGoal";
+import { updateReadBooksRequest, updateReadPagesRequest } from "@/app/redux/saga/requests/readingGoal";
 
 const Reader = () => {
   const [location, setLocation] = useState(0);
@@ -92,7 +92,9 @@ const Reader = () => {
   const handleSliderChange = (val) => {
     setSelectedSliderChapter(val)
     handleChapterSelect(chapters[val]);
-    setCheckFinalPageCounter(p => p + 1)
+    // update books progress for reading goal for user
+    setCheckFinalPageCounter(p => p + 1);
+
   };
 
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
@@ -204,6 +206,10 @@ const Reader = () => {
         const currentIndex = getCurrentChapterIndex(epubViewRef.current.rendition.location.start.href);
         setSelectedSliderChapter(currentIndex);
         setCheckFinalPageCounter(p => p + 1)
+        // update progress for reading goal for user
+        if (currentAccount) {
+          updateReadPagesRequest(currentAccount._id)
+        }
       })
 
       // retrieve text from current page

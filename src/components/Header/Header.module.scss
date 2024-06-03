@@ -1,257 +1,262 @@
 @import "../../assets/styles/globalstyle.scss";
 .container {
-    width: 100%;
-    .menuLaptop {
-        background-color: white;
-        padding: 5px 60px;
-        height: 70px;
-        width: 100vw;
+  width: 100%;
+  .menuLaptop {
+    background-color: white;
+    padding: 5px 60px;
+    height: 70px;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    z-index: 999 !important;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+  }
+  .menuMobile {
+    background-color: white;
+    padding: 5px 60px;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    z-index: 999 !important;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+    .menuWrapper {
+      background-color: white;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      height: 70px;
+    }
+    .menuList {
+      background-color: white;
+      z-index: 999 !important;
+      font-weight: 600;
+      .menuItem {
+        padding: 10px;
+        cursor: pointer;
+        &:hover {
+          color: #31b6ba !important;
+        }
+        a {
+          &:hover {
+            color: #31b6ba !important;
+          }
+        }
+      }
+    }
+  }
+  .topMenu {
+    background-color: white;
+    .left {
+      display: flex;
+      align-items: center;
+      .logo {
+        cursor: pointer;
+        margin-right: 30px;
+      }
+      .searchBarContainer {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
         display: flex;
-        flex-direction: row;
         justify-content: space-between;
-        position: fixed;
-        top: 0;
-        z-index: 999 !important;
-        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+        padding: 3px;
+        input {
+          width: 353px;
+          border-radius: 10px;
+          border: none !important;
+          outline: none !important;
+          padding: 10px 10px;
+          font-size: 13px;
+        }
+        a {
+          background-color: $primary-color;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          transition: 0.2s all linear;
+          &:hover {
+            background-color: $hover-color--light;
+          }
+        }
+        button {
+          padding: 10px 10px;
+          font-size: 13px;
+          cursor: pointer;
+          color: #fff;
+        }
+      }
     }
-    .menuMobile {
-        background-color: white;
-        padding: 5px 60px;
-        width: 100vw;
-        position: fixed;
-        top: 0;
-        z-index: 999 !important;
-        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
-        .menuWrapper {
-            background-color: white;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            height: 70px;
+    .right {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+      position: relative;
+      .accountAvt {
+        img {
+          border-radius: 999px;
+          width: 40px;
+          height: 40px;
         }
-        .menuList {
-            background-color: white;
-            z-index: 999 !important;
-            font-weight: 600;
-            .menuItem {
-                padding: 10px;
-                cursor: pointer;
-                &:hover {
-                    color: #31b6ba !important;
-                }
-                a {
-                    &:hover {
-                        color: #31b6ba !important;
-                    }
-                }
-            }
-        }
-    }
-    .topMenu {
-        background-color: white;
-        .left {
-            display: flex;
-            align-items: center;
-            .logo {
-                cursor: pointer;
-                margin-right: 30px;
-            }
-            .searchBarContainer {
-                border: 1px solid #e5e7eb;
-                border-radius: 10px;
-                display: flex;
-                justify-content: space-between;
-                padding: 3px;
-                input {
-                    width: 353px;
-                    border-radius: 10px;
-                    border: none !important;
-                    outline: none !important;
-                    padding: 10px 10px;
-                    font-size: 13px;
-                }
-                a {
-                    background-color: $primary-color;
-                    border-radius: 10px;
-                    display: flex;
-                    align-items: center;
-                    transition: 0.2s all linear;
-                    &:hover {
-                        background-color: $hover-color--light;
-                    }
-                }
-                button {
-                    padding: 10px 10px;
-                    font-size: 13px;
-                    cursor: pointer;
-                    color: #fff;
-                }
-            }
-        }
-        .right {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-weight: 600;
-            position: relative;
-            .accountAvt {
-                img {
-                    border-radius: 999px;
-                    width: 40px;
-                    height: 40px;
-                }
-            }
-            .notificationBtn {
-                border-radius: 999px;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-right: 10px;
-                background-color: rgb(231, 231, 231);
-                cursor: pointer;
-                transition: all 0.2s linear;
-                &:hover {
-                    background-color: rgb(224, 223, 223);
-                    color: black;
-                }
-            }
-            .notificationCount {
-                position: absolute;
-                top: -6px;
-                right: -1px;
-                background-color: red;
-                color: white;
-                border-radius: 90%;
-                padding: 2px 9px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-            .menuAccount,
-            .menuNotification {
-                position: absolute;
-                top: 57px;
-                right: 0;
-                z-index: 3;
-                .newNotiIcon {
-                    width: 12px !important;
-                    height: 12px !important;
-                    color: rgb(4, 81, 247);
-                }
-            }
-        }
-    }
-    .bottomMenu {
-        padding: 5px 41px;
-        background-color: white;
-        margin-top: 67px;
+      }
+      .notificationBtn {
+        border-radius: 999px;
+        width: 40px;
         height: 40px;
-        font-size: 15px;
         display: flex;
         align-items: center;
-        ul {
-            display: flex;
-            align-items: center;
-            flex: row;
-            // margin-left: 22px;
-            .bottomMenuItem {
-                margin-right: 27px;
-                cursor: pointer;
-                font-weight: 600;
-                &:hover {
-                    color: #31b6ba;
-                }
-            }
+        justify-content: center;
+        margin-right: 10px;
+        background-color: rgb(231, 231, 231);
+        cursor: pointer;
+        transition: all 0.2s linear;
+        &:hover {
+          background-color: rgb(224, 223, 223);
+          color: black;
         }
-        .danhmuc {
-            position: relative;
-            margin-right: 27px;
-            cursor: pointer;
-            font-weight: 600;
-            &:hover {
-                color: #31b6ba;
-            }
-            .listbox {
-                width: auto;
-                color: black;
-                position: absolute;
-                top: 30px;
-                z-index: 1000 !important;
-                background-color: white;
-            }
-            .listboxContent {
-                width: auto;
-                margin-left: 0px;
-                background-color: white;
-                z-index: 1000 !important;
-            }
-            &:hover {}
+      }
+      .notificationCount {
+        position: absolute;
+        top: -6px;
+        right: -1px;
+        background-color: red;
+        color: white;
+        border-radius: 90%;
+        padding: 2px 9px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      .menuAccount,
+      .menuNotification {
+        position: absolute;
+        top: 57px;
+        right: 0;
+        z-index: 3;
+        .newNotiIcon {
+          width: 12px !important;
+          height: 12px !important;
+          color: rgb(4, 81, 247);
         }
+      }
     }
+  }
+  .bottomMenu {
+    padding: 5px 41px;
+    background-color: white;
+    margin-top: 67px;
+    height: 40px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    ul {
+      display: flex;
+      align-items: center;
+      flex: row;
+      // margin-left: 22px;
+      .bottomMenuItem {
+        margin-right: 27px;
+        cursor: pointer;
+        font-weight: 600;
+        &:hover {
+          color: #31b6ba;
+        }
+      }
+    }
+    .danhmuc {
+      position: relative;
+      margin-right: 27px;
+      cursor: pointer;
+      font-weight: 600;
+      &:hover {
+        color: #31b6ba;
+      }
+      .listbox {
+        width: auto;
+        color: black;
+        position: absolute;
+        top: 30px;
+        z-index: 1000 !important;
+        background-color: white;
+      }
+      .listboxContent {
+        max-height: 200px;
+        overflow-y: scroll;
+        width: auto;
+        margin-left: 0px;
+        background-color: white;
+        z-index: 1000 !important;
+      }
+      &:hover {
+      }
+    }
+  }
 }
 
 .memberRegisterBtn {
-    font-size: 13px;
-    cursor: pointer;
-    color: white;
-    display: flex;
-    justify-content: center;
-    width: fit-content;
-    background: linear-gradient(90deg, #52d0d0 0, #1badad);
-    padding: 10px;
-    border-radius: 50px;
+  font-size: 13px;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  background: linear-gradient(90deg, #52d0d0 0, #1badad);
+  padding: 10px;
+  border-radius: 50px;
 }
 
 @media (max-width: 576px) {
-    .menuLaptop,
-    .bottomMenu {
-        display: none !important;
+  .menuLaptop,
+  .bottomMenu {
+    display: none !important;
+  }
+  .menuMobile {
+    .searchBarContainer {
+      display: none !important;
     }
-    .menuMobile {
-        .searchBarContainer {
-            display: none !important;
-        }
-        .menu {
-            width: 20px;
-            height: auto;
-        }
+    .menu {
+      width: 20px;
+      height: auto;
     }
+  }
 }
 
 @media (max-width: 768px) {
-    .menuLaptop,
-    .bottomMenu {
-        display: none !important;
+  .menuLaptop,
+  .bottomMenu {
+    display: none !important;
+  }
+  .menuMobile {
+    .searchBarContainer {
+      display: none !important;
     }
-    .menuMobile {
-        .searchBarContainer {
-            display: none !important;
-        }
-        .menu {
-            width: 20px;
-            height: auto;
-        }
+    .menu {
+      width: 20px;
+      height: auto;
     }
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-    .menuLaptop {
-        display: none !important;
+  .menuLaptop {
+    display: none !important;
+  }
+  .menuMobile {
+    .searchBarContainer {
+      display: none !important;
     }
-    .menuMobile {
-        .searchBarContainer {
-            display: none !important;
-        }
-        .menu {
-            width: 20px;
-            height: auto;
-        }
+    .menu {
+      width: 20px;
+      height: auto;
     }
+  }
 }
 
 @media (min-width: 1025px) {
-    .menuMobile {
-        display: none !important;
-    }
+  .menuMobile {
+    display: none !important;
+  }
 }

@@ -278,7 +278,7 @@ const Post = () => {
                     />
                   </div>
                 </FacebookButton>
-                {currentAccount._id == post.account._id &&
+                {currentAccount?._id == post.account._id &&
                   <Link href={`/edit-post/${post._id}`}>
                     <FontAwesomeIcon
                       icon={faEdit}

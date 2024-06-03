@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getBooksFromMyLibrary,
-} from "@/app/redux/actions/myLibrary"; import { toast } from "react-toastify";
+} from "@/app/redux/actions/myLibrary";
 import ToastContainerWrapper from "@/components/ToastContainerWrapper/ToastContainerWrapper";
 import {
   TableCell,
@@ -30,6 +30,7 @@ import { followUserRequest, getAllFollowers, getAllFollowings, isFollowingReques
 import { getAccountByIdRequest } from "@/app/redux/saga/requests/account";
 import UnfollowConfirmModal from "@/components/Modals/UnfollowConfirmModal/UnfollowConfirmModal";
 import Loading from "@/components/Loading/Loading";
+import { Toaster, toast } from "react-hot-toast";
 
 const Profile = () => {
   const params = useParams();
@@ -52,17 +53,29 @@ const Profile = () => {
   const [followers, setFollowers] = useState([])
   const [followings, setFollowings] = useState([])
 
-  const handleFollowUser = () => {
-    const request = {
-      follower: currentAccount._id,
-      following: userId
+  function getBookType(book) {
+    if (book.access_level == 2) {
+      return "book";
     }
-    setIsLoadingFollowRequest(true)
-    followUserRequest(request)
-      .then((resp => {
-        setIsLoadingFollowRequest(false)
-        setIsFollowing(true)
-      }))
+    return book.chapters && book.chapters.length > 0 ? "audio-book" : "ebook";
+  }
+
+  const handleFollowUser = () => {
+    if (!currentAccount) {
+      toast.error("Vui lòng đăng nhập để theo dõi người dùng này!")
+    }
+    else {
+      const request = {
+        follower: currentAccount._id,
+        following: userId
+      }
+      setIsLoadingFollowRequest(true)
+      followUserRequest(request)
+        .then((resp => {
+          setIsLoadingFollowRequest(false)
+          setIsFollowing(true)
+        }))
+    }
   }
   const handleUnfollowUser = () => {
     const request = {
@@ -79,10 +92,11 @@ const Profile = () => {
     onCloseChangeUnfollowConfirm()
   }
 
+  console.log("user", user)
 
   const getPostData = () => {
     setIsLoadingPostList(true);
-    getPostByUserIdRequest(user._id).then((resp) => {
+    getPostByUserIdRequest(userId).then((resp) => {
       setPostList(resp.data);
     });
     setIsLoadingPostList(false);
@@ -122,11 +136,11 @@ const Profile = () => {
   }, [user]);
   useEffect(() => {
     if (currentAccount) {
-      getUserData()
       getIsFollowingData();
     }
   }, [currentAccount])
   useEffect(() => {
+    getUserData()
     setCurrentAccount(JSON.parse(localStorage.getItem("user")))
     dispatch(getBooksFromMyLibrary(userId));
     getFollowersData();
@@ -135,6 +149,7 @@ const Profile = () => {
 
   return (
     <div className={styles.profileContainer}>
+      <Toaster />
       <Header />
       <div className={styles.profileContent}>
         <section className={styles.accountContainer}>
@@ -159,38 +174,19 @@ const Profile = () => {
               <div className={styles.accountInfo}>
                 <div className={styles.top}>
                   <div className={styles.title}>{user?.displayName}</div>
-                  {currentAccount?._id !== userId && <>
-                    {
-                      isFollowing ?
-                        <Button color="primary" variant="flat" onPress={onOpenChangeUnfollowConfirm} >
-                          {
-                            isLoadingUnfollowRequest ?
-                              <Spinner /> :
-                              "Hủy theo dõi"
-                          }
-                        </Button> :
-                        <Button color="primary" variant="flat" onClick={() => handleFollowUser()}>
-                          {
-                            isLoadingFollowRequest ?
-                              <Spinner /> :
-                              "Theo dõi"
-                          }
-                        </Button>
-                    }
-                  </>}
                 </div>
 
                 <div className={styles.followInfo}>
                   <div className={styles.followItem} onClick={() => onOpenFollower()}>
-                    <span>245 </span>
+                    <span>{followers.length} </span>
                     Người theo dõi
                   </div>
                   <div className={styles.followItem} onClick={() => onOpenFollowing()}>
-                    <span>245 </span>
+                    <span>{followings.length} </span>
                     Đang theo dõi
                   </div>
                   <div className={styles.followItem}>
-                    <span>245 </span>
+                    <span>{postList.length} </span>
                     Bài viết
                   </div>
                 </div>
@@ -203,7 +199,8 @@ const Profile = () => {
               className={`${styles.navItem} ${currentTopic === "profile" ? styles.active : ""
                 }`}
             >
-              <Link href={`/user/${userId}/profile`}>Thông tin cá nhân</Link>
+              <Link href={`/user/${userId}/profile`}
+              >Thông tin cá nhân</Link>
             </div>
             <div
               className={`${styles.navItem} ${currentTopic === "library" ? styles.active : ""
@@ -321,9 +318,6 @@ const Profile = () => {
                     <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
                       Author
                     </th>
-                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
-                      Action
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -351,14 +345,7 @@ const Profile = () => {
                         <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
                           {book.book.author}
                         </td>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                          <FontAwesomeIcon
-                            icon={faTrashCan}
-                            class="cursor-pointer"
-                            width={20}
-                            onClick={() => handleDeleteBook(book.book)}
-                          />
-                        </td>
+
                       </tr>
                     ))
                   )}
@@ -374,7 +361,7 @@ const Profile = () => {
       <Footer />
       <ToastContainerWrapper />
       <FollowerModal isOpen={isOpenFollower} onOpenChange={onOpenChangeFollower} followers={followers} />
-      <FollowingModal isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} followings={followings} />
+      <FollowingModal userHaveAccess={currentAccount?._id === user?._id} isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} followings={followings} />
       <UnfollowConfirmModal isOpen={isOpenUnfollowConfirm}
         onOpenChange={onOpenChangeUnfollowConfirm}
         handleUnfollowUser={handleUnfollowUser}

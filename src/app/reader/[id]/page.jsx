@@ -56,8 +56,6 @@ const Reader = () => {
   const [showChapterMenu, setShowChapterMenu] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [currentPage, setCurrentPage] = useState(null);
-  const [prevEpubViewRef, setPrevEpubViewRef] = useState()
   const {
     isOpen: isOpenChapters,
     onOpen: onOpenChapters,
@@ -66,11 +64,14 @@ const Reader = () => {
   } = useDisclosure();
 
   const [audioUrl, setAudioUrl] = useState("");
-  const [isReading, setIsReading] = useState(false);
-  const audioRef = useRef(null);
-  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
+  const [nextAudioUrl, setNextAudioUrl] = useState("");
   const [sentences, setSentences] = useState([]);
+  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
+  const [isReading, setIsReading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isCurrentSentenceProcessed, setIsCurrentSentenceProcessed] =
+    useState(false);
+  const audioRef = useRef(null);
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -85,10 +86,8 @@ const Reader = () => {
 
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
-    console.log('location.totalProgression', newPosition.totalProgression)
     setLocation(newPosition);
     saveReadPositionToDatabase(newPosition);
-    setCurrentPage(newPosition.totalProgression)
   };
 
   // Hàm để lưu vị trí đọc vào database
@@ -180,24 +179,9 @@ const Reader = () => {
     };
   };
   const handleNextPage = async () => {
-    // if (epubViewRef.current) {
-    //   epubViewRef.current.nextPage();
-    // }
-    if (rendition) {
-      rendition.next();
-      const text = await getCurrentPageText(rendition);
-      const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
-      setSentences(sentences);
-      setCurrentSentenceIndex(0);
-      // setIsReading(true);
+    if (epubViewRef.current) {
+      epubViewRef.current.nextPage();
     }
-    console.log('prevEpubViewRefCurrentPage', prevEpubViewRef)
-    console.log('prevEpubViewRefCurrentPage', epubViewRef.current.location)
-    const isLastPage = prevEpubViewRef == epubViewRef.current.location
-    if (isLastPage) {
-      console.log('is last page')
-    }
-    setPrevEpubViewRef(epubViewRef.current.location)
   };
 
   const handlePreviousPage = () => {
@@ -228,7 +212,6 @@ const Reader = () => {
     }
   };
 
-
   // gọi đầu tiên
   useEffect(() => {
     const currentAccount = JSON.parse(localStorage.getItem("user"));
@@ -250,18 +233,6 @@ const Reader = () => {
     console.log("handleSelectionChange");
   };
 
-  useEffect(() => {
-    if (rendition && currentPage) {
-      rendition.currentLocation().then((location) => {
-        console.log("location.totalProgression", location.totalProgression)
-        if (location.totalProgression === currentPage) {
-          // You're on the final page!
-          console.log('Reached the final page.');
-        }
-      });
-    }
-  }, [rendition, currentPage]);
-
   // khi selection
   useEffect(() => {
     console.log("rendition");
@@ -281,7 +252,6 @@ const Reader = () => {
   }, [setSelections, rendition, selectedHighlighter]);
 
   // setIsRenditionReady để check set lại note nếu người dùng đã có note cũ
-  console.log("rendition", rendition)
   useEffect(() => {
     if (rendition) {
       rendition.on("rendered", () => {
@@ -336,7 +306,6 @@ const Reader = () => {
     rendition.themes.select("custom");
   };
 
-
   //////////// TTS Function
   const textToSpeech = async (text, speed, voice) => {
     try {
@@ -347,6 +316,7 @@ const Reader = () => {
       return response.data.audioUrl;
     } catch (error) {
       console.error("Error converting text to speech:", error);
+      return null;
     }
   };
 
@@ -362,13 +332,21 @@ const Reader = () => {
   };
 
   const handleReadPage = async () => {
-    if (epubViewRef.current.rendition) {
-      const text = await getCurrentPageText(epubViewRef.current.rendition);
-      const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
-      setSentences(sentences);
-      console.log("sentences", sentences);
+    if (rendition) {
+      const text = await getCurrentPageText(rendition);
+      // Thay thế các ký tự xuống dòng và tab bằng dấu cách, loại bỏ khoảng trắng dư thừa và sau đó tách thành các câu
+      const sentences = text
+        .replace(/[\n\t]/g, " ")
+        .replace(/\s+/g, " ")
+        .match(/[^\.!\?]+[\.!\?]+/g) || [text];
+      // Lọc ra các câu không chỉ toàn dấu cách hoặc không có ký tự
+      const filteredSentences = sentences.filter(
+        (sentence) => /[^\s.]/.test(sentence.trim()) // Kiểm tra câu không chỉ toàn dấu cách
+      );
+      setSentences(filteredSentences);
+      console.log("sentences", filteredSentences);
       setCurrentSentenceIndex(0);
-      setIsReading(true);
+      setIsReading((prevState) => !prevState); // Đảo ngược giá trị của isReading
       setIsPaused(false);
     }
   };
@@ -377,17 +355,45 @@ const Reader = () => {
     if (isReading && sentences.length > 0 && !isPaused) {
       readCurrentSentence();
     }
-  }, [isReading, currentSentenceIndex, isPaused]);
+  }, [isReading, currentSentenceIndex]);
 
   const readCurrentSentence = async () => {
     if (currentSentenceIndex < sentences.length) {
-      const currentSentence = sentences[currentSentenceIndex];
-      const audioUrl = await textToSpeech(currentSentence);
-      if (audioUrl) {
-        setAudioUrl(audioUrl);
+      if (nextAudioUrl) {
+        setAudioUrl(nextAudioUrl);
+        setNextAudioUrl("");
+
+        setIsCurrentSentenceProcessed(true);
+      } else {
+        const currentSentence = sentences[currentSentenceIndex];
+        let audioUrl = await textToSpeech(currentSentence);
+
+        if (audioUrl) {
+          setAudioUrl(`${audioUrl}?t=${new Date().getTime()}`);
+          setIsCurrentSentenceProcessed(true);
+        }
       }
     } else {
       handleNextPage();
+    }
+  };
+
+  useEffect(() => {
+    if (
+      isCurrentSentenceProcessed &&
+      currentSentenceIndex + 1 < sentences.length
+    ) {
+      fetchNextAudioUrl();
+      setIsCurrentSentenceProcessed(false);
+    }
+  }, [isCurrentSentenceProcessed]);
+
+  const fetchNextAudioUrl = async () => {
+    const nextSentence = sentences[currentSentenceIndex + 1];
+    let nextAudioUrl = await textToSpeech(nextSentence);
+
+    if (nextAudioUrl) {
+      setNextAudioUrl(`${nextAudioUrl}?t=${new Date().getTime()}`);
     }
   };
 
@@ -405,7 +411,16 @@ const Reader = () => {
     if (isReading && currentSentenceIndex < sentences.length - 1) {
       setCurrentSentenceIndex((prevIndex) => prevIndex + 1);
     } else {
-      handleNextPage();
+      handleNextPageRead();
+    }
+  };
+
+  const handleStopReading = () => {
+    setIsReading(false);
+    setIsPaused(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setCurrentSentenceIndex(0);
     }
   };
 
@@ -421,7 +436,31 @@ const Reader = () => {
     if (audioRef.current) {
       audioRef.current.play().catch((error) => {
         console.error("Error playing audio:", error);
+        setIsPaused(true);
       });
+    }
+  };
+
+  const handleNextPageRead = async () => {
+    if (rendition) {
+      try {
+        await rendition.next();
+        const text = await getCurrentPageText(rendition);
+        const sentences = text
+          .replace(/[\n\t]/g, " ")
+          .replace(/\s+/g, " ")
+          .match(/[^\.!\?]+[\.!\?]+/g) || [text];
+        // Lọc ra các câu không chỉ toàn dấu cách hoặc không có ký tự
+        const filteredSentences = sentences.filter(
+          (sentence) => /[^\s.]/.test(sentence.trim()) // Kiểm tra câu không chỉ toàn dấu cách
+        );
+        setSentences(filteredSentences);
+        console.log("sentences", filteredSentences);
+        setSentences(sentences);
+        setCurrentSentenceIndex(0);
+      } catch (error) {
+        console.error("Error getting next page text:", error);
+      }
     }
   };
 
@@ -437,7 +476,7 @@ const Reader = () => {
           <div className={styles.noteList}>
             <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
           </div>
-          <Button className="flex flex-col gap-1" onClick={() => handleReadPage()}>Nghe từ đầu trang hiện tại</Button>
+          <Button onClick={handleReadPage}>Nghe từ đầu trang hiện tại</Button>
           <Button onClick={handlePauseReading}>Tạm dừng</Button>
           <Button onClick={handleResumeReading}>Tiếp tục</Button>
           <audio ref={audioRef} onEnded={handleAudioEnded} />
@@ -485,7 +524,7 @@ const Reader = () => {
                 title={book.name}
                 url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
                 location={location}
-                // locationChanged={(newPosition) => handlePageChange(newPosition)}
+                locationChanged={(newPosition) => handlePageChange(newPosition)}
                 onSelectionChange={handleSelectionChange}
                 getRendition={(rendition) => {
                   rendition.themes.register("custom", {
@@ -497,7 +536,7 @@ const Reader = () => {
                   rendition.themes.select("custom");
                   setRendition(rendition);
                 }}
-              // epubOptions={{ flow: 'scrolled ' }}
+                // epubOptions={{ flow: 'scrolled ' }}
               />
 
               {showChapterMenu && (

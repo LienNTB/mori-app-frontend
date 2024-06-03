@@ -58,8 +58,6 @@ const Reader = () => {
   const [showChapterMenu, setShowChapterMenu] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [currentPage, setCurrentPage] = useState(null);
-  const [prevEpubViewRef, setPrevEpubViewRef] = useState()
   const {
     isOpen: isOpenChapters,
     onOpen: onOpenChapters,
@@ -68,13 +66,17 @@ const Reader = () => {
   } = useDisclosure();
 
   const [audioUrl, setAudioUrl] = useState("");
-  const [isReading, setIsReading] = useState(false);
-  const audioRef = useRef(null);
-  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
+  const [nextAudioUrl, setNextAudioUrl] = useState("");
   const [sentences, setSentences] = useState([]);
+  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
+  const [isReading, setIsReading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [selectedSliderChaper, setSelectedSliderChapter] = useState(0);
   const [checkFinalPageCounter, setCheckFinalPageCounter] = useState(0)
+  const [isCurrentSentenceProcessed, setIsCurrentSentenceProcessed] =
+    useState(false);
+  const audioRef = useRef(null);
+
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -91,13 +93,12 @@ const Reader = () => {
     setSelectedSliderChapter(val)
     handleChapterSelect(chapters[val]);
     setCheckFinalPageCounter(p => p + 1)
-  }
+  };
 
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
     setLocation(newPosition);
     saveReadPositionToDatabase(newPosition);
-    setCurrentPage(newPosition.totalProgression)
   };
 
   // Hàm để lưu vị trí đọc vào database
@@ -214,6 +215,7 @@ const Reader = () => {
 
     }
     setPrevEpubViewRef(epubViewRef.current.location)
+
   };
 
   const handlePreviousPage = () => {
@@ -274,7 +276,6 @@ const Reader = () => {
   }, [id]);
 
   useEffect(() => {
-
     handleCheckFinalChapter()
   }, [checkFinalPageCounter])
 
@@ -302,9 +303,6 @@ const Reader = () => {
       rendition.on("rendered", () => {
         setIsRenditionReady(true);
       });
-      // rendition.on("relocated", () => {
-      //   setLocation(rendition.currentLocation().start.cfi);
-      // });
     }
   }, [rendition, isDarkMode]);
 
@@ -351,7 +349,6 @@ const Reader = () => {
     rendition.themes.select("custom");
   };
 
-
   //////////// TTS Function
   const textToSpeech = async (text, speed, voice) => {
     try {
@@ -362,6 +359,7 @@ const Reader = () => {
       return response.data.audioUrl;
     } catch (error) {
       console.error("Error converting text to speech:", error);
+      return null;
     }
   };
 
@@ -377,49 +375,122 @@ const Reader = () => {
   };
 
   const handleReadPage = async () => {
-    if (epubViewRef.current.rendition) {
-      const text = await getCurrentPageText(epubViewRef.current.rendition);
-      const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
-      setSentences(sentences);
+    if (rendition) {
+      const text = await getCurrentPageText(rendition);
+      // Thay thế các ký tự xuống dòng và tab bằng dấu cách, loại bỏ khoảng trắng dư thừa và sau đó tách thành các câu
+      const sentences = text
+        .replace(/[\n\t]/g, " ")
+        .replace(/\s+/g, " ")
+        .match(/[^\.!\?]+[\.!\?]+/g) || [text];
+      // Lọc ra các câu không chỉ toàn dấu cách hoặc không có ký tự
+      const filteredSentences = sentences.filter(
+        (sentence) => /[^\s.]/.test(sentence.trim()) // Kiểm tra câu không chỉ toàn dấu cách
+      );
+      setSentences(filteredSentences);
+      console.log("sentences", filteredSentences);
       setCurrentSentenceIndex(0);
-      setIsReading(true);
+      setIsReading((prevState) => !prevState); // Đảo ngược giá trị của isReading để gọi useffect
       setIsPaused(false);
     }
   };
 
   useEffect(() => {
-    if (isReading && sentences.length > 0 && !isPaused) {
+    if (sentences.length > 0 && !isPaused) {
       readCurrentSentence();
     }
-  }, [isReading, currentSentenceIndex, isPaused]);
+  }, [isReading, currentSentenceIndex]);
 
   const readCurrentSentence = async () => {
     if (currentSentenceIndex < sentences.length) {
-      const currentSentence = sentences[currentSentenceIndex];
-      const audioUrl = await textToSpeech(currentSentence);
-      if (audioUrl) {
-        setAudioUrl(audioUrl);
+      // tách ra gọi api text to speech để có thời gian chờ cho api fpt xử lý
+      if (nextAudioUrl) {
+        setAudioUrl(nextAudioUrl);
+        setNextAudioUrl("");
+        setIsCurrentSentenceProcessed(true);// set để gọi useffect thôi
+      } else {
+        const currentSentence = sentences[currentSentenceIndex];
+        let audioUrl = await textToSpeech(currentSentence);
+
+        if (audioUrl) {
+          setAudioUrl(`${audioUrl}?t=${new Date().getTime()}`);
+          setIsCurrentSentenceProcessed(true);
+        }
       }
     } else {
-      handleNextPage();
+      await handleNextPageRead();
     }
   };
 
+  const handleNextPageRead = async () => {
+    if (rendition) {
+      try {
+        await rendition.next();
+        await handleReadPage(); // trở lại set sentences
+      } catch (error) {
+        console.error("Error getting next page text:", error);
+      }
+    }
+  };
+  // gọi api text to speech cho câu tiếp
+  useEffect(() => {
+    if (
+      isCurrentSentenceProcessed &&
+      currentSentenceIndex + 1 < sentences.length
+    ) {
+      fetchNextAudioUrl();
+    }
+  }, [isCurrentSentenceProcessed]);
+
+  const fetchNextAudioUrl = async () => {
+    const nextSentence = sentences[currentSentenceIndex + 1];
+    let nextAudioUrl = await textToSpeech(nextSentence);
+
+    if (nextAudioUrl) {
+      setNextAudioUrl(`${nextAudioUrl}?t=${new Date().getTime()}`);
+    }
+  };
+
+  const [retryCount, setRetryCount] = useState(0);
   useEffect(() => {
     if (audioUrl && audioRef.current) {
       audioRef.current.src = audioUrl;
-      audioRef.current.load();
-      audioRef.current.play().catch((error) => {
-        console.error("Error playing audio:", error);
-      });
+      // audioRef.current.play().catch((error) => {
+      //   console.error("Error playing audio:", error);
+      // });
+      const playAudio = async () => {
+        try {
+          audioRef.current.load();
+          await audioRef.current.play();
+          // Phát audio thành công, đặt lại số lần thử lại về 0
+          setRetryCount(0);
+        } catch (error) {
+          console.error("Error playing audio:", error);
+          // Nếu có lỗi khi phát audio, thử lại tối đa 60 lần, mỗi lần cách nhau 1s
+          if (retryCount < 200) {
+            setTimeout(playAudio, 1000);
+            setRetryCount(prevCount => prevCount + 1);
+          }
+        }
+      };
+      playAudio();
     }
   }, [audioUrl]);
 
-  const handleAudioEnded = () => {
-    if (isReading && currentSentenceIndex < sentences.length - 1) {
+  const handleAudioEnded = async () => {
+    if (currentSentenceIndex < sentences.length - 1) {
       setCurrentSentenceIndex((prevIndex) => prevIndex + 1);
     } else {
-      handleNextPage();
+      console.log("eeee chuyển trang");
+      await handleNextPageRead();
+    }
+  };
+
+  const handleStopReading = () => {
+    setIsReading(false);
+    setIsPaused(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setCurrentSentenceIndex(0);
     }
   };
 
@@ -435,21 +506,25 @@ const Reader = () => {
     if (audioRef.current) {
       audioRef.current.play().catch((error) => {
         console.error("Error playing audio:", error);
+        setIsPaused(true);
       });
     }
   };
 
   return (
     <>
-      <div className={styles.readerContainer} style={{
-        background: isDarkMode ? "#31363F" : "#EEEEEE",
-        color: isDarkMode ? "#9CA3AF" : "#111827",
-      }}>
+      <div
+        className={styles.readerContainer}
+        style={{
+          background: isDarkMode ? "#31363F" : "#EEEEEE",
+          color: isDarkMode ? "#9CA3AF" : "#111827",
+        }}
+      >
         <div className={styles.settingContainer}>
           <div className={styles.noteList}>
             <Button onPress={onOpen}>Xem danh sách ghi chú</Button>
           </div>
-          <Button className="flex flex-col gap-1" onClick={() => handleReadPage()}>Nghe từ đầu trang hiện tại</Button>
+          <Button onClick={handleReadPage}>Nghe từ đầu trang hiện tại</Button>
           <Button onClick={handlePauseReading}>Tạm dừng</Button>
           <Button onClick={handleResumeReading}>Tiếp tục</Button>
           <audio ref={audioRef} onEnded={handleAudioEnded} />
@@ -471,7 +546,7 @@ const Reader = () => {
           </div>
         </div>
 
-        <div className={styles.bookReaderContainer} >
+        <div className={styles.bookReaderContainer}>
           {!book ? (
             <Loading />
           ) : (
@@ -498,8 +573,7 @@ const Reader = () => {
                 title={book.name}
                 url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
                 location={location}
-                // locationChanged={(newPosition) => handlePageChange(newPosition)}
-                // onSelectionChange={handleSelectionChange}
+                locationChanged={(newPosition) => handlePageChange(newPosition)}
                 getRendition={(rendition) => {
                   rendition.themes.register("custom", {
                     body: {
@@ -512,16 +586,17 @@ const Reader = () => {
                 }}
               // epubOptions={{ flow: 'scrolled ' }}
               />
-
-
             </>
           )}
         </div>
-        {chapters.length > 0 &&
-          <div className={styles.sliderContainer} style={{
-            background: isDarkMode ? "#31363F" : "#EEEEEE",
-            color: isDarkMode ? "#9CA3AF" : "#111827",
-          }}>
+        {chapters.length > 0 && (
+          <div
+            className={styles.sliderContainer}
+            style={{
+              background: isDarkMode ? "#31363F" : "#EEEEEE",
+              color: isDarkMode ? "#9CA3AF" : "#111827",
+            }}
+          >
             <Slider
               className={styles.sliderContent}
               label={chapters[selectedSliderChaper]?.label}
@@ -538,14 +613,13 @@ const Reader = () => {
                   "transition-size",
                   "bg-gradient-to-r from-secondary-400 to-primary-500",
                   "data-[dragging=true]:shadow-lg data-[dragging=true]:shadow-black/20",
-                  "data-[dragging=true]:w-7 data-[dragging=true]:h-7 data-[dragging=true]:after:h-6 data-[dragging=true]:after:w-6"
+                  "data-[dragging=true]:w-7 data-[dragging=true]:h-7 data-[dragging=true]:after:h-6 data-[dragging=true]:after:w-6",
                 ],
-                step: "data-[in-range=true]:bg-black/30 dark:data-[in-range=true]:bg-white/50"
+                step: "data-[in-range=true]:bg-black/30 dark:data-[in-range=true]:bg-white/50",
               }}
-
             />
           </div>
-        }
+        )}
       </div>
       <Modal
         isOpen={isOpen}
@@ -676,10 +750,7 @@ const Reader = () => {
                 <div className={styles.chapterMenu}>
                   <ul>
                     {chapters.map((chapter, index) => (
-                      <li
-                        key={index}
-                        onClick={() => handleSliderChange(index)}
-                      >
+                      <li key={index} onClick={() => handleSliderChange(index)}>
                         {chapter.label}
                       </li>
                     ))}

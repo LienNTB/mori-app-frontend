@@ -14,6 +14,7 @@ import { googleLogout } from '@react-oauth/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
+import { ListboxProfileWrapper } from '../ListboxWrapper/ListboxProfileWrapper'
 import { getNotificationsRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
@@ -135,7 +136,7 @@ const Header = () => {
                   alt="avt" />
               </div>
               {isAccountMenuOpen && <div className={styles.menuAccount}>
-                <ListboxWrapper>
+                <ListboxProfileWrapper>
                   <Listbox variant="flat" aria-label="Listbox menu with sections">
                     <ListboxSection >
                       <ListboxItem
@@ -155,7 +156,7 @@ const Header = () => {
                     </ListboxSection>
 
                   </Listbox>
-                </ListboxWrapper>
+                </ListboxProfileWrapper>
               </div>}
 
               {currentAccount && isNotificationMenuOpen && <div className={styles.menuNotification}>

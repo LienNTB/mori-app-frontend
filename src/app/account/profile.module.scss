@@ -215,6 +215,30 @@
         font-size: 17px;
         padding-bottom: 7px !important;
       }
+      .goalContent {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        .goalActionList {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .actionItem {
+            margin-left: 10px;
+            color: gray;
+            &:hover {
+              color: #4ebec0;
+            }
+            &:last-child {
+              &:hover {
+                color: red;
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

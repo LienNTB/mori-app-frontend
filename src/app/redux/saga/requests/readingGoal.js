@@ -87,3 +87,32 @@ export const getReadingGoalByIdRequest = async (id) => {
       throw error;
     });
 };
+
+export const editReadingGoalRequest = async (goalId, request) => {
+  return fetch(`${type.BACKEND_URL}/api/readingGoal/${goalId}`, {
+    method: "PUT",
+    headers: type.requestHeader,
+    body: JSON.stringify(request),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const deleteReadingGoalByIdRequest = async (goalId) => {
+  return fetch(`${type.BACKEND_URL}/api/readingGoal/${goalId}`, {
+    method: "DELETE",
+    headers: type.requestHeader,
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};

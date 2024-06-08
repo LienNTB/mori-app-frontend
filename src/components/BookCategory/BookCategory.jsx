@@ -43,7 +43,9 @@ const BookCategory = ({ books }) => {
       title = " hội viên";
     } else if (slug == "purchase") {
       title = " mua lẻ";
-    } else {
+    } else if (slug == "recommend") {
+      title = " Mori nghĩ bạn sẽ thích";
+    }else {
       tags.map((tag) => {
         if (tag.name == slug) {
           title = tag.description;

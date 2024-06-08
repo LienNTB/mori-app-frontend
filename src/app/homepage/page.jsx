@@ -12,6 +12,7 @@ import { getAllBooksRequest } from "../redux/saga/requests/book";
 import { getAllTagsRequest } from "../redux/saga/requests/tag";
 import Loading from "@/components/Loading/Loading";
 import { getReadingGoalsByUserId, resetReadingProgressRequest } from "../redux/saga/requests/readingGoal";
+import { getUserRecommendationsRequest } from "../redux/saga/requests/account";
 import { useRouter } from "next/navigation";
 
 const HomePage = () => {
@@ -19,6 +20,7 @@ const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [books, setBooks] = useState(null);
   const [tags, setTags] = useState(null);
+  const [userRecommendations, setUserRecommendations] = useState(null);
   // const itemsPerPage = 20;
   // const totalPages = Math.ceil((books?.length || 0) / itemsPerPage);
   // const startIndex = (currentPage - 1) * itemsPerPage;
@@ -32,6 +34,12 @@ const HomePage = () => {
     getReadingGoalsByUserId(userId).then(resp => {
       console.log('resp', resp)
       setReadingGoals(resp)
+    })
+  }
+  const getRecommendation = (userId) => {
+    getUserRecommendationsRequest(userId).then(resp => {
+      console.log('resp', resp)
+      setUserRecommendations(resp.recommendations.slice(0, 5))
     })
   }
   // Handle reset reading goal to check when new day pass every time user enter homepage
@@ -52,6 +60,7 @@ const HomePage = () => {
     if (JSON.parse(localStorage.getItem('user'))) {
       if (currentAccount) {
         getReadingGoalData(currentAccount._id)
+        getRecommendation(currentAccount._id)
       }
     }
 
@@ -124,6 +133,37 @@ const HomePage = () => {
             </div>
           </div>
         </section>
+
+        {userRecommendations ? (
+          <section className={styles.bookSectionContainer}>
+            <div className={styles.sectionHeader}>
+              <h3>Mori nghĩ bạn sẽ thích</h3>
+              <a
+                title="Sách miễn phí"
+                href="/book-category/recommend"
+                className={styles.getmorebtn}
+              >
+                Xem thêm
+              </a>
+            </div>
+            <div className={styles.ruler}></div>
+            <div className={styles.sectionBody}>
+              <div className={styles.bookList}>
+                {userRecommendations ? (
+                  userRecommendations.map((book) => {
+                    return (
+                      <div className={styles.bookItem}>
+                        <BookItem book={book} key={book._id} />
+                      </div>
+                    );
+                  })
+                ) : (
+                  <Loading />
+                )}
+              </div>
+            </div>
+          </section>
+        ): null}
         <section className={styles.bookSectionContainer}>
           <div className={styles.sectionHeader}>
             <h3>Sách miễn phí</h3>

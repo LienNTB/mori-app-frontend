@@ -37,6 +37,7 @@ import {
   addNewOrUpdateReadHistory,
   increaseTotalReadDaily,
   increaseTotalHeartRequest,
+  getRecommendationsOfBookRequest
 } from "@/app/redux/saga/requests/book";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
@@ -69,6 +70,9 @@ function EBook() {
   const { isOpen: isOpenDeleteReview, onOpen: onOpenDeleteReview, onOpenChange: onOpenChangeDeleteReview, onClose: onCloseChangeDeleteReview } = useDisclosure();
   const [currentReviewContent, setCurrentReviewContent] = useState("")
   const [reload, setReload] = useState(0)
+  const [recommendations, setRecommendations] = useState("")
+  const [loading, setLoading] = useState(true);
+
 
   const params = useParams();
   const id = params.id;
@@ -258,17 +262,25 @@ function EBook() {
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
   };
+  const fetchRecommendations = async () => {
+    try {
+      const response = await getRecommendationsOfBookRequest(id);
+      console.log('resp', response.recommendations);
+      setRecommendations(response.recommendations);
+    } catch (error) {
+      console.error('Error fetching recommendations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let currentAccount = JSON.parse(localStorage.getItem("user"));
+    const currentAccount = JSON.parse(localStorage.getItem('user'));
     setCurrentAccount(currentAccount);
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(getReviewsById(id));
-  }, [reload]);
+    fetchRecommendations();
+  }, [id]);
 
   useEffect(() => {
     if (book) {
@@ -276,9 +288,16 @@ function EBook() {
     }
   }, [book]);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (reload > 0) {
+      dispatch(getReviewsById(id));
+    }
+  }, [reload]);
+
+  if (isLoading && loading) {
     return <Loading />;
   }
+
 
   return (
     <>
@@ -649,7 +668,7 @@ function EBook() {
                 </div>
               </div>
             </section>
-            {!booksByCate ? (
+            {!recommendations.length ? (
               <Loading />
             ) : (
               <section className={styles.moreProducts}>
@@ -657,26 +676,22 @@ function EBook() {
                 <Splide
                   className={styles.splideType1}
                   options={{
-                    type: "loop",
+                    type: 'loop',
                     perPage: 1,
                     perMove: 1,
                   }}
                   aria-label="My Favorite Images"
                 >
-                  {!booksByCate ? (
-                    <Loading />
-                  ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide>
-                        <BookItemSplide itemsPerRow={1} book={book} />
-                      </SplideSlide>
-                    ))
-                  )}
+                  {recommendations.map((book) => (
+                    <SplideSlide key={book.id}>
+                      <BookItemSplide itemsPerRow={1} book={book} />
+                    </SplideSlide>
+                  ))}
                 </Splide>
-                <Splide
+                {/* <Splide
                   className={styles.splideType2}
                   options={{
-                    type: "loop",
+                    type: 'loop',
                     perPage: 3,
                     perMove: 1,
                   }}
@@ -686,18 +701,14 @@ function EBook() {
                     <Loading />
                   ) : (
                     booksByCate.map((book) => (
-                      <SplideSlide>
+                      <SplideSlide key={book.id}>
                         <BookItemSplide itemsPerRow={1} book={book} />
                       </SplideSlide>
                     ))
                   )}
-                </Splide>
+                </Splide> */}
               </section>
             )}
-            {/* Hiển thị PDF Viewer nếu showPdfViewer là true */}
-            {/* {showPdfViewer && <PdfViewer pdfUrl={book.pdf} />} */}
-
-            {/* ... (các phần khác) */}
           </div>
         ) : (
           <Loading />

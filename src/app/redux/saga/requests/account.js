@@ -1,4 +1,14 @@
 import * as type from "../../types";
+export const getUserRecommendationsRequest = async (accountId) => {
+  return fetch(`${type.BACKEND_URL}/api/account/get-recommendations/${accountId}`, {
+    method: "GET",
+    headers: type.requestHeader,
+  })
+    .then((response) => response.json())
+    .catch((error) => {
+      throw error;
+    });
+};
 export const getAccountsRequest = async (searchValue) => {
   return fetch(`${type.BACKEND_URL}/api/account/get-account`, {
     method: "POST",
@@ -97,3 +107,4 @@ export const changePasswordRequest = async (
       throw error;
     });
 };
+

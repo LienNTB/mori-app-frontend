@@ -1,6 +1,20 @@
 import { useSelector } from "react-redux";
 import * as type from "../../types";
 
+export const getRecommendationsOfBookRequest = async (id) => {
+  return fetch(`${type.BACKEND_URL}/api/book/get-recommendations/${id}`, {
+    method: "GET",
+    headers: type.requestHeader,
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
 export const getAllBooksRequest = async () => {
   return fetch(`${type.BACKEND_URL}/api/book/get-book`, {
     method: "GET",

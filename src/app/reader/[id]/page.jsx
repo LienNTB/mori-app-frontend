@@ -36,6 +36,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Epub from "epubjs";
+import { updateReadBooksRequest, updateReadPagesRequest } from "@/app/redux/saga/requests/readingGoal";
 
 const Reader = () => {
   const [location, setLocation] = useState(0);
@@ -70,12 +71,12 @@ const Reader = () => {
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [isReading, setIsReading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [selectedSliderChaper, setSelectedSliderChapter] = useState(0);
+  const [checkFinalPageCounter, setCheckFinalPageCounter] = useState(0)
   const [isCurrentSentenceProcessed, setIsCurrentSentenceProcessed] =
     useState(false);
   const audioRef = useRef(null);
-  const [selectedSliderChaper, setSelectedSliderChapter] = useState(0);
 
-  console.log("chapters", chapters);
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -89,10 +90,11 @@ const Reader = () => {
   );
 
   const handleSliderChange = (val) => {
-    console.log("val", val);
-    console.log("handleSliderChange");
-    setSelectedSliderChapter(val);
+    setSelectedSliderChapter(val)
     handleChapterSelect(chapters[val]);
+    // update books progress for reading goal for user
+    setCheckFinalPageCounter(p => p + 1);
+
   };
 
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
@@ -187,10 +189,39 @@ const Reader = () => {
       epub.destroy();
     };
   };
+
+  const getCurrentChapterIndex = (url) => {
+    const currentChapterIndex = chapters.findIndex((chapter, index) => {
+      return chapter.href === url
+    })
+    return currentChapterIndex
+  }
   const handleNextPage = async () => {
-    if (epubViewRef.current) {
-      epubViewRef.current.nextPage();
+
+    if (epubViewRef.current.rendition) {
+
+      // locate to next page
+      await epubViewRef.current.rendition.next().then(() => {
+        // update current progress for slider
+        const currentIndex = getCurrentChapterIndex(epubViewRef.current.rendition.location.start.href);
+        setSelectedSliderChapter(currentIndex);
+        setCheckFinalPageCounter(p => p + 1)
+        // update progress for reading goal for user
+        if (currentAccount) {
+          updateReadPagesRequest(currentAccount._id)
+        }
+      })
+
+      // retrieve text from current page
+      const text = await getCurrentPageText(epubViewRef.current.rendition);
+      const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
+      setSentences(sentences);
+      setCurrentSentenceIndex(0);
+
+
     }
+    setPrevEpubViewRef(epubViewRef.current.location)
+
   };
 
   const handlePreviousPage = () => {
@@ -221,6 +252,19 @@ const Reader = () => {
     }
   };
 
+  const handleCheckFinalChapter = () => {
+    // check if user is logged in
+    if (!currentAccount) return;
+    if (epubViewRef?.current?.rendition) {
+      const currentIndex = getCurrentChapterIndex(epubViewRef.current.rendition.location.start.href);
+      if (currentIndex === chapters.length - 1) {
+        // if user reach final page then update finish
+        updateReadBooksRequest(currentAccount._id, params.id)
+      }
+    }
+  }
+
+
   // gọi đầu tiên
   useEffect(() => {
     const currentAccount = JSON.parse(localStorage.getItem("user"));
@@ -231,20 +275,19 @@ const Reader = () => {
         findOneReadHistoryRequest(res.book._id, currentAccount._id).then(
           (res) => {
             setLocation(res.position);
-            console.log("read history", res.position);
           }
         );
       }
     });
   }, [id]);
 
-  const handleSelectionChange = () => {
-    console.log("handleSelectionChange");
-  };
+  useEffect(() => {
+    handleCheckFinalChapter()
+  }, [checkFinalPageCounter])
+
 
   // khi selection
   useEffect(() => {
-    console.log("rendition");
     if (rendition) {
       function setRenderSelection(cfiRange, contents) {
         if (rendition) {
@@ -394,7 +437,7 @@ const Reader = () => {
       }
     }
   };
-// gọi api text to speech cho câu tiếp
+  // gọi api text to speech cho câu tiếp
   useEffect(() => {
     if (
       isCurrentSentenceProcessed &&
@@ -413,7 +456,7 @@ const Reader = () => {
     }
   };
 
-  const [retryCount, setRetryCount] = useState(0); 
+  const [retryCount, setRetryCount] = useState(0);
   useEffect(() => {
     if (audioUrl && audioRef.current) {
       audioRef.current.src = audioUrl;
@@ -537,7 +580,6 @@ const Reader = () => {
                 url={`${types.BACKEND_URL}/api/bookepub/${book.epub}`}
                 location={location}
                 locationChanged={(newPosition) => handlePageChange(newPosition)}
-                onSelectionChange={handleSelectionChange}
                 getRendition={(rendition) => {
                   rendition.themes.register("custom", {
                     body: {
@@ -548,7 +590,7 @@ const Reader = () => {
                   rendition.themes.select("custom");
                   setRendition(rendition);
                 }}
-                // epubOptions={{ flow: 'scrolled ' }}
+              // epubOptions={{ flow: 'scrolled ' }}
               />
             </>
           )}
@@ -563,7 +605,7 @@ const Reader = () => {
           >
             <Slider
               className={styles.sliderContent}
-              label={chapters[selectedSliderChaper].label}
+              label={chapters[selectedSliderChaper]?.label}
               hideValue={true}
               step={1}
               maxValue={chapters.length - 1}

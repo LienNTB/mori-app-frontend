@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { FacebookButton } from "react-social";
+import * as types from '../../app/redux/types'
 
-export default function Hero() {
+export default function Hero({ readingGoal }) {
   return (
     <section className="relative">
       {/* Illustration behind hero content */}
@@ -34,31 +36,37 @@ export default function Hero() {
         </svg>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div style={{
+        width: "100%",
+        height: "100vh",
+        display: 'flex',
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center"
+      }}>
         {/* Hero content */}
-        <div className="pt-20 pb-12 md:pt-40 md:pb-20">
+        <div>
           {/* Section header */}
-          <div className="text-center pb-12 md:pb-16">
+          <div className="text-center pb-12 md:pb-16" style={{ padding: "0 100px" }}>
             <h1
-              className="text-3xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
+              className="text-xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4"
               data-aos="zoom-y-out"
             >
-              Khám phá thế giới sách cùng{" "}
+              Thật tuyệt vời! Bạn đã hoàn thành mục tiêu đọc sách
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">
-                Mori
+                {" "}một cách xuất sắc!
               </span>
             </h1>
             <div className="max-w-3xl mx-auto">
               <p
-                className="text-xl text-gray-600 mb-8"
+                className="text-l text-gray-600 mb-8"
                 data-aos="zoom-y-out"
                 data-aos-delay="150"
               >
-                Chào mừng bạn đến với Mori, nơi mở ra cho bạn một thế giới tri
-                thức, tưởng tượng và cộng đồng. Dù bạn là người đọc hâm mộ,
-                người yêu thích mua sắm trực tuyến hay đơn giản là một người yêu
-                sách muốn kết nối, chúng tôi có điều đặc biệt dành riêng cho
-                bạn!
+                Hoàn thành {readingGoal.goalAmount} {readingGoal.goalType == "pages" ? "trang" : "quyển"} sách trong 1 {readingGoal.timeFrame == "day" ? " ngày"
+                  : readingGoal.timeFrame == "week" ? " tuần"
+                    : readingGoal.timeFrame == "month" ? " tháng"
+                      : " năm"} là một thành tích đáng tự hào. Việc bạn hoàn thành mục tiêu này thể hiện sự quyết tâm và nỗ lực của bạn trong việc rèn luyện trí tuệ và nâng cao kiến thức. Đọc sách là một món quà quý giá dành cho bản thân, và việc bạn dành thời gian cho việc đọc sách là một lựa chọn vô cùng sáng suốt. Hãy tiếp tục nuôi dưỡng niềm đam mê đọc sách để gặt hái nhiều thành công trong cuộc sống nhé!
               </p>
               <div
                 className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center"
@@ -66,32 +74,18 @@ export default function Hero() {
                 data-aos-delay="300"
               >
                 <div>
-                  <a href="/homepage"
-                    className="btn text-white bg-blue-600 hover:bg-blue-700 w-full mb-4 sm:w-auto sm:mb-0"
+                  <FacebookButton
+                    url={`https://ebook.workon.space/reading-milestone-reached/${readingGoal._id}`}
+                    appId={types.FACEBOOK_APP_ID}
                   >
-                    {/* <Link href="/homepage" prefetch={false}> */}
-                    Đọc sách điện tử
-                    {/* </Link> */}
-                  </a>
+                    <div
+                      className="btn text-white bg-blue-600 hover:bg-blue-700 w-full mb-4 sm:w-auto sm:mb-0"
+                    >
+                      Chia sẻ thành tựu
+                    </div>
+                  </FacebookButton>
                 </div>
-                <div>
-                  <a
-                    className="btn bg-blue-400 hover:bg-blue-500 w-full sm:w-auto sm:ml-4"
-                  >
-                    <Link href="/e-commerce" prefetch={false}>
-                      Mua sách
-                    </Link>
-                  </a>
-                </div>
-                <div>
-                  <a
-                    className="btn text-white bg-teal-400 hover:bg-teal-500 w-full sm:w-auto sm:ml-4"
-                  >
-                    <Link href="/community" prefetch={false}>
-                      Gia nhập cộng đồng đọc sách
-                    </Link>
-                  </a>
-                </div>
+
               </div>
             </div>
           </div>

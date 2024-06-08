@@ -6,7 +6,7 @@ import Footer from "@/components/Footer/Footer";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPencil, faRemove, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { redirect } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,9 +37,11 @@ import FollowingModal from "@/components/Modals/FollowingModal/FollowingModal";
 import { getAllFollowers, getAllFollowings, isFollowingRequest } from "@/app/redux/saga/requests/follow";
 import { getAccountByIdRequest } from "@/app/redux/saga/requests/account";
 import CreateReadingGoalModal from "@/components/Modals/CreateReadingGoalModal/CreateReadingGoalModal";
-import { createReadingGoalRequest, getReadingGoalsByUserId, resetReadingProgressRequest } from "@/app/redux/saga/requests/readingGoal";
+import { createReadingGoalRequest, deleteReadingGoalByIdRequest, editReadingGoalRequest, getReadingGoalsByUserId, resetReadingProgressRequest } from "@/app/redux/saga/requests/readingGoal";
 import { Toaster, toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import EditReadingGoalModal from "@/components/Modals/EditReadingGoalModal/CreateReadingGoalModal";
+import DeleteReadingGoalConfirmModal from "@/components/Modals/DeleteReadingGoalConfirmModal/DeleteReadingGoalConfirmModal";
 
 const Profile = () => {
   const router = useRouter();
@@ -66,7 +68,14 @@ const Profile = () => {
   const [followings, setFollowings] = useState([])
   const { isOpen: isOpenCreateReadingGoal, onOpen: onOpenCreateReadingGoal,
     onOpenChange: onOpenChangeCreateReadingGoal, onClose: onCloseCreateReadingGoal } = useDisclosure();
+  const { isOpen: isOpenEditReadingGoal, onOpen: onOpenEditReadingGoal,
+    onOpenChange: onOpenChangeEditReadingGoal, onClose: onCloseEditReadingGoal } = useDisclosure();
+  const { isOpen: isOpenDeleteReadingGoalConfirm, onOpen: onOpenDeleteReadingGoalConfirm,
+    onOpenChange: onOpenChangeDeleteReadingGoalConfirm, onClose: onCloseDeleteReadingGoalConfirm } = useDisclosure();
   const [readingGoals, setReadingGoals] = useState(null)
+  const [isLoadingReadingGoal, setIsLoadingReadingGoal] = useState(false)
+  const [currentEditReadingGoal, setCurrentEditReadingGoal] = useState(null)
+  const [currentDeletingReadingGoal, setCurrentDeletingReadingGoal] = useState(null)
 
   function getBookType(book) {
     if (book.access_level == 2) {
@@ -133,6 +142,7 @@ const Profile = () => {
           .then((resp) => {
             if (resp.message) {
               resolve(resp.message);
+              getReadingGoalData(currentAccount._id)
             } else {
               reject(resp.error);
             }
@@ -151,10 +161,66 @@ const Profile = () => {
   }
 
   const getReadingGoalData = (userId) => {
+    setIsLoadingReadingGoal(true)
     getReadingGoalsByUserId(userId).then(resp => {
-      console.log('resp', resp)
       setReadingGoals(resp)
     })
+    setIsLoadingReadingGoal(false)
+  }
+
+  const editReadingGoal = (request) => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        editReadingGoalRequest(currentEditReadingGoal._id, request)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.message);
+              getReadingGoalData(currentAccount._id)
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error,
+      }
+    );
+    onCloseEditReadingGoal()
+
+  }
+  const deleteReadingGoal = () => {
+    console.log("currentDeletingReadingGoal", currentDeletingReadingGoal)
+    toast.promise(
+      new Promise((resolve, reject) => {
+        deleteReadingGoalByIdRequest(currentDeletingReadingGoal._id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.message);
+              getReadingGoalData(currentAccount._id)
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error,
+      }
+    );
+    onCloseDeleteReadingGoalConfirm()
+  }
+
+  const getPercentBooksRead = (booksRead, totalBookGoal) => {
+    return (booksRead * 100) / totalBookGoal
   }
   useEffect(() => {
     if (JSON.parse(localStorage.getItem('user'))) {
@@ -646,7 +712,7 @@ const Profile = () => {
                     <Button color="primary" onClick={() => onOpenCreateReadingGoal()}>Thiết lập mục tiêu đọc sách</Button>
                   </div>
                   {
-                    readingGoals ?
+                    !isLoadingReadingGoal && readingGoals ?
                       <>
                         {
                           readingGoals.length !== 0 ?
@@ -654,17 +720,48 @@ const Profile = () => {
                               {
                                 readingGoals.map(goal => (
                                   <div className={styles.goalItem}>
-                                    <label>Mục tiêu trong
-                                      {goal.timeFrame == "day" ? " ngày"
-                                        : goal.timeFrame == "week" ? " tuần"
-                                          : goal.timeFrame == "month" ? " tháng"
-                                            : " năm"}: đã đọc được {goal.goalType == "pages" ? goal.pagesRead : goal.booksRead.length}/{goal.goalAmount} {goal.goalType == "pages" ? "trang" : "quyển"} sách</label>
+                                    <div className={styles.goalContent}>
+                                      <label>Mục tiêu trong
+                                        {goal.timeFrame == "day" ? " ngày"
+                                          : goal.timeFrame == "week" ? " tuần"
+                                            : goal.timeFrame == "month" ? " tháng"
+                                              : " năm"}: đã đọc được {goal.goalType == "pages" ? goal.pagesRead : goal.booksRead.length}/{goal.goalAmount} {goal.goalType == "pages" ? "trang" : "quyển"} sách</label>
+
+                                      <div className={styles.goalActionList}>
+                                        <div className={styles.actionItem}
+                                          onClick={() => {
+                                            setCurrentEditReadingGoal(goal)
+                                            onOpenEditReadingGoal()
+                                          }}>
+                                          <FontAwesomeIcon
+                                            icon={faPencil}
+                                            class="cursor-pointer"
+                                            width={15}
+                                          />
+                                        </div>
+                                        <div className={styles.actionItem}
+                                          onClick={() => {
+                                            setCurrentDeletingReadingGoal(goal)
+                                            onOpenDeleteReadingGoalConfirm()
+                                          }}>
+                                          <FontAwesomeIcon
+                                            icon={faRemove}
+                                            class="cursor-pointer"
+                                            width={15}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+
                                     <Progress color={
                                       goal.timeFrame == "day" ? "primary"
                                         : goal.timeFrame == "week" ? "secondary"
                                           : goal.timeFrame == "month" ? "success"
                                             : "danger"
-                                    } aria-label="Loading..." value={70} />
+                                    } aria-label="Loading..." value={
+                                      goal.goalType == "pages" ? getPercentBooksRead(goal.pagesRead, goal.goalAmount)
+                                        : getPercentBooksRead(goal.booksRead.length, goal.goalAmount)
+                                    } />
                                   </div>
                                 ))
                               }
@@ -698,7 +795,12 @@ const Profile = () => {
       <FollowingModal isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} followings={followings} />
       <CreateReadingGoalModal isOpen={isOpenCreateReadingGoal} onOpenChange={onOpenChangeCreateReadingGoal}
         createReadingGoal={createReadingGoal} user={currentAccount?._id} />
-
+      <EditReadingGoalModal isOpen={isOpenEditReadingGoal} onOpenChange={onOpenChangeEditReadingGoal}
+        editReadingGoal={editReadingGoal} user={currentAccount?._id} goal={currentEditReadingGoal} />
+      <DeleteReadingGoalConfirmModal
+        isOpen={isOpenDeleteReadingGoalConfirm}
+        onOpenChange={onOpenChangeDeleteReadingGoalConfirm}
+        deleteReadingGoal={deleteReadingGoal} />
     </div>
   );
 };

@@ -14,6 +14,7 @@ import { googleLogout } from '@react-oauth/google';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
+import { ListboxProfileWrapper } from '../ListboxWrapper/ListboxProfileWrapper'
 import { getNotificationsRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
@@ -135,7 +136,7 @@ const Header = () => {
                   alt="avt" />
               </div>
               {isAccountMenuOpen && <div className={styles.menuAccount}>
-                <ListboxWrapper>
+                <ListboxProfileWrapper>
                   <Listbox variant="flat" aria-label="Listbox menu with sections">
                     <ListboxSection >
                       <ListboxItem
@@ -155,7 +156,7 @@ const Header = () => {
                     </ListboxSection>
 
                   </Listbox>
-                </ListboxWrapper>
+                </ListboxProfileWrapper>
               </div>}
 
               {currentAccount && isNotificationMenuOpen && <div className={styles.menuNotification}>
@@ -175,7 +176,12 @@ const Header = () => {
                               key="new"
                               onClick={() => {
                                 !noti.isRead && handleMarkAsRead(noti._id);
-                                router.replace(`/post/${noti.post._id}`, undefined, { shallow: true })
+                                if (!noti.readingGoal) {
+                                  router.replace(`/post/${noti.post._id}`, undefined, { shallow: true })
+                                }
+                                else {
+                                  router.replace(`/reading-milestone-reached/${noti.readingGoal}`)
+                                }
                               }}
                             >
                               <div className="flex gap-2 justify-between items-center">
@@ -187,10 +193,11 @@ const Header = () => {
                                     } />
                                   <div className="flex flex-col">
                                     <span className="text-sm/[17px] font-medium ">{noti.performedBy ? noti.performedBy.displayName : "Mục tiêu đọc sách"}</span>
-                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[207px] overflow-hidden whitespace-normal max-h-9`}>
+                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`} style={{ maxHeight: "46px" }}>
                                       {noti.action === "like" ? "Đã thích bài viết của bạn." :
                                         noti.action === "share" ? "Đã chia sẻ bài viết của bạn." :
-                                          `Đã bình luận bài viết của bạn: ${noti.message}`}
+                                          noti.action === "comment" ? `Đã bình luận bài viết của bạn: ${noti.message}` :
+                                            noti.message}
                                     </span>
                                     <span className='text-sm/[12px] text-sky-600 font-medium my-1'>
                                       {timeUtils.getTimeElapsed(noti.createdAt)}

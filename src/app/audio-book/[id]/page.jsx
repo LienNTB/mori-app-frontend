@@ -13,7 +13,7 @@ import {
   getBookById,
   getBooks,
   getBooksByCate,
-  increaseTotalSaved,
+  increaseTotalSaved
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useRef, useEffect, useState, createRef } from "react";
@@ -33,6 +33,8 @@ import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
 import {
   addNewOrUpdateReadHistory,
   increaseTotalReadDaily,
+  increaseTotalHeartRequest,
+  getRecommendationsOfBookRequest,
 } from "@/app/redux/saga/requests/book";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
@@ -64,6 +66,8 @@ function AudioBookPage() {
   const [curTime, setCurTime] = useState(0);
   const params = useParams();
   const id = params.id;
+  const [recommendations, setRecommendations] = useState("")
+  const [loading, setLoading] = useState(true);
 
   const onListenHandler = (e) => {
     setCurTime(e.target.currentTime);
@@ -107,6 +111,29 @@ function AudioBookPage() {
         }
       }
     }
+  };
+
+  const handleIncreaseTotalHearted = async () => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        increaseTotalHeartRequest(id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve("Hearted!");
+            } else {
+              reject("Error!");
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error.message,
+      }
+    );
   };
 
   const handleSendReview = () => {
@@ -173,24 +200,40 @@ function AudioBookPage() {
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
   };
+
+  const fetchRecommendations = async () => {
+    try {
+      const response = await getRecommendationsOfBookRequest(id);
+      console.log('resp', response.recommendations);
+      setRecommendations(response.recommendations);
+    } catch (error) {
+      console.error('Error fetching recommendations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    // const currentAccount = JSON.parse(localStorage.getItem('user'));
+    // setCurrentAccount(currentAccount);
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
-  }, [dispatch]);
+    fetchRecommendations();
+  }, [id]);
+
   useEffect(() => {
     if (book) {
       dispatch(getBooksByCate(book.tags[0]));
     }
   }, [book]);
 
-  if (isLoading) {
+  if (isLoading && loading) {
     return <Loading />;
   }
   // if (!currentAccount) {
   //   redirect("/login")
   // }
 
-  let player = createRef();
   return (
     <>
       <div className={styles.bookContainer}>
@@ -268,12 +311,18 @@ function AudioBookPage() {
                         {book.totalRead}
                       </strong>
                     </div>
-                    {/* <div className={styles.statItem}>
-                  <small>Lượt thích</small>
-                  <strong>
-                    <FontAwesomeIcon className={styles.icon} icon={faHeart} width={20} height={20} />{book.totalHearted}
-                  </strong>
-                </div> */}
+                    <div className={styles.statItem}>
+                      <small>Lượt yêu thích</small>
+                      <strong>
+                        <FontAwesomeIcon
+                          className={styles.icon}
+                          icon={faHeart}
+                          width={20}
+                          height={20}
+                        />
+                        {book.totalHearted}
+                      </strong>
+                    </div>
                     <div className={styles.statItem}>
                       <small>Đánh dấu</small>
                       <strong>
@@ -304,8 +353,17 @@ function AudioBookPage() {
                     >
                       Thêm vào thư viện
                     </button>
-                    {/* <Link href={"/book-category/tamlykynang"}>
-                </Link> */}
+                    <button
+                      className={styles.save}
+                      onClick={() => handleIncreaseTotalHearted()}
+                    >
+                      <FontAwesomeIcon
+                        className={styles.icon}
+                        icon={faHeart}
+                        width={20}
+                        height={20}
+                      />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -543,34 +601,34 @@ function AudioBookPage() {
                 </div>
               </div>
             </section>
-            {!booksByCate ? (
+            {!recommendations ? (
               <Loading />
             ) : (
               <section className={styles.moreProducts}>
                 <div className={styles.header}>Sách cùng loại</div>
                 <Splide
-                  className={styles.splideType1}
+                  className={styles.splideType2}
                   options={{
-                    type: "loop",
-                    perPage: 1,
+                    type: 'loop',
+                    perPage: 3,
                     perMove: 1,
                   }}
                   aria-label="My Favorite Images"
                 >
-                  {!booksByCate ? (
+                  {!recommendations ? (
                     <Loading />
                   ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide>
+                    recommendations.map((book) => (
+                      <SplideSlide key={book._id}>
                         <BookItemSplide itemsPerRow={1} book={book} />
                       </SplideSlide>
                     ))
                   )}
                 </Splide>
-                <Splide
+                {/* <Splide
                   className={styles.splideType2}
                   options={{
-                    type: "loop",
+                    type: 'loop',
                     perPage: 3,
                     perMove: 1,
                   }}
@@ -580,12 +638,12 @@ function AudioBookPage() {
                     <Loading />
                   ) : (
                     booksByCate.map((book) => (
-                      <SplideSlide>
+                      <SplideSlide key={book.id}>
                         <BookItemSplide itemsPerRow={1} book={book} />
                       </SplideSlide>
                     ))
                   )}
-                </Splide>
+                </Splide> */}
               </section>
             )}
           </div>

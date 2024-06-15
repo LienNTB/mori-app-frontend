@@ -15,6 +15,7 @@ import {
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import React from 'react';
 import { redirect, useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
 import BookItem from "@/components/BookItem/BookItem";
@@ -34,6 +35,7 @@ import {
   addNewOrUpdateReadHistory,
   increaseTotalReadDaily,
   increaseTotalHeartRequest,
+  getRecommendationsOfBookRequest,
 } from "@/app/redux/saga/requests/book";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
@@ -86,6 +88,8 @@ function Book() {
   const [reload, setReload] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [userTrans, setUserTrans] = useState();
+  const [recommendations, setRecommendations] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const params = useParams();
   const id = params.id;
@@ -256,10 +260,24 @@ function Book() {
     }
   };
 
+  const fetchRecommendations = async () => {
+    try {
+      const response = await getRecommendationsOfBookRequest(id);
+      console.log("resp", response.recommendations);
+      setRecommendations(response.recommendations);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
-  }, [dispatch]);
+    fetchRecommendations();
+  }, [dispatch], [id]);
+
   useEffect(() => {
     dispatch(getReviewsById(id));
   }, [reload]);
@@ -280,7 +298,7 @@ function Book() {
     setCurrentAccount(JSON.parse(localStorage.getItem("user")))
   }, [])
 
-  if (isLoading) {
+  if (isLoading && loading) {
     return <Loading />;
   }
 
@@ -346,11 +364,13 @@ function Book() {
 
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    <Link href={"/book-category/tamlykynang"} prefetch={false} shallow>
-                      <button className={styles.tag}>
-                        Tâm lý - Kỹ năng sống
-                      </button>
-                    </Link>
+                    {book.tags.map((tag, index) => (
+                      <React.Fragment key={index}>
+                        <Link href={`/book-category/${tag}`} prefetch={false}  shallow>
+                          <button className={styles.tag}>{tag}</button>
+                        </Link>{" "}
+                      </React.Fragment>
+                    ))}
                   </div>
                   <div className={styles.priceWrapper}>
                     <div className={styles.title}>Tạm tính</div>
@@ -530,31 +550,31 @@ function Book() {
                 </div>
               </div>
             </section>
-            {!booksByCate ? (
+            {!recommendations ? (
               <Loading />
             ) : (
               <section className={styles.moreProducts}>
                 <div className={styles.header}>Sách cùng loại</div>
                 <Splide
-                  className={styles.splideType1}
+                  className={styles.splideType2}
                   options={{
-                    type: "loop",
-                    perPage: 1,
+                    type: 'loop',
+                    perPage: 3,
                     perMove: 1,
                   }}
                   aria-label="My Favorite Images"
                 >
-                  {!booksByCate ? (
+                  {!recommendations ? (
                     <Loading />
                   ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide>
+                    recommendations.map((book) => (
+                      <SplideSlide key={book._id}>
                         <BookItemSplide itemsPerRow={1} book={book} />
                       </SplideSlide>
                     ))
                   )}
                 </Splide>
-                <Splide
+                {/* <Splide
                   className={styles.splideType2}
                   options={{
                     type: "loop",
@@ -572,7 +592,7 @@ function Book() {
                       </SplideSlide>
                     ))
                   )}
-                </Splide>
+                </Splide> */}
               </section>
             )}
           </div>

@@ -62,7 +62,6 @@ function CollectionContent(props) {
   };
   const handleChangeFilter = (filterName) => {
     const name = filterName;
-    console.log(name);
     if (name === "ascName") {
       if (isAscName) {
         setIsAscName(false);

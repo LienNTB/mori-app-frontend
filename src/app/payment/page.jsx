@@ -66,11 +66,9 @@ function Payment() {
 
     const membership = JSON.parse(localStorage.getItem("membership"));
     setMembership(membership);
-    console.log("membership", membership);
 
     const payment = JSON.parse(localStorage.getItem("payment"));
     setPayment(payment);
-    console.log("payment", payment);
 
     setPaymentMethod("cod");
   }, []);
@@ -180,9 +178,8 @@ function Payment() {
             </p>
           </div>
           <div
-            className={`${styles.paymentMethodOption} ${
-              activePaymentMethod === "qr" ? styles.active : ""
-            }`}
+            className={`${styles.paymentMethodOption} ${activePaymentMethod === "qr" ? styles.active : ""
+              }`}
             onClick={() => handlePaymentMethodClick("qr")}
           >
             <div className={styles.qrIcon}>
@@ -211,9 +208,8 @@ function Payment() {
           </div>
 
           <div
-            className={`${styles.paymentMethodOption} ${
-              activePaymentMethod === "bank" ? styles.active : ""
-            }`}
+            className={`${styles.paymentMethodOption} ${activePaymentMethod === "bank" ? styles.active : ""
+              }`}
             onClick={() => handlePaymentMethodClick("bank")}
           >
             <div className={styles.qrIcon}>
@@ -243,9 +239,8 @@ function Payment() {
           </div>
 
           <div
-            className={`${styles.paymentMethodOption} ${
-              activePaymentMethod === "card" ? styles.active : ""
-            }`}
+            className={`${styles.paymentMethodOption} ${activePaymentMethod === "card" ? styles.active : ""
+              }`}
             onClick={() => handlePaymentMethodClick("card")}
           >
             <div className={styles.qrIcon}>
@@ -275,9 +270,8 @@ function Payment() {
           </div>
 
           <div
-            className={`${styles.paymentMethodOption} ${
-              activePaymentMethod === "digital-wallet" ? styles.active : ""
-            }`}
+            className={`${styles.paymentMethodOption} ${activePaymentMethod === "digital-wallet" ? styles.active : ""
+              }`}
             onClick={() => handlePaymentMethodClick("digital-wallet")}
           >
             <div className={styles.qrIcon}>

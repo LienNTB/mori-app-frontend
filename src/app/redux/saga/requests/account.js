@@ -1,9 +1,12 @@
 import * as type from "../../types";
 export const getUserRecommendationsRequest = async (accountId) => {
-  return fetch(`${type.BACKEND_URL}/api/account/get-recommendations/${accountId}`, {
-    method: "GET",
-    headers: type.requestHeader,
-  })
+  return fetch(
+    `${type.BACKEND_URL}/api/account/get-recommendations/${accountId}`,
+    {
+      method: "GET",
+      headers: type.requestHeader,
+    }
+  )
     .then((response) => response.json())
     .catch((error) => {
       throw error;
@@ -34,7 +37,6 @@ export const getAccountByIdRequest = async (id) => {
     });
 };
 export const createAccountRequest = async (account) => {
-  console.log("type", type);
   return fetch(`${type.BACKEND_URL}/api/account/add-account`, {
     method: "POST",
     headers: type.requestHeader,
@@ -107,4 +109,3 @@ export const changePasswordRequest = async (
       throw error;
     });
 };
-

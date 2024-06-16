@@ -21,7 +21,6 @@ const BookHomePage = () => {
   const displayedItems = books.slice(startIndex, endIndex);
 
   useEffect(() => {
-    console.log("fd")
     getAllEBookRequest().then(res => {
       setBooks(res.books)
     })

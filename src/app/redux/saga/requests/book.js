@@ -138,9 +138,7 @@ export const increaseTotalSavedRequest = async (payload) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const findBookByCategoryRequest = async (payload) => {
@@ -156,9 +154,7 @@ export const findBookByCategoryRequest = async (payload) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const getReadHistoryRequest = async (id) => {
@@ -186,9 +182,7 @@ export const addNewOrUpdateReadHistory = async (request) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const findOneReadHistoryRequest = async (book_id, user_id) => {

@@ -9,9 +9,7 @@ export const getNotificationsRequest = async (userId) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const createNewNotificationRequest = async (
@@ -36,9 +34,7 @@ export const createNewNotificationRequest = async (
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const markNotificationaAsReadRequest = async (id) => {
@@ -50,7 +46,17 @@ export const markNotificationaAsReadRequest = async (id) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
+};
+
+export const markAllNotificationaAsReadRequest = async (id) => {
+  return fetch(`${type.BACKEND_URL}/api/notification/mark-all-as-read/${id}`, {
+    method: "POST",
+    headers: type.requestHeader,
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {});
 };

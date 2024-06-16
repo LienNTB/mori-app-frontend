@@ -15,7 +15,7 @@ function TopFilter({ brandList, isChecked, handleChange, isCheckedFilter }) {
 
   const [selected, setSelected] = useState("Sắp xếp");
   const [visible, setVisible] = useState(false);
-  const handler = () => { setVisible(true); console.log("check") };
+  const handler = () => { setVisible(true); };
   const closeHandler = () => {
     setVisible(false);
   };

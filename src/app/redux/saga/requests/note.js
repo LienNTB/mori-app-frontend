@@ -10,9 +10,7 @@ export const addNoteForBookRequest = async (request) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 export const getNotesForBookByUserRequest = async (book_id, user_id) => {
   return fetch(`${type.BACKEND_URL}/api/note/get-note/${book_id}/${user_id}`, {

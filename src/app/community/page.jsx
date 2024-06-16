@@ -23,11 +23,8 @@ const Community = () => {
       setIsLoading(false)
       setPostList(resp.posts)
       setLastPost(resp.posts.length > 0 ? resp.posts.length - 1 : 0)
-      console.log("postList", resp.posts)
-      console.log("lastPost", resp.posts[resp.posts.length - 1])
     })
       .catch(err => {
-        console.log("err", err)
       })
   }, [])
 

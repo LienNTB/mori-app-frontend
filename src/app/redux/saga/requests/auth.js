@@ -15,9 +15,7 @@ export const resetPasswordRequest = async (token, password) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const forgetPasswordRequest = async (email) => {
@@ -34,9 +32,7 @@ export const forgetPasswordRequest = async (email) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const checkTokenRequest = async (token) => {
@@ -53,7 +49,5 @@ export const checkTokenRequest = async (token) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };

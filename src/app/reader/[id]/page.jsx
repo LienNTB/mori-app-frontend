@@ -393,7 +393,6 @@ const Reader = () => {
         (sentence) => /[^\s.]/.test(sentence.trim()) // Kiểm tra câu không chỉ toàn dấu cách
       );
       setSentences(filteredSentences);
-      console.log("sentences", filteredSentences);
       setCurrentSentenceIndex(0);
       setIsReading((prevState) => !prevState); // Đảo ngược giá trị của isReading để gọi useffect
       setIsPaused(false);
@@ -486,7 +485,6 @@ const Reader = () => {
     if (currentSentenceIndex < sentences.length - 1) {
       setCurrentSentenceIndex((prevIndex) => prevIndex + 1);
     } else {
-      console.log("eeee chuyển trang");
       await handleNextPageRead();
     }
   };

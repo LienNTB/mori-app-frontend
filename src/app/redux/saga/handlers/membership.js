@@ -21,13 +21,12 @@ export function* registerMembershipHandler({ payload }) {
   }
 }
 export function* getMembershipByIdHandler({ payload }) {
-  console.log("getMembershipByIdHandler");
   try {
     const result = yield call(
       membershipRequest.getMembershipByIdRequest,
       payload
     );
-    console.log("getMembershipByIdHandler:", payload);
+
     yield put({
       type: type.GET_MEMBERSHIP_BY_ID_SUCCESS,
       payload: result.membership,

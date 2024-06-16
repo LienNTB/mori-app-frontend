@@ -27,7 +27,6 @@ class RichTextEditor extends React.Component {
     this.toggleInlineStyle = this._toggleInlineStyle.bind(this);
   }
   componentDidUpdate(prevProps) {
-    console.log('this.props.postBody', this.props.postBody)
     // Check for prop change and update state only when necessary
     if (prevProps.postBody !== this.props.postBody) {
       if (this.props.postBody) {
@@ -97,8 +96,6 @@ class RichTextEditor extends React.Component {
   }
 
   render() {
-    console.log('props.postBody ', this.props.postBody)
-
     const { editorState } = this.state;
     // console.log("editorContentHtml", this.state.editorContentHtml)
     // If the user changes block type before entering any text, we can

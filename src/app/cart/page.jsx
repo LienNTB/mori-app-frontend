@@ -68,8 +68,6 @@ function Cart() {
     }
     setTotalPrice(totalPrice);
 
-    console.log("cartitem", cartItems);
-    console.log("selectedItems", getSelectedItems());
   };
 
   // update quality khi cộng trừ quality

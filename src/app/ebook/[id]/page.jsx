@@ -82,7 +82,6 @@ function EBook() {
       router.push("/login");
     }
   };
-  // console.log("currentReviewContent", currentReviewContent)
   const handleUpdateReview = () => {
     toast.promise(
       new Promise((resolve, reject) => {
@@ -98,7 +97,7 @@ function EBook() {
             }
           })
           .catch((err) => {
-            console.log("err", err);
+
           });
       }),
       {
@@ -124,7 +123,7 @@ function EBook() {
             }
           })
           .catch((err) => {
-            console.log("err", err);
+
           });
       }),
       {
@@ -186,7 +185,7 @@ function EBook() {
             }
           })
           .catch((err) => {
-            console.log("err", err);
+
           });
       }),
       {
@@ -265,7 +264,7 @@ function EBook() {
   const fetchRecommendations = async () => {
     try {
       const response = await getRecommendationsOfBookRequest(id);
-      console.log('resp', response.recommendations);
+
       setRecommendations(response.recommendations);
     } catch (error) {
       console.error('Error fetching recommendations:', error);
@@ -397,7 +396,7 @@ function EBook() {
                   </div>
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    <Link href={"/book-category/tamlykynang"} prefetch={false}  shallow>
+                    <Link href={"/book-category/tamlykynang"} prefetch={false} shallow>
                       <button className={styles.tag}>
                         Tâm lý - Kỹ năng sống
                       </button>

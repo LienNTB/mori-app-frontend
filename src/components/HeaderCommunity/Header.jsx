@@ -15,10 +15,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper';
 import { ListboxProfileWrapper } from '../ListboxWrapper/ListboxProfileWrapper'
-import { getNotificationsRequest } from '@/app/redux/saga/requests/notification'
+import { getNotificationsRequest, markAllNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
-
+import readingGoalImg from '../../../public/readinggoal.png'
+import { toast } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 
 const HeaderCommunity = () => {
   const dispatch = useDispatch()
@@ -57,14 +59,34 @@ const HeaderCommunity = () => {
   const getNotificationsData = () => {
     getNotificationsRequest(currentAccount._id)
       .then(resp => {
-        console.log("notifications", [...resp.data].reverse());
         setNotifications([...resp.data].reverse())
       })
   }
   const handleMarkAsRead = (id) => {
-    markNotificationaAsReadRequest(id).then(resp => {
-      console.log(resp)
-    })
+    markNotificationaAsReadRequest(id)
+  }
+  const handleMarkAllAsRead = () => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        markAllNotificationaAsReadRequest(currentAccount._id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.message);
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error,
+      }
+    );
+    getNotificationsData()
   }
   useEffect(() => {
     if (currentAccount) {
@@ -158,49 +180,75 @@ const HeaderCommunity = () => {
 
                 {isNotificationMenuOpen && <div className={styles.menuNotification}>
                   <ListboxWrapper >
-                    <Listbox variant="flat" aria-label="Listbox menu with sections" className={"max-h-80 overflow-y-scroll"}>
-                      <ListboxSection title="Thông báo">
-                        {
-                          notifications.length == 0 ?
+                    <Listbox variant="flat" aria-label="Listbox menu with sections"
+                      className={"max-h-80 overflow-y-scroll"}
+                      topContent={<div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between"
+                        }}
+                      >
+                        <div>Thông báo</div>
+                        <div
+                          style={{
+                            fontWeight: "normal",
+                            fontSize: "0.8rem",
+                            paddingTop: "20px"
+                          }}
+                          onClick={() => handleMarkAllAsRead()}
+                        >Đánh dấu tất cả đã đọc</div>
+                      </div>}>
+                      {
+                        notifications.length == 0 ?
+                          <ListboxItem
+                            key="new"
+                          >
+                            Bạn chưa có thông báo nào.
+                          </ListboxItem> :
+
+                          notifications.map(noti => (
                             <ListboxItem
                               key="new"
+                              onClick={() => {
+                                !noti.isRead && handleMarkAsRead(noti._id);
+                                router.replace(`/post/${noti.post._id}`, undefined, { shallow: true })
+                              }}
                             >
-                              Bạn chưa có thông báo nào.
-                            </ListboxItem> :
-
-                            notifications.map(noti => (
-                              <ListboxItem
-                                key="new"
-                                onClick={() => {
-                                  !noti.isRead && handleMarkAsRead(noti._id);
-                                  router.replace(`/post/${noti.post._id}`, undefined, { shallow: true })
-                                }}
-                              >
-                                <div className="flex gap-2 justify-between items-center">
-                                  <div className="flex gap-2 items-center">
-                                    <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]" src={noti.performedBy.avatar.includes("googleusercontent") ?
-                                      noti.performedBy.avatar
-                                      : `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`} />
-                                    <div className="flex flex-col">
-                                      <span className="text-sm/[17px] font-medium ">{noti.performedBy.displayName}</span>
-                                      <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`}
-                                        style={{ maxHeight: "46px" }}>
-                                        {noti.action === "like" ? "Đã thích bài viết của bạn." :
+                              <div className="flex gap-2 justify-between items-center">
+                                <div className="flex gap-2 items-center">
+                                  <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]" src={noti.performedBy ? noti.performedBy?.avatar
+                                    : noti.performedBy && noti.performedBy?.avatar.includes("googleusercontent") ? `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`
+                                      : { readingGoalImg }
+                                  } />
+                                  <div className="flex flex-col">
+                                    <span className="text-sm/[17px] font-medium ">{
+                                      noti.action == "comment" ? noti.performedBy :
+                                        noti.action == "like" ? noti.performedBy :
+                                          noti.action == "share" ? noti.performedBy :
+                                            noti.action == "readingGoal" ? "Mục tiêu đọc sách" :
+                                              "Kiểm duyệt bình luận"
+                                    }</span>
+                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`}
+                                      style={{ maxHeight: "46px" }}>
+                                      {
+                                        noti.action === "like" ? "Đã thích bài viết của bạn." :
                                           noti.action === "share" ? "Đã chia sẻ bài viết của bạn." :
-                                            `Đã bình luận bài viết của bạn: ${noti.message}`}
-                                      </span>
-                                      <span className='text-sm/[12px] text-sky-600 font-medium my-1'>
-                                        {timeUtils.getTimeElapsed(noti.createdAt)}
-                                      </span>
-                                    </div>
+                                            noti.action === "comment" ? `Đã bình luận bài viết của bạn: ${noti.message}` :
+                                              noti.message
+                                      }
+                                    </span>
+                                    <span className='text-sm/[12px] text-sky-600 font-medium my-1'>
+                                      {timeUtils.getTimeElapsed(noti.createdAt)}
+                                    </span>
                                   </div>
-                                  {!noti.isRead && <FontAwesomeIcon className={styles.newNotiIcon} icon={faCircle} />}
-
                                 </div>
-                              </ListboxItem>
-                            ))
-                        }
-                      </ListboxSection>
+                                {!noti.isRead && <FontAwesomeIcon className={styles.newNotiIcon} icon={faCircle} />}
+
+                              </div>
+                            </ListboxItem>
+                          ))
+                      }
                     </Listbox>
                   </ListboxWrapper>
                 </div>}
@@ -342,6 +390,7 @@ const HeaderCommunity = () => {
 
         </ul>
       </div>
+      <Toaster />
     </div >
   )
 }

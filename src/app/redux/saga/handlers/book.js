@@ -43,7 +43,7 @@ export function* getBookByIdHandler({ payload }) {
 export function* getReadHistoryHandler({ payload }) {
   try {
     const result = yield call(bookRequest.getReadHistoryRequest, payload);
-    console.log("result:", result.readHistory);
+
     yield put({
       type: types.GET_READ_HISTORY_SUCCESS,
       readHistory: result.readHistory.reverse(),
@@ -54,7 +54,6 @@ export function* getReadHistoryHandler({ payload }) {
 }
 
 export function* searchBooksHandler({ payload }) {
-  console.log("searchBooksHandler");
   let books = store.getState().books.books;
   try {
     let filteredBooks = books.filter((item) => {
@@ -70,7 +69,6 @@ export function* searchBooksHandler({ payload }) {
       filteredBooks: filteredBooks,
     });
   } catch (e) {
-    console.log("err:", e);
     yield put({ type: types.SEARCH_BOOKS_FAILED, message: e.message });
   }
 }
@@ -90,11 +88,9 @@ export function* increaseTotalReadHandler({ payload }) {
 }
 
 export function* increaseTotalSavedHandler(payload) {
-  console.log("increaseTotalSavedHandler");
-  console.log("payload:", payload);
   try {
     const result = yield call(bookRequest.increaseTotalSavedRequest, payload);
-    console.log("result:", result);
+
     yield put({
       type: types.INCREASE_TOTAL_SAVED_SUCCESS,
     });

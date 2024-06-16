@@ -115,7 +115,7 @@ function Book() {
             }
           })
           .catch((err) => {
-            console.log("err", err);
+
           });
       }),
       {
@@ -140,7 +140,7 @@ function Book() {
             }
           })
           .catch((err) => {
-            console.log("err", err);
+
           });
       }),
       {
@@ -182,7 +182,7 @@ function Book() {
             }
           })
           .catch((err) => {
-            console.log("err", err);
+
           });
       }),
       {
@@ -270,7 +270,7 @@ function Book() {
     }
   }, [book]);
 
-  // console.log("book", book);
+
   useEffect(() => {
     if (book) {
       dispatch(getBooksByCate(book.tags[0]));

@@ -6,7 +6,6 @@ import { Toaster, toast } from 'react-hot-toast'
 import { useDispatch } from 'react-redux'
 
 const Comment = (props) => {
-  console.log("comment props", props)
   const dispatch = useDispatch()
   const comments = props.comments
   const [currentAccount, setCurrentAccount] = useState(null)
@@ -22,9 +21,7 @@ const Comment = (props) => {
     newValues[index] = ""
     setReplyInputValues(newValues);
   };
-  console.log("likeCommentValues", likeCommentValues)
   const handleLikeCommentValueChange = (value, index) => {
-    console.log('handleLikeCommentValueChange')
     const newValues = [...likeCommentValues];
     if (value < 0) {
       newValues[index] = 0
@@ -37,7 +34,6 @@ const Comment = (props) => {
 
 
   const handleReplyComment = (comment, index) => {
-    console.log("index", index)
     if (replyInputValues[index] === "") {
       toast.error("Bạn chưa nhập nội dung trả lời bình luận!")
     }
@@ -50,7 +46,6 @@ const Comment = (props) => {
       }
       replyCommentRequest(request)
         .then(resp => {
-          console.log('resp', resp)
           if (resp.message && resp.data) {
             const createdReply = resp.data
             const updatedComments = [...props.comments]

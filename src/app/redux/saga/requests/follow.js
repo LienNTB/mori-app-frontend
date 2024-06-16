@@ -11,9 +11,7 @@ export const followUserRequest = async (request) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const unfollowUserRequest = async (request) => {
@@ -26,9 +24,7 @@ export const unfollowUserRequest = async (request) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const getAllFollowers = async (userId) => {
@@ -40,9 +36,7 @@ export const getAllFollowers = async (userId) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const getAllFollowings = async (userId) => {
@@ -54,9 +48,7 @@ export const getAllFollowings = async (userId) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const isFollowingRequest = async (request) => {
@@ -69,7 +61,5 @@ export const isFollowingRequest = async (request) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };

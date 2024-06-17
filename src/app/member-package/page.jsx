@@ -97,7 +97,6 @@ const MemberPackage = () => {
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
     request.getAllMembershipTypeRequest().then((res) => {
-      console.log(res.membershipTypes);
       setMembershipTypes(res.membershipTypes);
     });
   }, []);

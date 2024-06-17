@@ -3,7 +3,7 @@ import * as type from "../types";
 export const createNewComment = (userId, postId, content) => ({
   type: type.CREATE_NEW_COMMENT_REQUESTED,
   payload: {
-    user: userId,
+    account: userId,
     post: postId,
     content: content,
   },

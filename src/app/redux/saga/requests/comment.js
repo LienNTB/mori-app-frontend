@@ -10,9 +10,7 @@ export const addNewCommentRequest = async (request) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 export const getAllCommentsRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/comment/user`, {
@@ -24,9 +22,7 @@ export const getAllCommentsRequest = async (request) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 export const replyCommentRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/comment/reply`, {
@@ -38,9 +34,7 @@ export const replyCommentRequest = async (request) => {
       return response.json();
     })
 
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const likeCommentRequest = async (commentId, accountId) => {

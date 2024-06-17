@@ -47,7 +47,6 @@ const NewPost = () => {
   const [isOpenSearchBox, setIsOpenSearchBox] = useState(false)
   const [selectedSearchingBook, setSelectedSearchingBook] = useState(null)
   const [filteredBooks, setFilteredBooks] = useState([]);
-  console.log("selectedTags", selectedTags)
   const handleClose = (tagToRemove) => {
     setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
     if (selectedTags.length === 1) {
@@ -81,20 +80,18 @@ const NewPost = () => {
               image: respUploadImg.filename,
               book: selectedSearchingBook ? selectedSearchingBook._id : null
             }
-            console.log("postRequest", postRequest)
             createNewPostRequest(postRequest)
               .then((respCreatePost) => {
                 if (respCreatePost.message) {
                   resolve(respCreatePost.message);
                   router.replace("/community", undefined, { shallow: true })
                 } else {
-                  console.log("respCreatePost.error", respCreatePost.error.toString())
                   reject(respCreatePost.error);
                 }
               })
               .catch((err) => {
                 reject("Tạo bài viết thất bại! Vui lòng thử lại!")
-                console.log("err", err);
+                  ;
               });
           }
         })
@@ -125,7 +122,6 @@ const NewPost = () => {
 
   const loadTagData = () => {
     getAllTagsRequest().then(resp => {
-      console.log("resp", resp.allTags)
       setTags(resp.allTags)
     })
   }

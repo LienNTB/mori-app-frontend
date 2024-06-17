@@ -135,7 +135,7 @@ const Profile = () => {
   }
 
   const createReadingGoal = (request) => {
-    console.log("request", request);
+
     toast.promise(
       new Promise((resolve, reject) => {
         createReadingGoalRequest(request)
@@ -148,7 +148,7 @@ const Profile = () => {
             }
           })
           .catch((err) => {
-            console.log("err", err);
+
           });
       }),
       {
@@ -181,7 +181,7 @@ const Profile = () => {
             }
           })
           .catch((err) => {
-            console.log("err", err);
+
           });
       }),
       {
@@ -194,7 +194,7 @@ const Profile = () => {
 
   }
   const deleteReadingGoal = () => {
-    console.log("currentDeletingReadingGoal", currentDeletingReadingGoal)
+
     toast.promise(
       new Promise((resolve, reject) => {
         deleteReadingGoalByIdRequest(currentDeletingReadingGoal._id)
@@ -207,7 +207,7 @@ const Profile = () => {
             }
           })
           .catch((err) => {
-            console.log("err", err);
+
           });
       }),
       {
@@ -225,7 +225,7 @@ const Profile = () => {
   useEffect(() => {
     if (JSON.parse(localStorage.getItem('user'))) {
       if (currentAccount) {
-        console.log('currentAccount', currentAccount)
+
         dispatch(getMembershipById(currentAccount._id));
         dispatch(getReadHistory(currentAccount._id));
         getUserTransactions();

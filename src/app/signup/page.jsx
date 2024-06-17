@@ -92,7 +92,6 @@ const SignUp = () => {
                 window.location.replace('/login', undefined, { shallow: true })
               } else {
                 reject(new Error(resp.message));
-                console.log("resp:", resp);
               }
             })
             .catch((err) => {

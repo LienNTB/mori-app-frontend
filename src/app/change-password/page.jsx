@@ -17,7 +17,6 @@ const ResetPassword = () => {
   const [user, setUser] = useState("")
   const currentAccount = user
   const username = currentAccount.username;
-  console.log(username);
 
   const handleResetPassword = async () => {
     if (currentPassword === "" || newPassword === "" || retypePassword == "") {
@@ -35,7 +34,7 @@ const ResetPassword = () => {
         new Promise((resolve, reject) => {
           changePasswordRequest(username, currentPassword, newPassword)
             .then((resp) => {
-              console.log(resp);
+
               if (resp.error) {
                 reject(resp.message);
               }

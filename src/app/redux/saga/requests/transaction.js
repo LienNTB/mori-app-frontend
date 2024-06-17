@@ -8,13 +8,12 @@ export const createTransactionRequest = async (request) => {
     .then((response) => {
       return response.json();
     })
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const getUserTransactionsRequest = async (account, type) => {
-  return fetch(`${Type.BACKEND_URL}/api/transaction/get-usertrans?account=${account}&type=${type}`,
+  return fetch(
+    `${Type.BACKEND_URL}/api/transaction/get-usertrans?account=${account}&type=${type}`,
     {
       method: "GET",
       headers: type.requestHeader,

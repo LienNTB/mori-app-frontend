@@ -36,8 +36,30 @@ const Header = () => {
     getNotificationsRequest(currentAccount._id)
       .then(resp => {
         setNotifications([...resp.data].reverse())
-        console.log("notifications", [...resp.data].reverse());
       })
+  }
+  const handleMarkAllAsRead = () => {
+    toast.promise(
+      new Promise((resolve, reject) => {
+        markAllNotificationaAsReadRequest(currentAccount._id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.message);
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error,
+      }
+    );
+    getNotificationsData()
   }
   useEffect(() => {
     if (currentAccount) {
@@ -69,7 +91,6 @@ const Header = () => {
   }
   const handleMarkAsRead = (id) => {
     markNotificationaAsReadRequest(id).then(resp => {
-      console.log(resp)
     })
   }
 
@@ -137,23 +158,38 @@ const Header = () => {
               </div>
               {isAccountMenuOpen && <div className={styles.menuAccount}>
                 <ListboxProfileWrapper>
-                  <Listbox variant="flat" aria-label="Listbox menu with sections">
-                    <ListboxSection >
-                      <ListboxItem
-                        key="new"
-                        startContent={<FontAwesomeIcon icon={faUser} />}
-                        onClick={() => router.replace("/account/profile", undefined, { shallow: true })}
-                      >
-                        Tài khoản của tôi
-                      </ListboxItem>
-                      <ListboxItem
-                        key="new"
-                        startContent={<FontAwesomeIcon icon={faSignOut} />}
-                        onClick={() => handleSignOut()}
-                      >
-                        Đăng xuất
-                      </ListboxItem>
-                    </ListboxSection>
+                  <Listbox variant="flat" aria-label="Listbox menu with sections"
+                    topContent={<div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <div>Thông báo</div>
+                      <div
+                        style={{
+                          fontWeight: "normal",
+                          fontSize: "0.8rem",
+                          paddingTop: "20px"
+                        }}
+                        onClick={() => handleMarkAllAsRead()}
+                      >Đánh dấu tất cả đã đọc</div>
+                    </div>}>
+                    <ListboxItem
+                      key="new"
+                      startContent={<FontAwesomeIcon icon={faUser} />}
+                      onClick={() => router.replace("/account/profile", undefined, { shallow: true })}
+                    >
+                      Tài khoản của tôi
+                    </ListboxItem>
+                    <ListboxItem
+                      key="new"
+                      startContent={<FontAwesomeIcon icon={faSignOut} />}
+                      onClick={() => handleSignOut()}
+                    >
+                      Đăng xuất
+                    </ListboxItem>
 
                   </Listbox>
                 </ListboxProfileWrapper>
@@ -187,8 +223,8 @@ const Header = () => {
                               <div className="flex gap-2 justify-between items-center">
                                 <div className="flex gap-2 items-center">
                                   <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]"
-                                    src={noti.performedBy ? noti.performedBy.avatar
-                                      : noti.performedBy && noti.performedBy.avatar.includes("googleusercontent") ? `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`
+                                    src={noti.performedBy ? noti.performedBy?.avatar
+                                      : noti.performedBy && noti.performedBy?.avatar.includes("googleusercontent") ? `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`
                                         : { readingGoalImg }
                                     } />
                                   <div className="flex flex-col">
@@ -276,6 +312,11 @@ const Header = () => {
                   Bảng xếp hạng
                 </Link>
               </div>
+              <div className={styles.menuItem}>
+                <Link href="/community" prefetch={false}>
+                  Review sách
+                </Link>
+              </div>
               <div className={styles.menuItem} >
                 <Link href={"/account/profile"} prefetch={false}>
                   Tài khoản của tôi
@@ -312,6 +353,11 @@ const Header = () => {
                     Bảng xếp hạng
                   </Link>
                 </div>
+                <div className={styles.menuItem}>
+                  <Link href="/community" prefetch={false}>
+                    Review sách
+                  </Link>
+                </div>
                 <div className={styles.menuItem} >
                   <Link href={"/login"} prefetch={false}>
                     Đăng nhập
@@ -344,7 +390,6 @@ const Header = () => {
                             {item.name}
                           </a>
                         </ListboxItem>
-
                       ))
                     }
                   </Listbox>}

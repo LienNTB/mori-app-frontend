@@ -89,13 +89,11 @@ const EditPost = () => {
                 resolve(respEditPost.message);
                 router.replace("/community", undefined, { shallow: true })
               } else {
-                console.log("respEditPost.error", respEditPost.error.toString())
                 reject(respEditPost.error);
               }
             })
             .catch((err) => {
               reject("Cập nhật bài viết thất bại! Vui lòng thử lại!")
-              console.log("err", err);
             });
         }
         // update post with image
@@ -119,13 +117,11 @@ const EditPost = () => {
                     resolve(respEditPost.message);
                     router.replace("/community", undefined, { shallow: true })
                   } else {
-                    console.log("respEditPost.error", respEditPost.error.toString())
                     reject(respEditPost.error);
                   }
                 })
                 .catch((err) => {
                   reject("Cập nhật bài viết thất bại! Vui lòng thử lại!")
-                  console.log("err", err);
                 });
             }
           })
@@ -151,13 +147,11 @@ const EditPost = () => {
   };
   const loadTagData = () => {
     getAllTagsRequest().then(resp => {
-      console.log("resp", resp.allTags)
       setTags(resp.allTags)
     })
   }
   const getPostData = () => {
     getPostByIdRequest(id).then((resp) => {
-      console.log("resp.post", resp.post)
       setPost(resp.post);
       setSelectedSearchingBook(resp.post.book ? resp.post.book : null)
       setSelectedTags(resp.post.tag.map(tagItem => tagItem.description))

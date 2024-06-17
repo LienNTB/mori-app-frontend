@@ -9,9 +9,7 @@ export const addBooktoCartRequest = async (request) => {
     .then((response) => {
       return response.json();
     })
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const cartOfCustomerRequest = async (id) => {
@@ -36,9 +34,7 @@ export const updateCartItemQuantityRequest = async (request) => {
     .then((response) => {
       return response.json();
     })
-    .catch((error) => {
-      console.log("error:", error);
-    });
+    .catch((error) => {});
 };
 
 export const deleteBookFromCartRequest = async (id) => {

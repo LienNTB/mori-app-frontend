@@ -31,7 +31,6 @@ function BookInfo() {
   const params = useParams();
   const id = params.id;
 
-  console.log("book:", book);
   useEffect(() => {
     dispatch(getBookById(id));
   }, [dispatch]);

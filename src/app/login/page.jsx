@@ -20,7 +20,7 @@ import {
   Input,
 } from "@nextui-org/react";
 import { forgetPasswordRequest } from "../redux/saga/requests/auth";
-import { useRouter, useSearchParams  } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 
@@ -65,8 +65,7 @@ const Login = () => {
     onSuccess: (codeResponse) => {
       setGoogleUserResponse(codeResponse);
 
-    },
-    onError: (error) => console.log('Login Failed:', error)
+    }
   });
 
 
@@ -77,7 +76,6 @@ const Login = () => {
   };
 
   const handleSignIn = () => {
-    console.log("handleSignIn")
     const loginRequest = {
       googleAccount: googleUser,
       username,
@@ -87,7 +85,6 @@ const Login = () => {
       new Promise((resolve, reject) => {
         loginAccountRequest(loginRequest)
           .then(resp => {
-            console.log("resp login", resp)
             if (resp.error) {
               reject(resp.error)
             }
@@ -136,14 +133,14 @@ const Login = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-      const success= searchParams.get('success');
-      const error = searchParams.get('error')
-      if (success) {
-          setMessage('Email verification successful. Please log in.');
-      } else if (error) {
-          setMessage('Email verification failed. Please try again.');
-      }
-      console.log("message: ", success);
+    const success = searchParams.get('success');
+    const error = searchParams.get('error')
+    if (success) {
+      setMessage('Email verification successful. Please log in.');
+    } else if (error) {
+      setMessage('Email verification failed. Please try again.');
+    }
+    console.log("message: ", success);
   }, []);
 
   return (
@@ -154,19 +151,19 @@ const Login = () => {
           <div className={styles.column}>
             <div className={styles.div3}>
               <div className={styles.div4}>WELCOME BACK!</div>
-            {message ? 
-              (<div className={styles.div5}>
+              {message ?
+                (<div className={styles.div5}>
                   <span style={{ fontWeight: 500 }}>{message}</span>
                 </div>)
-              :(<div className={styles.div5}>
-                {/* <span style="font-family: Nunito, sans-serif;font-weight: 400;color: rgba(68,75,89,1);"> */}
-                <span style={{ fontWeight: 400 }}>Don’t have a account, </span>
-                {/* <span style="font-family: Nunito, sans-serif;font-weight: 700;color: rgba(134,153,218,1);"> */}
-                <span style={{ fontWeight: 700 }}>
-                  <Link href="/signup"  prefetch={false} shallow>Sign up</Link>
-                </span>
-              </div>)}
-              
+                : (<div className={styles.div5}>
+                  {/* <span style="font-family: Nunito, sans-serif;font-weight: 400;color: rgba(68,75,89,1);"> */}
+                  <span style={{ fontWeight: 400 }}>Don’t have a account, </span>
+                  {/* <span style="font-family: Nunito, sans-serif;font-weight: 700;color: rgba(134,153,218,1);"> */}
+                  <span style={{ fontWeight: 700 }}>
+                    <Link href="/signup" prefetch={false} shallow>Sign up</Link>
+                  </span>
+                </div>)}
+
               <div className={styles.div6}>Username</div>
               <input
                 className={styles.div7}

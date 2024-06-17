@@ -15,8 +15,6 @@ export function* getAllCommentsHandler({ payload }) {
 }
 
 export function* createNewCommentHandler({ payload }) {
-  console.log("createNewCommentHandler");
-  console.log("payload", payload);
   try {
     const comments = yield call(commentRequest.addNewCommentRequest, payload);
     yield put({

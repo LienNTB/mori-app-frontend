@@ -7,8 +7,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 export default function PdfViewer({ pdfUrl }) {
 
-  console.log("pdfurl", pdfUrl);
-
   const [numPages, setNumPages] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -36,8 +34,7 @@ export default function PdfViewer({ pdfUrl }) {
     loadPdf();
   }, [pdfUrl]);
 
-  function onDocumentLoadSuccess({numPages: nextNumPages}) 
-  {
+  function onDocumentLoadSuccess({ numPages: nextNumPages }) {
     setNumPages(nextNumPages);
   }
 
@@ -91,7 +88,7 @@ export default function PdfViewer({ pdfUrl }) {
           </button>
         </div>
 
-        <div style={{ width: "100%", maxWidth: "auto", margin: "0 auto" , background: "black"}}>
+        <div style={{ width: "100%", maxWidth: "auto", margin: "0 auto", background: "black" }}>
           <Document
             file={pdfUrl.toString()}
             onLoadSuccess={(success) => {

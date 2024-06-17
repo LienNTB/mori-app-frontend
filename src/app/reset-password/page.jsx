@@ -81,10 +81,7 @@ const ResetPassword = () => {
   };
 
   useEffect(() => {
-    // const searchParams = useSearchParams();
-    // const token = searchParams.get("token");
     checkTokenRequest(token).then((resp) => {
-      console.log("reset password", resp.error);
       if (resp.message) {
         // resolve("Reset mật khẩu thành công!");
         setCheckToken(1);

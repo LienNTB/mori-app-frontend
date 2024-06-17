@@ -32,13 +32,11 @@ const HomePage = () => {
 
   const getReadingGoalData = (userId) => {
     getReadingGoalsByUserId(userId).then(resp => {
-      console.log('resp', resp)
       setReadingGoals(resp)
     })
   }
   const getRecommendation = (userId) => {
     getUserRecommendationsRequest(userId).then(resp => {
-      console.log('resp', resp)
       setUserRecommendations(resp.recommendations.slice(0, 5))
     })
   }
@@ -46,7 +44,7 @@ const HomePage = () => {
   useEffect(() => {
     if (readingGoals) {
       readingGoals.forEach((goal) => {
-        console.log('goal', goal._id)
+
         resetReadingProgressRequest(goal._id)
       })
     }
@@ -76,8 +74,7 @@ const HomePage = () => {
           .filter((book) => book.access_level == 2)
           .slice(0, 10),
       };
-      setBooks(categorizedBooks);
-      console.log(categorizedBooks);
+      setBooks(categorizedBooks);;
       // setBooks(res.books)
     });
     getAllTagsRequest().then((res) => {
@@ -163,7 +160,7 @@ const HomePage = () => {
               </div>
             </div>
           </section>
-        ): null}
+        ) : null}
         <section className={styles.bookSectionContainer}>
           <div className={styles.sectionHeader}>
             <h3>Sách miễn phí</h3>

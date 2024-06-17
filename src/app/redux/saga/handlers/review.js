@@ -3,8 +3,6 @@ import * as types from "../../types";
 import * as reviewRequest from "../requests/review";
 
 export function* getAllReviewsByIdHandler({ payload }) {
-  // console.log("getAllReviewsByIdHandler");
-  // console.log("payload", payload);
   try {
     const reviews = yield call(reviewRequest.getReviewsByIdRequest, payload);
     yield put({

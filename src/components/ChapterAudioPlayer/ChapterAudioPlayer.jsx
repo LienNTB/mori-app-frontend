@@ -6,7 +6,6 @@ const ChapterAudioPlayer = ({ chapter, book }) => {
   const audioRef = useRef(null);
   const hlsRef = useRef(null);
   const encodedChapterAudio = encodeURIComponent(chapter.audio);
-  console.log("book", book);
 
   useEffect(() => {
     const audio = audioRef.current;

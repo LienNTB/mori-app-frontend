@@ -108,3 +108,18 @@ export const changePasswordRequest = async (
     });
 };
 
+export const createOrUpdateUserRecommendationsRequest = async (request) => {
+  return fetch(`${type.BACKEND_URL}/api/account/add-recommendations`, {
+    method: "POST",
+    headers: type.requestHeader,
+
+    body: JSON.stringify(request),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      console.log("error:", error);
+    });
+};

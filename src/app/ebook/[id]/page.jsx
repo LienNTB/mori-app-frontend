@@ -17,7 +17,7 @@ import {
   increaseTotalSaved,
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { redirect, useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
 import BookItem from "@/components/BookItem/BookItem";
@@ -39,6 +39,7 @@ import {
   increaseTotalHeartRequest,
   getRecommendationsOfBookRequest,
 } from "@/app/redux/saga/requests/book";
+import { createOrUpdateUserRecommendationsRequest } from "@/app/redux/saga/requests/account";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
 import {
@@ -152,18 +153,25 @@ function EBook() {
       }
     );
   };
+
+  const readBookSuccess = () => {
+    increaseTotalReadDaily(book._id);
+    if (currentAccount) {
+      addNewOrUpdateReadHistory({
+        book: book._id,
+        user: currentAccount._id,
+      });
+      createOrUpdateUserRecommendationsRequest({
+        user_id : currentAccount._id,
+        book_id: book._id
+      })
+    }
+    router.replace(`/reader/${book._id}`, undefined, { shallow: true });
+  }
+
   const handleReadBook = async () => {
     if (book.access_level === 0) {
-      increaseTotalReadDaily(book._id);
-      if (currentAccount) {
-        addNewOrUpdateReadHistory({
-          book: book,
-          user: currentAccount._id,
-        });
-      }
-      router.replace(`/reader/${book._id}`, undefined, { shallow: true });
-
-      // setShowPdfViewer(true);
+      readBookSuccess();
     } else {
       if (currentAccount == null) {
         toast.error(
@@ -181,12 +189,7 @@ function EBook() {
             duration: 2000,
           });
         } else {
-          increaseTotalReadDaily(book._id);
-          addNewOrUpdateReadHistory({
-            book: book,
-            user: currentAccount._id,
-          });
-          router.replace(`/reader/${book._id}`, undefined, { shallow: true });
+          readBookSuccess();
         }
       }
     }

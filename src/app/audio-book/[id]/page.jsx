@@ -36,6 +36,7 @@ import {
   increaseTotalHeartRequest,
   getRecommendationsOfBookRequest,
 } from "@/app/redux/saga/requests/book";
+import { createOrUpdateUserRecommendationsRequest } from "@/app/redux/saga/requests/account";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
 import { reviewBookRequest } from "@/app/redux/saga/requests/review";
@@ -79,16 +80,24 @@ function AudioBookPage() {
     }
   };
 
+  const readBookSuccess = () => {
+    increaseTotalReadDaily(book._id);
+    if (currentAccount) {
+      addNewOrUpdateReadHistory({
+        book: book._id,
+        user: currentAccount._id,
+      });
+      createOrUpdateUserRecommendationsRequest({
+        user_id : currentAccount._id,
+        book_id: book._id
+      })
+    }
+  }
+
   const handleReadBook = async (chapter) => {
     if (book.access_level === 0) {
-      increaseTotalReadDaily(book._id);
+      readBookSuccess();
       setSelectedChapter(chapter);
-      if (currentAccount) {
-        addNewOrUpdateReadHistory({
-          book: book,
-          user: currentAccount._id,
-        });
-      }
     } else {
       if (currentAccount == null) {
         toast.error(
@@ -106,7 +115,7 @@ function AudioBookPage() {
             duration: 2000,
           });
         } else {
-          increaseTotalReadDaily(book._id);
+          readBookSuccess();
           setSelectedChapter(chapter);
         }
       }

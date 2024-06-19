@@ -89,7 +89,7 @@ const SignUp = () => {
             .then((resp) => {
               if (resp.username) {
                 resolve("Đăng kí tài khoản thành công!");
-                window.location.replace('/login', undefined, { shallow: true })
+                router.replace('/login', undefined, { shallow: true })
               } else {
                 reject(new Error(resp.message));
               }

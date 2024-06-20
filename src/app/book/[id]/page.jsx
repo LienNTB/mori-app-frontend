@@ -266,9 +266,14 @@ function Book() {
   useEffect(() => {
     if (book) {
       setProductPrice(book.price);
+    }
+
+  }, [book]);
+  useEffect(() => {
+    if (currentAccount) {
       getUserTransactions();
     }
-  }, [book]);
+  }, [currentAccount]);
 
 
   useEffect(() => {

@@ -328,3 +328,12 @@
     cursor: pointer;
   }
 }
+.voucherInfoContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  .voucherCode {
+    margin-right: 10px;
+    color: white;
+  }
+}

@@ -545,7 +545,7 @@ const Profile = () => {
                     <TableBody>
                       <TableRow key="1">
                         <TableCell>Họ tên</TableCell>
-                        <TableCell>{currentAccount.displayName}</TableCell>
+                        <TableCell>{currentAccount?.displayName}</TableCell>
                       </TableRow>
                       <TableRow key="2">
                         <TableCell>Gói hội viên</TableCell>
@@ -775,15 +775,6 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-            {/* <Toaster/> */}
-            {currentAccount?.username && (
-              <Link href="/change-password" prefetch={false} >
-                <button className={styles.changePasswordButton}>
-                  Thay đổi mật khẩu
-                </button>
-              </Link>
-            )}
-            {/* <Toaster/> */}
           </section>
         ) : (
           <></>

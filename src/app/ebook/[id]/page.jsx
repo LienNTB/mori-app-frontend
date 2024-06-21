@@ -2,7 +2,6 @@
 import {
   faEllipsisVertical,
   faEye,
-  faEyeDropper,
   faHeart,
   faSave,
   faStar,
@@ -12,19 +11,16 @@ import Tag from "@/components/Tag/Tag";
 import styles from "./book.module.scss";
 import {
   getBookById,
-  getBooks,
   getBooksByCate,
   increaseTotalSaved,
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
-import { redirect, useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
-import BookItem from "@/components/BookItem/BookItem";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addBookToLibrary } from "@/app/redux/actions/myLibrary";
 import { Toaster, toast } from "react-hot-toast";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
@@ -57,25 +53,18 @@ import {
   Button,
 } from "@nextui-org/react";
 import * as types from "@/app/redux/types";
-// import PdfViewer from "@/components/PdfViewer/PdfViewer";
 
 function EBook() {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.books.loading);
   const book = useSelector((state) => state.books.book);
-  const booksByCate = useSelector((state) => state.books.booksByCate);
   const isLoadingReview = useSelector((state) => state.reviews.loading);
   const reviews = useSelector((state) => state.reviews.reviews);
   let [currentAccount, setCurrentAccount] = useState("");
-  const [similarProducts, setSimilarProducts] = useState([]);
   const [reviewRating, setReviewRating] = useState("5/5");
-  const [email, setEmail] = useState("");
-  const [starHover, setStarHover] = useState(0);
   const [rating, setRating] = useState(5);
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const router = useRouter();
-  const [showPdfViewer, setShowPdfViewer] = useState(false);
   const [isOpenReviewOption, setIsOpenReviewOption] = useState(false);
   const [isOpenReview, setIsOpenReview] = useState(null);
   const {
@@ -162,12 +151,12 @@ function EBook() {
         user: currentAccount._id,
       });
       createOrUpdateUserRecommendationsRequest({
-        user_id : currentAccount._id,
-        book_id: book._id
-      })
+        user_id: currentAccount._id,
+        book_id: book._id,
+      });
     }
     router.replace(`/reader/${book._id}`, undefined, { shallow: true });
-  }
+  };
 
   const handleReadBook = async () => {
     if (book.access_level === 0) {
@@ -218,37 +207,46 @@ function EBook() {
   };
 
   const handleSendReview = () => {
-    redirectLogin();
-    const request = {
-      user_id: currentAccount._id,
-      book_id: id,
-      rating: rating.toString(),
-      content: content,
-    };
-    toast.promise(
-      new Promise((resolve, reject) => {
-        reviewBookRequest(request).then((resp) => {
-          if (resp.message) {
-            resolve("Thêm review thành công!");
-            setReload((p) => p + 1);
-          } else {
-            reject(new Error("Thêm review thất bại!"));
-          }
-        });
-      }),
-      {
-        loading: "Processing...",
-        success: (message) => message,
-        error: (error) => error.message,
-      }
-    );
-    setContent("");
+    if(!currentAccount){
+      toast.error("Vui lòng đăng nhập để review sách", {
+        duration: 2000,
+      });
+      redirectLogin();
+    }
+    else{
+      const request = {
+        user_id: currentAccount._id,
+        book_id: id,
+        rating: rating.toString(),
+        content: content,
+      };
+      toast.promise(
+        new Promise((resolve, reject) => {
+          reviewBookRequest(request).then((resp) => {
+            if (resp.message) {
+              resolve("Thêm review thành công!");
+              setReload((p) => p + 1);
+            } else {
+              reject(new Error("Thêm review thất bại!"));
+            }
+          });
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+      setContent("");
+    }
   };
 
   const handleSaveToLibrary = () => {
     currentAccount = JSON.parse(localStorage.getItem("user"));
     if (!currentAccount) {
-      router.push("/login");
+      toast.error("Vui lòng đăng nhập để thêm sách vào thư viện của bạn", {
+        duration: 2000,
+      });
     } else {
       var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
       if (register == true) {
@@ -419,7 +417,11 @@ function EBook() {
                     <div className={styles.title}>Thể loại</div>
                     {book.tags.map((tag, index) => (
                       <React.Fragment key={index}>
-                        <Link href={`/book-category/${tag}`} prefetch={false}  shallow>
+                        <Link
+                          href={`/book-category/${tag}`}
+                          prefetch={false}
+                          shallow
+                        >
                           <button className={styles.tag}>{tag}</button>
                         </Link>{" "}
                       </React.Fragment>
@@ -502,129 +504,10 @@ function EBook() {
                 <div className={styles.ruler}></div>
               </div>
               <div className={styles.productReviewWrapper}>
-                {/* <div className={styles.reviewSidebar}>
-                  <div className={styles.ratingOverview}>
-                    <div className={styles.rating__current}>5</div>
-                    <div className={styles.rating__left}>
-                      <div className={styles.ratingStars}>
-                        <div className={styles.rating__star}>
-                          <div className={styles.reviewStars}>
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                          </div>
-                        </div>
-                        <div className={styles.rating__secondary}>
-                          (Đánh giá: 3)
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.starDetail}>
-                    <div className={styles.starLines}>
-                      <div>5</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="100"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>4</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>3</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>2</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>1</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                  </div>
-                </div> */}
                 <div className={styles.reviewMainContent}>
                   <div className={styles.reviewNavigation}>
-                    <div className={styles.reviewNavigationList}>
-                      {/* <div className={styles.reviewNavigationItemChoosen}>
-                        All review
-                      </div>
-                      <div className={styles.reviewNavigationItem}>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                        <div
-                          className={styles.reviewNavigationItem__starNumber}
-                        >
-                          5
-                        </div>
-                      </div> */}
-                    </div>
+                    <div className={styles.reviewNavigationList}></div>
                   </div>
-                  {/* <div className={styles.ruler}></div> */}
                   {isLoadingReview ? (
                     <Loading />
                   ) : (
@@ -682,7 +565,6 @@ function EBook() {
                                 {isOpenReviewOption &&
                                 review.user._id === currentAccount?._id &&
                                 review._id === isOpenReview._id ? (
-                                  // {isOpenReviewOption && isOpenReview._id === review._id
                                   <div className={styles.actionWrapper}>
                                     <div
                                       className={styles.actionItem}
@@ -722,7 +604,7 @@ function EBook() {
                 <Splide
                   className={styles.splideType2}
                   options={{
-                    type: 'loop',
+                    type: "loop",
                     perPage: 3,
                     perMove: 1,
                   }}
@@ -738,25 +620,6 @@ function EBook() {
                     ))
                   )}
                 </Splide>
-                {/* <Splide
-                  className={styles.splideType2}
-                  options={{
-                    type: 'loop',
-                    perPage: 3,
-                    perMove: 1,
-                  }}
-                  aria-label="My Favorite Images"
-                >
-                  {!booksByCate ? (
-                    <Loading />
-                  ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide key={book.id}>
-                        <BookItemSplide itemsPerRow={1} book={book} />
-                      </SplideSlide>
-                    ))
-                  )}
-                </Splide> */}
               </section>
             )}
           </div>

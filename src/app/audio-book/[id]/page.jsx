@@ -146,36 +146,46 @@ function AudioBookPage() {
   };
 
   const handleSendReview = () => {
-    redirectLogin();
-    const request = {
-      user_id: currentAccount._id,
-      book_id: id,
-      rating: rating.toString(),
-      content: content,
-    };
-    toast.promise(
-      new Promise((resolve, reject) => {
-        reviewBookRequest(request).then((resp) => {
-          if (resp.message) {
-            resolve("Thêm review thành công!");
-          } else {
-            reject(new Error("Thêm review thất bại!"));
-          }
-        });
-      }),
-      {
-        loading: "Processing...",
-        success: (message) => message,
-        error: (error) => error.message,
-      }
-    );
-    setContent("");
+    if(!currentAccount){
+      toast.error("Vui lòng đăng nhập để review sách", {
+        duration: 2000,
+      });
+      redirectLogin();
+    }
+    else{
+      const request = {
+        user_id: currentAccount._id,
+        book_id: id,
+        rating: rating.toString(),
+        content: content,
+      };
+      toast.promise(
+        new Promise((resolve, reject) => {
+          reviewBookRequest(request).then((resp) => {
+            if (resp.message) {
+              resolve("Thêm review thành công!");
+              setReload((p) => p + 1);
+            } else {
+              reject(new Error("Thêm review thất bại!"));
+            }
+          });
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+      setContent("");
+    }
   };
 
   const handleSaveToLibrary = () => {
     currentAccount = JSON.parse(localStorage.getItem("user"));
     if (!currentAccount) {
-      router.push("/login");
+      toast.error("Vui lòng đăng nhập để thêm sách vào thư viện của bạn", {
+        duration: 2000,
+      });
     } else {
       var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
       if (register == true) {

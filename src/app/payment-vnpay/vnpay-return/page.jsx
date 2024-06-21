@@ -13,10 +13,6 @@ import { createTransactionRequest } from "@/app/redux/saga/requests/transaction"
 const VNpayreturn = () => {
   const router = useRouter();
   const [queryData, setQueryData] = useState({});
-  const [membership, setMembership] = useState(null)
-  const [payment, setPayment] = useState(null)
-  const [currentAccount, setCurrentAccount] = useState(null)
-  const [userVoucher, setUserVoucher] = useState(null)
 
   const handleRegisterMembership = async (membership) => {
     toast.promise(
@@ -68,44 +64,34 @@ const VNpayreturn = () => {
     }
     setQueryData(queryParams);
 
-    setMembership(JSON.parse(localStorage.getItem("membership")));
-    setPayment(JSON.parse(localStorage.getItem("payment")));
-    setCurrentAccount(JSON.parse(localStorage.getItem("user")));
-    setUserVoucher(JSON.parse(localStorage.getItem("userVoucher")));
-  }, []);
+    const membership = JSON.parse(localStorage.getItem("membership"));
+    const payment = JSON.parse(localStorage.getItem("payment"));
+    const currentAccount = JSON.parse(localStorage.getItem("user"));
 
-  useEffect(() => {
-    if (queryData && queryData != {}) {
-      if (queryData.vnp_ResponseCode === "00"
-        && currentAccount
-        && payment
-        && userVoucher
-      ) {
-        console.log("co ton tai")
-        try {
-          const transaction = {
-            account: currentAccount._id,
-            product: payment.productId,
-            productType: payment.type,
-            status: 1,
-            amount: payment.price,
-            userVoucher: userVoucher._id
-          };
-          if (membership && payment.type == "Membership") {
-            handleRegisterMembership(membership);
-            handleCreateTransaction(transaction);
-            localStorage.removeItem("payment");
-            localStorage.removeItem("membership");
-          } else if (payment && payment.type == "Book") {
-            handleCreateTransaction(transaction);
-            localStorage.removeItem("payment");
-          }
-        } catch {
-          toast.error("Không tồn tại sản phẩm bạn cần thanh toán");
+    if (queryParams.vnp_ResponseCode === "00") {
+      try {
+        const transaction = {
+          account: currentAccount._id,
+          product: payment.productId,
+          productType: payment.type,
+          status: 1,
+          amount: payment.price,
+        };
+        if (membership && payment.type == "Membership") {
+          handleRegisterMembership(membership);
+          handleCreateTransaction(transaction);
+          localStorage.removeItem("payment");
+          localStorage.removeItem("membership");
+        } else if (payment && payment.type == "Book") {
+          handleCreateTransaction(transaction);
+          localStorage.removeItem("payment");
         }
+      } catch {
+        toast.error("Không tồn tại sản phẩm bạn cần thanh toán");
       }
     }
-  }, [queryData, payment, currentAccount, userVoucher, membership])
+  }, []);
+
   const {
     vnp_Amount,
     vnp_BankCode,

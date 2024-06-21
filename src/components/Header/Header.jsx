@@ -112,7 +112,7 @@ const Header = () => {
             </div>
             <div className={styles.searchBarContainer}>
               <input type="text" placeholder='Nhập tên sách, tuyển tập, tác giả,...'
-                onChange={(e) => setSearchValue(e.target.value)} />
+                onChange={(e) => setSearchValue(e.target.value.toLowerCase())} />
               <Link href={`/search/${searchValue}`} prefetch={false}>
                 <button onClick={() => { dispatch(searchBooks(searchValue)) }}>
                   Tìm kiếm

@@ -170,7 +170,7 @@ function Book() {
         duration: 2000,
       });
     } else {
-      if (!checkBuyBook) {
+      if (!checkBuyBook()) {
         toast.error("Vui lòng mua sách để đọc sách này!", {
           duration: 2000,
         });
@@ -276,15 +276,14 @@ function Book() {
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
   };
+
   const checkBuyBook = () => {
-    if (userTrans) {
-      userTrans.map((userTran) => {
-        if (userTran.product === book._id) {
-          return true;
-        }
+    if (userTrans && userTrans.length > 0) {
+      return userTrans.some((userTran) => {
+        return userTran.product._id === book._id;
       });
-      return false;
     }
+    return false;
   };
 
   const handleBuyEbook = () => {
@@ -317,7 +316,6 @@ function Book() {
   const fetchRecommendations = async () => {
     try {
       const response = await getRecommendationsOfBookRequest(id);
-      console.log("resp", response.recommendations);
       setRecommendations(response.recommendations);
     } catch (error) {
       console.error("Error fetching recommendations:", error);

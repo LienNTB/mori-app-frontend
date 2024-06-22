@@ -162,7 +162,7 @@ function EBook() {
     if (book.access_level === 0) {
       readBookSuccess();
     } else {
-      if (currentAccount == null) {
+      if (currentAccount) {
         toast.error(
           "Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!",
           {

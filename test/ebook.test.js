@@ -13,12 +13,6 @@ describe("EBook Page", function() {
     await driver.quit();
   });
 
-//   beforeEach(async function() {
-//     await driver.get('http://localhost:3000/ebook/664ca0ec8179762b1337d32e');//sách free
-//     // // đăng nhặp bằng nick lientest bichLien#20110335
-//     // await driver.get('http://localhost:3000/ebook/664c95c134e9d01f77e6f1b6');//sách member
-//   });
-
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -35,7 +29,6 @@ describe("EBook Page", function() {
 
   async function login(username, password) {
     await driver.get('http://localhost:3000/login');
-    await sleep(1000);
     const usernameInput = await driver.findElement(By.css('input.login_div7__ond80'));
     const passwordInput = await driver.findElement(By.css('input.login_div9__yOW_d'));
     const signInButton = await driver.findElement(By.css('.login_div14__bjpo5'));
@@ -43,11 +36,13 @@ describe("EBook Page", function() {
     await usernameInput.sendKeys(username);
     await passwordInput.sendKeys(password);
     await signInButton.click();
-    await sleep(2000);
-}
+
+    // Chờ đến khi trang chính sau đăng nhập hiển thị
+    await driver.wait(until.urlContains('/homepage'), 10000);
+  }
 
   async function getEBookElements(driver) {
-    await sleep(3000);
+    await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Đọc ngay')]")), 10000);
     return {
       readButton: await driver.findElement(By.xpath("//button[contains(text(),'Đọc ngay')]")),
       saveButton: await driver.findElement(By.xpath("//button[contains(text(),'Thêm vào thư viện')]")),
@@ -60,7 +55,6 @@ describe("EBook Page", function() {
   describe("BOOK FREE", function() {
     it("should display eBook page elements", async function() {
         await driver.get('http://localhost:3000/ebook/664ca0ec8179762b1337d32e');
-        await sleep(2000);
         const { readButton, saveButton, heartButton, reviewTextarea, sendReviewButton } = await getEBookElements(driver);
 
         assert(await readButton.isDisplayed());
@@ -72,10 +66,9 @@ describe("EBook Page", function() {
 
     it("should read book successfully when clicking 'Read' button", async function() {
         await driver.get('http://localhost:3000/ebook/664ca0ec8179762b1337d32e');
-        await sleep(1000);
         const { readButton } = await getEBookElements(driver);
         await readButton.click();
-        await sleep(4000);
+        await driver.wait(until.urlContains('/reader'), 10000);
 
         const currentUrl = await driver.getCurrentUrl();
         assert(currentUrl.includes('/reader'), 'Không chuyển hướng đến trang đọc sách.');
@@ -85,7 +78,6 @@ describe("EBook Page", function() {
         await login('nguyenlien', 'bichLien#20110335');
 
         await driver.get('http://localhost:3000/ebook/664ca0ec8179762b1337d32e');
-        await sleep(1000);
         const { saveButton } = await getEBookElements(driver);
         await saveButton.click();
         await sleep(1000);
@@ -111,7 +103,6 @@ describe("EBook Page", function() {
 
     it("should like book successfully when clicking 'Heart' button", async function() {
         await driver.get('http://localhost:3000/ebook/664ca0ec8179762b1337d32e');
-        await sleep(1000);
         const { heartButton } = await getEBookElements(driver);
         await heartButton.click();
         await sleep(1000);
@@ -123,7 +114,6 @@ describe("EBook Page", function() {
     it("should send review successfully with correct details", async function() {
         await login('nguyenlien', 'bichLien#20110335');
         await driver.get('http://localhost:3000/ebook/664ca0ec8179762b1337d32e');
-        await sleep(1000);
         const { reviewTextarea, sendReviewButton } = await getEBookElements(driver);
 
         await reviewTextarea.sendKeys('Great book!');
@@ -138,9 +128,9 @@ describe("EBook Page", function() {
   describe("BOOK MEMBER", function() {
     it("should show error when reading book without logging in", async function() {
         await driver.get('http://localhost:3000/ebook/664c95c134e9d01f77e6f1b6');
+        await sleep(1000);
         // đăng xuất tài khoản
         await driver.executeScript('localStorage.clear();');
-        await sleep(1000);
 
         const { readButton } = await getEBookElements(driver);
         await readButton.click();
@@ -156,7 +146,6 @@ describe("EBook Page", function() {
 
         // đọc sách
         await driver.get('http://localhost:3000/ebook/664c95c134e9d01f77e6f1b6');
-        await sleep(1000);
         const { readButton } = await getEBookElements(driver);
         await readButton.click();
         await sleep(1000);
@@ -171,11 +160,10 @@ describe("EBook Page", function() {
 
         // đọc sách
         await driver.get('http://localhost:3000/ebook/664c95c134e9d01f77e6f1b6');
-        await sleep(1000);
         const { readButton } = await getEBookElements(driver);
         await readButton.click();
-        await sleep(4000);
-
+        
+        await driver.wait(until.urlContains('/reader'), 10000)
         const currentUrl = await driver.getCurrentUrl();
         assert(currentUrl.includes('/reader'), 'Không chuyển hướng đến trang đọc sách.');
     });

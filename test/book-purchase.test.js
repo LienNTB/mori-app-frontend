@@ -45,8 +45,10 @@ describe("Book Purchase Page", function() {
     const buyButton = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Mua lẻ ebook')]")), 10000);
     const readButton = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Đọc ngay')]")), 10000);
     const heartButton = await driver.wait(until.elementLocated(By.xpath("//button//*[name()='svg' and contains(@class, 'fa-heart')]")), 10000);
+    const reviewTextarea = await driver.findElement(By.css('textarea'));
+    const sendReviewButton = await driver.findElement(By.css('.book_sendReviewBtn__hXUP3'));
 
-    return { buyButton, readButton, heartButton };
+    return { buyButton, readButton, heartButton, reviewTextarea, sendReviewButton };
   }
 
   describe("BOOK PURCHASE", function() {
@@ -72,6 +74,19 @@ describe("Book Purchase Page", function() {
       // Check for toast message
       await checkToastMessage(driver, '.go3958317564', 'Vui lòng đăng nhập và mua sách để đọc sách này!');
     });
+
+    it("should send review successfully with correct details", async function() {
+      await login('nguyenlien', 'bichLien#20110335');
+      await driver.get('http://localhost:3000/book/659330e9ff7f147158b2036c');
+      const { reviewTextarea, sendReviewButton } = await getPurchaseElements(driver);
+
+      await reviewTextarea.sendKeys('Great book!');
+      await sendReviewButton.click();
+      await sleep(2000);
+
+      // Kiểm tra nội dung và sự hiển thị của toast message
+      await checkToastMessage(driver, '.go3958317564', 'Thêm review thành công!');
+  });
 
     // // test nick đã mua sách
     it("should read book successfully when clicking 'Read' button", async function() {

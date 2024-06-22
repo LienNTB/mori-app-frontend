@@ -70,6 +70,7 @@ function Book() {
   const router = useRouter();
   const [isOpenReviewOption, setIsOpenReviewOption] = useState(false);
   const [isOpenReview, setIsOpenReview] = useState(null);
+  const [buyBookChecker, setBuyBookChecker] = useState(false)
   const {
     isOpen: isOpenModifyReview,
     onOpen: onOpenModifyReview,
@@ -95,6 +96,8 @@ function Book() {
       router.push("/login");
     }
   };
+
+
 
   const getUserTransactions = () => {
     getUserTransactionsRequest(currentAccount._id, "Book").then((resp) => {
@@ -156,7 +159,7 @@ function Book() {
         duration: 2000,
       });
     } else {
-      if (!checkBuyBook) {
+      if (!buyBookChecker) {
         toast.error("Vui lòng mua sách để đọc sách này!", {
           duration: 2000,
         });
@@ -225,18 +228,20 @@ function Book() {
     setRating(ratingData);
   };
   const checkBuyBook = () => {
+
     if (userTrans) {
-      userTrans.map((userTran) => {
-        if (userTran.product === book._id) {
-          return true;
+      userTrans.forEach((userTran) => {
+        if (userTran.product._id === id) {
+
+          setBuyBookChecker(true)
+          return;
         }
       });
-      return false;
     }
   };
 
   const handleBuyEbook = () => {
-    if (!checkBuyBook()) {
+    if (!buyBookChecker) {
       const price = book.price;
       const productId = book._id;
       var description = "Mua lẻ sách " + book.name;
@@ -269,6 +274,9 @@ function Book() {
     }
 
   }, [book]);
+  useEffect(() => {
+    checkBuyBook()
+  }, [userTrans])
   useEffect(() => {
     if (currentAccount) {
       getUserTransactions();
@@ -370,18 +378,18 @@ function Book() {
                     </div>
                   </div>
                   <div className={styles.nextAction}>
-                    <button
+                    {buyBookChecker && <button
                       className={styles.read}
                       onClick={() => handleReadBook()}
                     >
                       Đọc ngay
-                    </button>
-                    <button
+                    </button>}
+                    {!buyBookChecker && < button
                       className={styles.purchaseBtn}
                       onClick={handleBuyEbook}
                     >
                       Mua lẻ ebook
-                    </button>
+                    </button>}
                     <button
                       className={styles.save}
                       onClick={() => handleIncreaseTotalHearted()}
@@ -580,13 +588,14 @@ function Book() {
                 </Splide>
               </section>
             )}
-          </div>
+          </div >
         ) : (
           <Loading />
-        )}
+        )
+        }
         <Footer />
         <Toaster />
-      </div>
+      </div >
       <Modal
         placement="center"
         isOpen={isOpenModifyReview}

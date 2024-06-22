@@ -109,7 +109,7 @@ const Comment = (props) => {
             <textarea id="comment" commentInput={props.commentInput} onChange={(e) => props.onCommentInputChange(e.target.value)} cols="30" rows="3" placeholder="Type your comment..." class="px-3 py-2 border shadow-sm border-gray-300 rounded-md w-full block placeholder:text-gray-400 placeholder-gray-500
         focus:outline-none focus:ring-1 bg-gray-50 focus:ring-blue-600 focus:border-blue-600 text-sm"></textarea>
           </label>
-          <button type="button" onClick={props.handleCreateComment} class="mt-2  inline-flex items-center justify-center text-gray-100 font-medium leading-none
+          <button type="button" onClick={() => { props.handleCreateComment(); props.onCommentInputChange("") }} class="mt-2  inline-flex items-center justify-center text-gray-100 font-medium leading-none
            bg-blue-600 rounded-md py-2 px-3 border border-transparent transform-gpu hover:-translate-y-0.5 
            transition-all ease-in duration-300 hover:text-gray-200 hover:bg-blue-700 text-sm">
             Post comment

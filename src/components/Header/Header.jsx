@@ -197,7 +197,8 @@ const Header = () => {
 
               {currentAccount && isNotificationMenuOpen && <div className={styles.menuNotification}>
                 <ListboxWrapper >
-                  <Listbox variant="flat" aria-label="Listbox menu with sections" className={"max-h-80 overflow-y-scroll"}>
+                  <Listbox variant="flat" aria-label="Listbox menu with sections"
+                    className={"max-h-80 overflow-y-scroll"}>
                     <ListboxSection title="Thông báo">
                       {
                         notifications.length == 0 ?
@@ -236,7 +237,7 @@ const Header = () => {
                                               noti.action == "voucher" ? "Voucher giảm giá" :
                                                 "Kiểm duyệt bình luận"}
                                     </span>
-                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`} style={{ maxHeight: "46px" }}>
+                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`} >
                                       {noti.action === "like" ? "Đã thích bài viết của bạn." :
                                         noti.action === "share" ? "Đã chia sẻ bài viết của bạn." :
                                           noti.action === "comment" ? `Đã bình luận bài viết của bạn: ${noti.message}` :

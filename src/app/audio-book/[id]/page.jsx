@@ -42,7 +42,6 @@ import { getReviewsById } from "@/app/redux/actions/review";
 import { reviewBookRequest } from "@/app/redux/saga/requests/review";
 import RatingStars from "@/components/RatingStars/RatingStars";
 
-import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import ChapterAudioPlayer from "@/components/ChapterAudioPlayer/ChapterAudioPlayer";
 
@@ -101,7 +100,7 @@ function AudioBookPage() {
     } else {
       if (currentAccount == null) {
         toast.error(
-          "Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!",
+          "Vui lòng đăng nhập và đăng ký gói cước người dùng để nghe sách này!",
           {
             duration: 2000,
           }
@@ -111,7 +110,7 @@ function AudioBookPage() {
           currentAccount._id
         );
         if (!membershipRequest.membership) {
-          toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
+          toast.error("Vui lòng đăng kí gói cước người dùng để nghe sách này!", {
             duration: 2000,
           });
         } else {
@@ -644,25 +643,6 @@ function AudioBookPage() {
                     ))
                   )}
                 </Splide>
-                {/* <Splide
-                  className={styles.splideType2}
-                  options={{
-                    type: 'loop',
-                    perPage: 3,
-                    perMove: 1,
-                  }}
-                  aria-label="My Favorite Images"
-                >
-                  {!booksByCate ? (
-                    <Loading />
-                  ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide key={book.id}>
-                        <BookItemSplide itemsPerRow={1} book={book} />
-                      </SplideSlide>
-                    ))
-                  )}
-                </Splide> */}
               </section>
             )}
           </div>

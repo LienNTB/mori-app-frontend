@@ -164,11 +164,10 @@ describe("Profile Page", function() {
       await driver.findElement(By.xpath("(//button[normalize-space()='Submit'])[1]")).click();
 
       let message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
-      if(message == "Processing..."){
+      while (message === 'Processing...') {
+        message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
+        await driver.sleep(500);
         await checkToastMessage(driver, '.go3958317564', 'Tạo mục tiêu mới thành công!' || 'Bạn đã có mục tiêu đọc sách cho Ngày rồi!');
-      }
-      else{
-        
       }
 
       //edit reading goal
@@ -178,7 +177,9 @@ describe("Profile Page", function() {
       await driver.findElement(By.xpath("//button[contains(text(),'Lưu')]")).click();
 
       message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
-      if(message == "Processing..."){
+      while (message === 'Processing...') {
+        message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
+        await driver.sleep(500);
         await checkToastMessage(driver, '.go3958317564', 'Chỉnh sửa mục tiêu đọc sách thành công!');
       }
 
@@ -186,7 +187,9 @@ describe("Profile Page", function() {
       await driver.wait(until.elementLocated(By.xpath("(//*[name()='svg'][@data-icon='xmark'])[1]")), 10000).click();
       await driver.wait(until.elementLocated(By.xpath("//button[contains(text(),'Xóa mục tiêu')]")), 10000).click();
       message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
-      if(message == "Processing..."){
+      while (message === 'Processing...') {
+        message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
+        await driver.sleep(500);
         await checkToastMessage(driver, '.go3958317564', 'Xóa mục tiêu thành công!');
       }
     });

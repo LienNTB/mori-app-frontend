@@ -24,7 +24,7 @@ describe("EBook Page", function() {
     );
     const isDisplayed = await toastMessage.isDisplayed();
     const text = await toastMessage.getText();
-    assert.strictEqual(isDisplayed && text === expectedMessage, true, 'Toast message không hiển thị hoặc không chứa nội dung mong đợi.');
+    assert.strictEqual(isDisplayed && text === expectedMessage, true, `Toast message không hiển thị hoặc không chứa nội dung mong đợi. Message: ${text}`);
   }
 
   async function login(username, password) {

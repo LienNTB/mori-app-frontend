@@ -158,7 +158,7 @@ const Profile = () => {
           });
       }),
       {
-        // loading: "Processing...",
+        loading: "Processing...",
         success: (message) => message,
         error: (error) => error,
       }
@@ -191,7 +191,7 @@ const Profile = () => {
           });
       }),
       {
-        // loading: "Processing...",
+        loading: "Processing...",
         success: (message) => message,
         error: (error) => error,
       }
@@ -217,7 +217,7 @@ const Profile = () => {
           });
       }),
       {
-        // loading: "Processing...",
+        loading: "Processing...",
         success: (message) => message,
         error: (error) => error,
       }

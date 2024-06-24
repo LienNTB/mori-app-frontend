@@ -1,16 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import styles from "./change-password.module.scss"
-import { useDispatch } from 'react-redux'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input } from "@nextui-org/react";
-import { useSearchParams } from 'next/navigation';
 import { changePasswordRequest } from '../redux/saga/requests/account'
 import { Toaster, toast } from "react-hot-toast";
 
-
-
 const ResetPassword = () => {
-  const dispatch = useDispatch()
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setPassword] = useState("")
   const [retypePassword, setRetypePassword] = useState("")
@@ -91,6 +85,5 @@ const ResetPassword = () => {
     </>
   );
 }
-
 
 export default ResetPassword

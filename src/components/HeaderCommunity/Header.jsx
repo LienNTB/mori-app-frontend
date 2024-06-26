@@ -302,6 +302,11 @@ const HeaderCommunity = () => {
                   Bảng xếp hạng
                 </Link>
               </div>
+              <div className={styles.menuItem}>
+                <Link href="/community" prefetch={false}>
+                  Review sách
+                </Link>
+              </div>
               <div className={styles.menuItem} >
                 <Link href={"/account/profile"} prefetch={false}>
                   <FontAwesomeIcon
@@ -335,6 +340,11 @@ const HeaderCommunity = () => {
                 <div className={styles.menuItem}>
                   <Link href="/ranking/sachdoc" prefetch={false}>
                     Bảng xếp hạng
+                  </Link>
+                </div>
+                <div className={styles.menuItem}>
+                  <Link href="/community" prefetch={false}>
+                    Review sách
                   </Link>
                 </div>
                 <div className={styles.menuItem} >
@@ -388,6 +398,10 @@ const HeaderCommunity = () => {
           <Link href="/ranking/sachdoc" prefetch={false}>
             <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
           </Link>
+          <Link href="/community" prefetch={false}>
+            Review sách
+          </Link>
+
 
         </ul>
       </div>

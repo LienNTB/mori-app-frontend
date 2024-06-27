@@ -1,9 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import Image from 'next/image';
 import tempImg from '../../../public/book.png'
 import Link from 'next/link';
-import Header from '@/components/Header/Header';
 import styles from './Community.module.scss'
 import Tag from '@/components/Tag/Tag';
 import Footer from '@/components/Footer/Footer';
@@ -71,11 +69,11 @@ const Community = () => {
                         }
                       </div>
                     </div>
-                    <Link href={`/post/${postList[lastPost]._id}`} prefetch={false} >
-                      <div className={styles.postTitle}>
+                    <div className={styles.postTitle}>
+                      <Link href={`/post/${postList[lastPost]._id}`} prefetch={false} >
                         {postList[lastPost].title}
-                      </div>
-                    </Link>
+                      </Link>
+                    </div>
                     <div className={styles.postBody}>
                       {ReactHtmlParser(postList[lastPost].content)}
                     </div>
@@ -114,11 +112,11 @@ const Community = () => {
                                 ))
                               }
                             </div>
-                            <Link href={`/post/${post._id}`} prefetch={false} >
-                              <div className={styles.postTitle}>
+                            <div className={styles.postTitle}>
+                              <Link href={`/post/${post._id}`} prefetch={false} >
                                 {post.title}
-                              </div>
-                            </Link>
+                              </Link>
+                            </div>
                             <div className={styles.postBody}>
                               {ReactHtmlParser(post.content)}
                             </div>

@@ -227,8 +227,7 @@ const HeaderCommunity = () => {
                                         noti.action == "like" ? noti.performedBy :
                                           noti.action == "share" ? noti.performedBy :
                                             noti.action == "readingGoal" ? "Mục tiêu đọc sách" :
-                                              noti.action == "voucher" ? "Chúc mừng bạn đã nhận được voucher!" :
-                                                "Kiểm duyệt bình luận"
+                                              "Kiểm duyệt bình luận"
                                     }</span>
                                     <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`}
                                     >

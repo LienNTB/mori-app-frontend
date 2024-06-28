@@ -13,7 +13,7 @@ import {
   getBookById,
   getBooks,
   getBooksByCate,
-  increaseTotalSaved,
+  increaseTotalSaved
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useRef, useEffect, useState, createRef } from "react";
@@ -33,13 +33,15 @@ import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
 import {
   addNewOrUpdateReadHistory,
   increaseTotalReadDaily,
+  increaseTotalHeartRequest,
+  getRecommendationsOfBookRequest,
 } from "@/app/redux/saga/requests/book";
+import { createOrUpdateUserRecommendationsRequest } from "@/app/redux/saga/requests/account";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
 import { reviewBookRequest } from "@/app/redux/saga/requests/review";
 import RatingStars from "@/components/RatingStars/RatingStars";
 
-import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import ChapterAudioPlayer from "@/components/ChapterAudioPlayer/ChapterAudioPlayer";
 
@@ -64,6 +66,8 @@ function AudioBookPage() {
   const [curTime, setCurTime] = useState(0);
   const params = useParams();
   const id = params.id;
+  const [recommendations, setRecommendations] = useState("")
+  const [loading, setLoading] = useState(true);
 
   const onListenHandler = (e) => {
     setCurTime(e.target.currentTime);
@@ -75,20 +79,28 @@ function AudioBookPage() {
     }
   };
 
+  const readBookSuccess = () => {
+    increaseTotalReadDaily(book._id);
+    if (currentAccount) {
+      addNewOrUpdateReadHistory({
+        book: book._id,
+        user: currentAccount._id,
+      });
+      createOrUpdateUserRecommendationsRequest({
+        user_id : currentAccount._id,
+        book_id: book._id
+      })
+    }
+  }
+
   const handleReadBook = async (chapter) => {
     if (book.access_level === 0) {
-      increaseTotalReadDaily(book._id);
+      readBookSuccess();
       setSelectedChapter(chapter);
-      if (currentAccount) {
-        addNewOrUpdateReadHistory({
-          book: book,
-          user: currentAccount._id,
-        });
-      }
     } else {
       if (currentAccount == null) {
         toast.error(
-          "Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!",
+          "Vui lòng đăng nhập và đăng ký gói cước người dùng để nghe sách này!",
           {
             duration: 2000,
           }
@@ -98,34 +110,31 @@ function AudioBookPage() {
           currentAccount._id
         );
         if (!membershipRequest.membership) {
-          toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
+          toast.error("Vui lòng đăng kí gói cước người dùng để nghe sách này!", {
             duration: 2000,
           });
         } else {
-          increaseTotalReadDaily(book._id);
+          readBookSuccess();
           setSelectedChapter(chapter);
         }
       }
     }
   };
 
-  const handleSendReview = () => {
-    redirectLogin();
-    const request = {
-      user_id: currentAccount._id,
-      book_id: id,
-      rating: rating.toString(),
-      content: content,
-    };
+  const handleIncreaseTotalHearted = async () => {
     toast.promise(
       new Promise((resolve, reject) => {
-        reviewBookRequest(request).then((resp) => {
-          if (resp.message) {
-            resolve("Thêm review thành công!");
-          } else {
-            reject(new Error("Thêm review thất bại!"));
-          }
-        });
+        increaseTotalHeartRequest(id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve("Hearted!");
+            } else {
+              reject("Error!");
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
       }),
       {
         loading: "Processing...",
@@ -133,13 +142,49 @@ function AudioBookPage() {
         error: (error) => error.message,
       }
     );
-    setContent("");
+  };
+
+  const handleSendReview = () => {
+    if(!currentAccount){
+      toast.error("Vui lòng đăng nhập để review sách", {
+        duration: 2000,
+      });
+      redirectLogin();
+    }
+    else{
+      const request = {
+        user_id: currentAccount._id,
+        book_id: id,
+        rating: rating.toString(),
+        content: content,
+      };
+      toast.promise(
+        new Promise((resolve, reject) => {
+          reviewBookRequest(request).then((resp) => {
+            if (resp.message) {
+              resolve("Thêm review thành công!");
+              setReload((p) => p + 1);
+            } else {
+              reject(new Error("Thêm review thất bại!"));
+            }
+          });
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+      setContent("");
+    }
   };
 
   const handleSaveToLibrary = () => {
     currentAccount = JSON.parse(localStorage.getItem("user"));
     if (!currentAccount) {
-      router.push("/login");
+      toast.error("Vui lòng đăng nhập để thêm sách vào thư viện của bạn", {
+        duration: 2000,
+      });
     } else {
       var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
       if (register == true) {
@@ -173,24 +218,40 @@ function AudioBookPage() {
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
   };
+
+  const fetchRecommendations = async () => {
+    try {
+      const response = await getRecommendationsOfBookRequest(id);
+      console.log('resp', response.recommendations);
+      setRecommendations(response.recommendations);
+    } catch (error) {
+      console.error('Error fetching recommendations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    // const currentAccount = JSON.parse(localStorage.getItem('user'));
+    // setCurrentAccount(currentAccount);
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
-  }, [dispatch]);
+    fetchRecommendations();
+  }, [id]);
+
   useEffect(() => {
     if (book) {
       dispatch(getBooksByCate(book.tags[0]));
     }
   }, [book]);
 
-  if (isLoading) {
+  if (isLoading && loading) {
     return <Loading />;
   }
   // if (!currentAccount) {
   //   redirect("/login")
   // }
 
-  let player = createRef();
   return (
     <>
       <div className={styles.bookContainer}>
@@ -268,12 +329,18 @@ function AudioBookPage() {
                         {book.totalRead}
                       </strong>
                     </div>
-                    {/* <div className={styles.statItem}>
-                  <small>Lượt thích</small>
-                  <strong>
-                    <FontAwesomeIcon className={styles.icon} icon={faHeart} width={20} height={20} />{book.totalHearted}
-                  </strong>
-                </div> */}
+                    <div className={styles.statItem}>
+                      <small>Lượt yêu thích</small>
+                      <strong>
+                        <FontAwesomeIcon
+                          className={styles.icon}
+                          icon={faHeart}
+                          width={20}
+                          height={20}
+                        />
+                        {book.totalHearted}
+                      </strong>
+                    </div>
                     <div className={styles.statItem}>
                       <small>Đánh dấu</small>
                       <strong>
@@ -304,8 +371,17 @@ function AudioBookPage() {
                     >
                       Thêm vào thư viện
                     </button>
-                    {/* <Link href={"/book-category/tamlykynang"}>
-                </Link> */}
+                    <button
+                      className={styles.save}
+                      onClick={() => handleIncreaseTotalHearted()}
+                    >
+                      <FontAwesomeIcon
+                        className={styles.icon}
+                        icon={faHeart}
+                        width={20}
+                        height={20}
+                      />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -543,44 +619,25 @@ function AudioBookPage() {
                 </div>
               </div>
             </section>
-            {!booksByCate ? (
+            {!recommendations ? (
               <Loading />
             ) : (
               <section className={styles.moreProducts}>
                 <div className={styles.header}>Sách cùng loại</div>
                 <Splide
-                  className={styles.splideType1}
-                  options={{
-                    type: "loop",
-                    perPage: 1,
-                    perMove: 1,
-                  }}
-                  aria-label="My Favorite Images"
-                >
-                  {!booksByCate ? (
-                    <Loading />
-                  ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide>
-                        <BookItemSplide itemsPerRow={1} book={book} />
-                      </SplideSlide>
-                    ))
-                  )}
-                </Splide>
-                <Splide
                   className={styles.splideType2}
                   options={{
-                    type: "loop",
+                    type: 'loop',
                     perPage: 3,
                     perMove: 1,
                   }}
                   aria-label="My Favorite Images"
                 >
-                  {!booksByCate ? (
+                  {!recommendations ? (
                     <Loading />
                   ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide>
+                    recommendations.map((book) => (
+                      <SplideSlide key={book._id}>
                         <BookItemSplide itemsPerRow={1} book={book} />
                       </SplideSlide>
                     ))

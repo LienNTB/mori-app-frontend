@@ -1,27 +1,25 @@
 "use client";
 import {
   faEllipsisVertical,
-  faStar,
+  faEye,
   faHeart,
   faSave,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import styles from "./book.module.scss";
 import {
   getBookById,
-  getBooks,
   getBooksByCate,
   increaseTotalSaved,
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { redirect, useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
-import BookItem from "@/components/BookItem/BookItem";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addBookToLibrary } from "@/app/redux/actions/myLibrary";
 import { Toaster, toast } from "react-hot-toast";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
@@ -34,7 +32,9 @@ import {
   addNewOrUpdateReadHistory,
   increaseTotalReadDaily,
   increaseTotalHeartRequest,
+  getRecommendationsOfBookRequest,
 } from "@/app/redux/saga/requests/book";
+import { createOrUpdateUserRecommendationsRequest } from "@/app/redux/saga/requests/account";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
 import {
@@ -51,7 +51,6 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
-import { addBooktoCartRequest } from "@/app/redux/saga/requests/cart";
 import { getUserTransactionsRequest } from "@/app/redux/saga/requests/transaction";
 import * as types from "@/app/redux/types";
 
@@ -60,8 +59,6 @@ function Book() {
   const isLoading = useSelector((state) => state.books.loading);
   const book = useSelector((state) => state.books.book);
   const [productPrice, setProductPrice] = useState(0);
-
-  const booksByCate = useSelector((state) => state.books.booksByCate);
   const isLoadingReview = useSelector((state) => state.reviews.loading);
   const reviews = useSelector((state) => state.reviews.reviews);
   let [currentAccount, setCurrentAccount] = useState(null)
@@ -70,7 +67,6 @@ function Book() {
   const router = useRouter();
   const [isOpenReviewOption, setIsOpenReviewOption] = useState(false);
   const [isOpenReview, setIsOpenReview] = useState(null);
-  const [buyBookChecker, setBuyBookChecker] = useState(false)
   const {
     isOpen: isOpenModifyReview,
     onOpen: onOpenModifyReview,
@@ -85,8 +81,9 @@ function Book() {
   } = useDisclosure();
   const [currentReviewContent, setCurrentReviewContent] = useState("");
   const [reload, setReload] = useState(0);
-  const [quantity, setQuantity] = useState(1);
   const [userTrans, setUserTrans] = useState();
+  const [recommendations, setRecommendations] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const params = useParams();
   const id = params.id;
@@ -96,8 +93,6 @@ function Book() {
       router.push("/login");
     }
   };
-
-
 
   const getUserTransactions = () => {
     getUserTransactionsRequest(currentAccount._id, "Book").then((resp) => {
@@ -153,23 +148,34 @@ function Book() {
       }
     );
   };
+
+  const readBookSuccess = () => {
+    increaseTotalReadDaily(book._id);
+    if (currentAccount) {
+      addNewOrUpdateReadHistory({
+        book: book._id,
+        user: currentAccount._id,
+      });
+      createOrUpdateUserRecommendationsRequest({
+        user_id : currentAccount._id,
+        book_id: book._id
+      })
+    }
+    router.replace(`/reader/${book._id}`, undefined, { shallow: true });
+  }
+
   const handleReadBook = async () => {
-    if (currentAccount == null) {
+    if (!currentAccount) {
       toast.error("Vui lòng đăng nhập và mua sách để đọc sách này!", {
         duration: 2000,
       });
     } else {
-      if (!buyBookChecker) {
+      if (!checkBuyBook()) {
         toast.error("Vui lòng mua sách để đọc sách này!", {
           duration: 2000,
         });
       } else {
-        increaseTotalReadDaily(book._id);
-        addNewOrUpdateReadHistory({
-          book: book,
-          user: currentAccount._id,
-        });
-        router.replace(`/reader/${book._id}`, undefined, { shallow: true });
+        readBookSuccess();
       }
     }
   };
@@ -197,91 +203,144 @@ function Book() {
   };
 
   const handleSendReview = () => {
-    redirectLogin();
-    const request = {
-      user_id: currentAccount._id,
-      book_id: id,
-      rating: rating.toString(),
-      content: content,
-    };
-    toast.promise(
-      new Promise((resolve, reject) => {
-        reviewBookRequest(request).then((resp) => {
-          if (resp.message) {
-            resolve("Thêm review thành công!");
-            setReload((p) => p + 1);
-          } else {
-            reject(new Error("Thêm review thất bại!"));
+    if(!currentAccount){
+      toast.error("Vui lòng đăng nhập để review sách", {
+        duration: 2000,
+      });
+      redirectLogin();
+    }
+    else{
+      const request = {
+        user_id: currentAccount._id,
+        book_id: id,
+        rating: rating.toString(),
+        content: content,
+      };
+      toast.promise(
+        new Promise((resolve, reject) => {
+          reviewBookRequest(request).then((resp) => {
+            if (resp.message) {
+              resolve("Thêm review thành công!");
+              setReload((p) => p + 1);
+            } else {
+              reject(new Error("Thêm review thất bại!"));
+            }
+          });
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+      setContent("");
+    }
+  };
+
+  const handleSaveToLibrary = () => {
+    currentAccount = JSON.parse(localStorage.getItem("user"));
+    if (!currentAccount) {
+      toast.error("Vui lòng đăng nhập để thêm sách vào thư viện của bạn", {
+        duration: 2000,
+      });
+    } else {
+      var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
+      if (register == true) {
+        var request = {
+          user: currentAccount._id,
+          book: book,
+        };
+        dispatch(increaseTotalSaved(book._id, currentAccount._id));
+
+        toast.promise(
+          new Promise((resolve, reject) => {
+            libraryRequest.addBookToLibraryRequest(request).then((resp) => {
+              if (resp === 0) {
+                resolve("Thêm sách vào thư viện thành công!");
+              }
+              if (resp === 1) {
+                reject(new Error("Sách đã tồn tại trong thư viện!"));
+              }
+            });
+          }),
+          {
+            loading: "Processing...",
+            success: (message) => message,
+            error: (error) => error.message,
           }
-        });
-      }),
-      {
-        loading: "Processing...",
-        success: (message) => message,
-        error: (error) => error.message,
+        );
       }
-    );
-    setContent("");
+    }
   };
 
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
   };
+
   const checkBuyBook = () => {
-
-    if (userTrans) {
-      userTrans.forEach((userTran) => {
-        if (userTran.product._id === id) {
-
-          setBuyBookChecker(true)
-          return;
-        }
+    if (userTrans && userTrans.length > 0) {
+      return userTrans.some((userTran) => {
+        return userTran.product._id === book._id;
       });
     }
+    return false;
   };
 
   const handleBuyEbook = () => {
-    if (!buyBookChecker) {
-      const price = book.price;
-      const productId = book._id;
-      var description = "Mua lẻ sách " + book.name;
-      var type = "Book";
-      var payment = {
-        price: price,
-        description: description,
-        type: type,
-        productId: productId,
-      };
-      localStorage.setItem("payment", JSON.stringify(payment));
-      router.replace("/payment", undefined, { shallow: true });
-    } else {
-      toast.error("Bạn đã mua sách này, để đọc tiếp vui lòng chọn đọc ngay", {
+    if (!currentAccount) {
+      toast.error("Vui lòng đăng nhập và mua sách để đọc sách này!", {
         duration: 2000,
       });
+    } else {
+      if (!checkBuyBook()) {
+        const price = book.price;
+        const productId = book._id;
+        var description = "Mua lẻ sách " + book.name;
+        var type = "Book";
+        var payment = {
+          price: price,
+          description: description,
+          type: type,
+          productId: productId,
+        };
+        localStorage.setItem("payment", JSON.stringify(payment));
+        router.replace("/payment", undefined, { shallow: true });
+      } else {
+        toast.error("Bạn đã mua sách này, để đọc tiếp vui lòng chọn đọc ngay", {
+          duration: 2000,
+        });
+      }
+    }
+  };
+
+  const fetchRecommendations = async () => {
+    try {
+      const response = await getRecommendationsOfBookRequest(id);
+      setRecommendations(response.recommendations);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
-  }, [dispatch]);
+    fetchRecommendations();
+  }, [dispatch], [id]);
+
   useEffect(() => {
     dispatch(getReviewsById(id));
   }, [reload]);
   useEffect(() => {
     if (book) {
       setProductPrice(book.price);
+      if(currentAccount){
+        getUserTransactions();
+      }
     }
-
   }, [book]);
-  useEffect(() => {
-    checkBuyBook()
-  }, [userTrans])
-  useEffect(() => {
-    if (currentAccount) {
-      getUserTransactions();
-    }
-  }, [currentAccount]);
 
 
   useEffect(() => {
@@ -293,7 +352,7 @@ function Book() {
     setCurrentAccount(JSON.parse(localStorage.getItem("user")))
   }, [])
 
-  if (isLoading) {
+  if (isLoading && loading) {
     return <Loading />;
   }
 
@@ -356,14 +415,53 @@ function Book() {
                   <div className={styles.yourRating}>
                     Đánh giá: 4.2/5 từ 28 lượt. Đánh giá của bạn?
                   </div>
-
+                  <div className={styles.headerStats}>
+                    <div className={styles.statItem}>
+                      <small>Lượt đọc</small>
+                      <strong>
+                        <FontAwesomeIcon
+                          className={styles.icon}
+                          icon={faEye}
+                          width={20}
+                          height={20}
+                        />
+                        {book.totalRead}
+                      </strong>
+                    </div>
+                    <div className={styles.statItem}>
+                      <small>Lượt yêu thích</small>
+                      <strong>
+                        <FontAwesomeIcon
+                          className={styles.icon}
+                          icon={faHeart}
+                          width={20}
+                          height={20}
+                        />
+                        {book.totalHearted}
+                      </strong>
+                    </div>
+                    <div className={styles.statItem}>
+                      <small>Đánh dấu</small>
+                      <strong>
+                        <FontAwesomeIcon
+                          className={styles.icon}
+                          icon={faSave}
+                          width={20}
+                          height={20}
+                        />
+                        {book.totalSaved.length}
+                      </strong>
+                    </div>
+                  </div>
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    <Link href={"/book-category/tamlykynang"} prefetch={false} shallow>
-                      <button className={styles.tag}>
-                        Tâm lý - Kỹ năng sống
-                      </button>
-                    </Link>
+                    {book.tags.map((tag, index) => (
+                      <React.Fragment key={index}>
+                        <Link href={`/book-category/${tag}`} prefetch={false}  shallow>
+                          <button className={styles.tag}>{tag}</button>
+                        </Link>{" "}
+                      </React.Fragment>
+                    ))}
                   </div>
                   <div className={styles.priceWrapper}>
                     <div className={styles.title}>Tạm tính</div>
@@ -378,18 +476,24 @@ function Book() {
                     </div>
                   </div>
                   <div className={styles.nextAction}>
-                    {buyBookChecker && <button
+                    <button
                       className={styles.read}
                       onClick={() => handleReadBook()}
                     >
                       Đọc ngay
-                    </button>}
-                    {!buyBookChecker && < button
+                    </button>
+                    <button
+                      className={styles.save}
+                      onClick={() => handleSaveToLibrary()}
+                    >
+                      Thêm vào thư viện
+                    </button>
+                    <button
                       className={styles.purchaseBtn}
                       onClick={handleBuyEbook}
                     >
                       Mua lẻ ebook
-                    </button>}
+                    </button>
                     <button
                       className={styles.save}
                       onClick={() => handleIncreaseTotalHearted()}
@@ -543,44 +647,25 @@ function Book() {
                 </div>
               </div>
             </section>
-            {!booksByCate ? (
+            {!recommendations ? (
               <Loading />
             ) : (
               <section className={styles.moreProducts}>
                 <div className={styles.header}>Sách cùng loại</div>
                 <Splide
-                  className={styles.splideType1}
-                  options={{
-                    type: "loop",
-                    perPage: 1,
-                    perMove: 1,
-                  }}
-                  aria-label="My Favorite Images"
-                >
-                  {!booksByCate ? (
-                    <Loading />
-                  ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide>
-                        <BookItemSplide itemsPerRow={1} book={book} />
-                      </SplideSlide>
-                    ))
-                  )}
-                </Splide>
-                <Splide
                   className={styles.splideType2}
                   options={{
-                    type: "loop",
+                    type: 'loop',
                     perPage: 3,
                     perMove: 1,
                   }}
                   aria-label="My Favorite Images"
                 >
-                  {!booksByCate ? (
+                  {!recommendations ? (
                     <Loading />
                   ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide>
+                    recommendations.map((book) => (
+                      <SplideSlide key={book._id}>
                         <BookItemSplide itemsPerRow={1} book={book} />
                       </SplideSlide>
                     ))
@@ -588,14 +673,13 @@ function Book() {
                 </Splide>
               </section>
             )}
-          </div >
+          </div>
         ) : (
           <Loading />
-        )
-        }
+        )}
         <Footer />
         <Toaster />
-      </div >
+      </div>
       <Modal
         placement="center"
         isOpen={isOpenModifyReview}

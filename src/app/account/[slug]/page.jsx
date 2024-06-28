@@ -60,7 +60,7 @@ const Profile = () => {
   const [isLoadingPostList, setIsLoadingPostList] = useState(false);
   const [isLoadingUserTrans, setIsLoadingUserTrans] = useState(false);
   const [click, setClick] = useState(0);
-  const [userTrans, setUserTrans] = useState();
+  const [userTrans, setUserTrans] = useState([]);
   const dispatch = useDispatch();
   const { isOpen: isOpenFollower, onOpen: onOpenFollower, onOpenChange: onOpenChangeFollower } = useDisclosure();
   const { isOpen: isOpenFollowing, onOpen: onOpenFollowing, onOpenChange: onOpenChangeFollowing } = useDisclosure();
@@ -83,29 +83,35 @@ const Profile = () => {
     }
     return book.chapters && book.chapters.length > 0 ? "audio-book" : "ebook";
   }
-
-  const handleDeleteBook = (choosenBook) => {
-    var request = {
-      user: currentAccount._id,
-      book: choosenBook,
-    };
-    dispatch(deleteBookFromLibrary(request));
+  
+  useEffect(() => {
     if (deleteBookResult === 0) {
       toast("Xoá sách khỏi thư viện thành công!", {
         autoClose: 2000,
         type: "success",
       });
-    }
-    if (deleteBookResult === 1) {
+    } else if (deleteBookResult === 1) {
       toast("Xóa thất bại!", {
         autoClose: 2000,
         type: "error",
       });
     }
+  }, [deleteBookResult, click]);
+
+  useEffect(() => {
+    if(currentAccount){
+      dispatch(getBooksFromMyLibrary(currentAccount._id));
+    }
+  }, [click]);
+
+  const handleDeleteBook = async (choosenBook) => {
+    var request = {
+      user: currentAccount._id,
+      book: choosenBook,
+    };
+    await dispatch(deleteBookFromLibrary(request));
     setClick((p) => p + 1);
   };
-
-
 
   const getPostData = () => {
     setIsLoadingPostList(true);
@@ -545,7 +551,7 @@ const Profile = () => {
                     <TableBody>
                       <TableRow key="1">
                         <TableCell>Họ tên</TableCell>
-                        <TableCell>{currentAccount.displayName}</TableCell>
+                        <TableCell>{currentAccount?.displayName}</TableCell>
                       </TableRow>
                       <TableRow key="2">
                         <TableCell>Gói hội viên</TableCell>
@@ -620,12 +626,16 @@ const Profile = () => {
           <></>
         )}
         {currentTopic == "my-book" ? (
-          <section className={styles.profileInfo}>
-            <div className={styles.historyHead}>
+          <section className={styles.myBookInfo}>
+            <div className={styles.uHead}>
               <div className={styles.title}>
-                Danh sách sách, truyện bạn đã mua{" "}
+                Danh sách sách, truyện bạn đã mua
               </div>
             </div>
+            
+            {userTrans.length === 0 ?(
+              <>Bạn chưa mua quyển sách nào</>
+            ) : (
 
             <div className={styles.libraryBody}>
               <table class="table-auto w-full">
@@ -649,51 +659,54 @@ const Profile = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {!userTrans ? (
-                    <Loading />
-                  ) : (
-                    userTrans.map((trans) => (
-                      <tr>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                          <img
-                            src={`${types.BACKEND_URL}/api/bookimg/${trans.product.image}`}
-                            alt="image"
-                            className={styles.bookLibImg}
-                          />
-                        </td>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
-                          <Link
-                            href={`/${getBookType(trans.product)}/${trans.product._id}`}
-                            prefetch={false}
-                            shallow
-                          >
-                            {trans.product.name}
-                          </Link>
-                        </td>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                          {trans.product.author}
-                        </td>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                          {trans.product.tags.map((tag, index) => (
-                            <React.Fragment key={index}>{tag}</React.Fragment>
-                          ))}
-                        </td>
-                        <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                          <div className={styles.readBtn}>
-                            <Link
-                              href={`/reader/${trans.product._id}`}
-                              prefetch={false}
-                            >
-                              Đọc sách
-                            </Link>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
+                    <div className={styles.uTable}>
+                      {isLoadingUserTrans ? (
+                        <Loading />
+                      ) : (
+                        userTrans.map((trans) => (
+                          <tr>
+                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                              <img
+                                src={`${types.BACKEND_URL}/api/bookimg/${trans.product.image}`}
+                                alt="image"
+                                className={styles.bookLibImg}
+                              />
+                            </td>
+                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
+                              <Link
+                                href={`/${getBookType(trans.product)}/${trans.product._id}`}
+                                prefetch={false}
+                                shallow
+                              >
+                                {trans.product.name}
+                              </Link>
+                            </td>
+                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                              {trans.product.author}
+                            </td>
+                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                              {trans.product.tags.map((tag, index) => (
+                                <React.Fragment key={index}>{tag}</React.Fragment>
+                              ))}
+                            </td>
+                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                              <div className={styles.readBtn}>
+                                <Link
+                                  href={`/reader/${trans.product._id}`}
+                                  prefetch={false}
+                                >
+                                  Đọc sách
+                                </Link>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                   </div>
                 </tbody>
               </table>
             </div>
+          )}
           </section>
         ) : (
           <></>
@@ -775,15 +788,6 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-            {/* <Toaster/> */}
-            {currentAccount?.username && (
-              <Link href="/change-password" prefetch={false} >
-                <button className={styles.changePasswordButton}>
-                  Thay đổi mật khẩu
-                </button>
-              </Link>
-            )}
-            {/* <Toaster/> */}
           </section>
         ) : (
           <></>

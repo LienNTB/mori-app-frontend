@@ -1,69 +1,59 @@
 "use client";
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./homepage.module.scss";
 import BookItem from "@/components/BookItem/BookItem";
 import Tag from "@/components/Tag/Tag";
-import { useDispatch } from "react-redux";
-import { Pagination } from "@nextui-org/react";
-import * as type from "../redux/types";
 import { getAllBooksRequest } from "../redux/saga/requests/book";
 import { getAllTagsRequest } from "../redux/saga/requests/tag";
 import Loading from "@/components/Loading/Loading";
-import { getReadingGoalsByUserId, resetReadingProgressRequest } from "../redux/saga/requests/readingGoal";
+import {
+  getReadingGoalsByUserId,
+  resetReadingProgressRequest,
+} from "../redux/saga/requests/readingGoal";
 import { getUserRecommendationsRequest } from "../redux/saga/requests/account";
-import { useRouter } from "next/navigation";
 
 const HomePage = () => {
-  const router = useRouter();
-  const [currentPage, setCurrentPage] = useState(1);
   const [books, setBooks] = useState(null);
   const [tags, setTags] = useState(null);
   const [userRecommendations, setUserRecommendations] = useState(null);
-  // const itemsPerPage = 20;
-  // const totalPages = Math.ceil((books?.length || 0) / itemsPerPage);
-  // const startIndex = (currentPage - 1) * itemsPerPage;
-  // const endIndex = startIndex + itemsPerPage;
-  // const displayedItems = books?.slice(startIndex, endIndex);
-  const [booksLoaded, setBooksLoaded] = useState(false);
   const [readingGoals, setReadingGoals] = useState(null);
   const [currentAccount, setCurrentAccount] = useState(null);
 
   const getReadingGoalData = (userId) => {
-    getReadingGoalsByUserId(userId).then(resp => {
-      setReadingGoals(resp)
-    })
-  }
+    getReadingGoalsByUserId(userId).then((resp) => {
+      setReadingGoals(resp);
+    });
+  };
   const getRecommendation = (userId) => {
-    getUserRecommendationsRequest(userId).then(resp => {
-      setUserRecommendations(resp.recommendations.slice(0, 5))
-    })
-  }
+    getUserRecommendationsRequest(userId).then((resp) => {
+      if (resp.recommendations.length) {
+        setUserRecommendations(resp.recommendations.slice(0, 5));
+      }
+    });
+  };
   // Handle reset reading goal to check when new day pass every time user enter homepage
   useEffect(() => {
     if (readingGoals) {
       readingGoals.forEach((goal) => {
-
-        resetReadingProgressRequest(goal._id)
-      })
+        resetReadingProgressRequest(goal._id);
+      });
     }
-  }, [readingGoals])
+  }, [readingGoals]);
 
   useEffect(() => {
-    setCurrentAccount(JSON.parse(localStorage.getItem('user')))
+    setCurrentAccount(JSON.parse(localStorage.getItem("user")));
   }, []);
 
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem('user'))) {
+    if (JSON.parse(localStorage.getItem("user"))) {
       if (currentAccount) {
-        getReadingGoalData(currentAccount._id)
-        getRecommendation(currentAccount._id)
+        getReadingGoalData(currentAccount._id);
+        getRecommendation(currentAccount._id);
       }
     }
-
-  }, [currentAccount])
-
+  }, [currentAccount]);
 
   useEffect(() => {
     getAllBooksRequest().then((res) => {
@@ -74,8 +64,7 @@ const HomePage = () => {
           .filter((book) => book.access_level == 2)
           .slice(0, 10),
       };
-      setBooks(categorizedBooks);;
-      // setBooks(res.books)
+      setBooks(categorizedBooks);
     });
     getAllTagsRequest().then((res) => {
       setTags(res.allTags);
@@ -131,7 +120,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {userRecommendations ? (
+        {userRecommendations && (
           <section className={styles.bookSectionContainer}>
             <div className={styles.sectionHeader}>
               <h3>Mori nghĩ bạn sẽ thích</h3>
@@ -146,21 +135,15 @@ const HomePage = () => {
             <div className={styles.ruler}></div>
             <div className={styles.sectionBody}>
               <div className={styles.bookList}>
-                {userRecommendations ? (
-                  userRecommendations.map((book) => {
-                    return (
-                      <div className={styles.bookItem}>
-                        <BookItem book={book} key={book._id} />
-                      </div>
-                    );
-                  })
-                ) : (
-                  <Loading />
-                )}
+                {userRecommendations.map((book) => (
+                  <div className={styles.bookItem}>
+                    <BookItem book={book} key={book._id} />
+                  </div>
+                ))}
               </div>
             </div>
           </section>
-        ) : null}
+        )}
         <section className={styles.bookSectionContainer}>
           <div className={styles.sectionHeader}>
             <h3>Sách miễn phí</h3>
@@ -246,14 +229,6 @@ const HomePage = () => {
           </div>
         </section>
       </div>
-      {/* <div className={styles.pagination}>
-        <Pagination
-          total={totalPages}
-          initialPage={1}
-          page={currentPage}
-          onChange={setCurrentPage}
-        />
-      </div> */}
       <Footer />
     </div>
   );

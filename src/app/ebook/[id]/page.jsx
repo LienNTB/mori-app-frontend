@@ -2,7 +2,6 @@
 import {
   faEllipsisVertical,
   faEye,
-  faEyeDropper,
   faHeart,
   faSave,
   faStar,
@@ -12,19 +11,16 @@ import Tag from "@/components/Tag/Tag";
 import styles from "./book.module.scss";
 import {
   getBookById,
-  getBooks,
   getBooksByCate,
   increaseTotalSaved,
 } from "@/app/redux/actions/book";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { redirect, useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
-import BookItem from "@/components/BookItem/BookItem";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addBookToLibrary } from "@/app/redux/actions/myLibrary";
 import { Toaster, toast } from "react-hot-toast";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
@@ -37,42 +33,56 @@ import {
   addNewOrUpdateReadHistory,
   increaseTotalReadDaily,
   increaseTotalHeartRequest,
-  getRecommendationsOfBookRequest
+  getRecommendationsOfBookRequest,
 } from "@/app/redux/saga/requests/book";
+import { createOrUpdateUserRecommendationsRequest } from "@/app/redux/saga/requests/account";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
-import { deleteReviewRequest, reviewBookRequest, updateReviewRequest } from "@/app/redux/saga/requests/review";
+import {
+  deleteReviewRequest,
+  reviewBookRequest,
+  updateReviewRequest,
+} from "@/app/redux/saga/requests/review";
 import RatingStars from "@/components/RatingStars/RatingStars";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
-import * as types from "@/app/redux/types"
-// import PdfViewer from "@/components/PdfViewer/PdfViewer";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from "@nextui-org/react";
+import * as types from "@/app/redux/types";
 
 function EBook() {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.books.loading);
   const book = useSelector((state) => state.books.book);
-  const booksByCate = useSelector((state) => state.books.booksByCate);
   const isLoadingReview = useSelector((state) => state.reviews.loading);
   const reviews = useSelector((state) => state.reviews.reviews);
   let [currentAccount, setCurrentAccount] = useState("");
-  const [similarProducts, setSimilarProducts] = useState([]);
   const [reviewRating, setReviewRating] = useState("5/5");
-  const [email, setEmail] = useState("");
-  const [starHover, setStarHover] = useState(0);
   const [rating, setRating] = useState(5);
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const router = useRouter();
-  const [showPdfViewer, setShowPdfViewer] = useState(false);
-  const [isOpenReviewOption, setIsOpenReviewOption] = useState(false)
-  const [isOpenReview, setIsOpenReview] = useState(null)
-  const { isOpen: isOpenModifyReview, onOpen: onOpenModifyReview, onOpenChange: onOpenChangeModifyReview, onClose: onCloseChangeModifyReview } = useDisclosure();
-  const { isOpen: isOpenDeleteReview, onOpen: onOpenDeleteReview, onOpenChange: onOpenChangeDeleteReview, onClose: onCloseChangeDeleteReview } = useDisclosure();
-  const [currentReviewContent, setCurrentReviewContent] = useState("")
-  const [reload, setReload] = useState(0)
-  const [recommendations, setRecommendations] = useState("")
+  const [isOpenReviewOption, setIsOpenReviewOption] = useState(false);
+  const [isOpenReview, setIsOpenReview] = useState(null);
+  const {
+    isOpen: isOpenModifyReview,
+    onOpen: onOpenModifyReview,
+    onOpenChange: onOpenChangeModifyReview,
+    onClose: onCloseChangeModifyReview,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenDeleteReview,
+    onOpen: onOpenDeleteReview,
+    onOpenChange: onOpenChangeDeleteReview,
+    onClose: onCloseChangeDeleteReview,
+  } = useDisclosure();
+  const [currentReviewContent, setCurrentReviewContent] = useState("");
+  const [reload, setReload] = useState(0);
+  const [recommendations, setRecommendations] = useState("");
   const [loading, setLoading] = useState(true);
-
 
   const params = useParams();
   const id = params.id;
@@ -82,6 +92,7 @@ function EBook() {
       router.push("/login");
     }
   };
+  // console.log("currentReviewContent", currentReviewContent)
   const handleUpdateReview = () => {
     toast.promise(
       new Promise((resolve, reject) => {
@@ -89,15 +100,14 @@ function EBook() {
           .then((resp) => {
             if (resp.message) {
               resolve(resp.mesage);
-              onOpenChangeModifyReview()
-              setReload(p => p + 1)
-
+              onOpenChangeModifyReview();
+              setReload((p) => p + 1);
             } else {
               reject(resp.error);
             }
           })
           .catch((err) => {
-
+            console.log("err", err);
           });
       }),
       {
@@ -106,9 +116,8 @@ function EBook() {
         error: (error) => error.message,
       }
     );
-    setReload(p => p + 1)
-
-  }
+    setReload((p) => p + 1);
+  };
   const handleDeleteReview = () => {
     toast.promise(
       new Promise((resolve, reject) => {
@@ -116,14 +125,14 @@ function EBook() {
           .then((resp) => {
             if (resp.message) {
               resolve("Review deleted successfully.");
-              onCloseChangeDeleteReview()
-              dispatch(getReviewsById(id))
+              onCloseChangeDeleteReview();
+              dispatch(getReviewsById(id));
             } else {
               reject(resp.error);
             }
           })
           .catch((err) => {
-
+            console.log("err", err);
           });
       }),
       {
@@ -132,22 +141,28 @@ function EBook() {
         error: (error) => error.message,
       }
     );
+  };
 
-  }
+  const readBookSuccess = () => {
+    increaseTotalReadDaily(book._id);
+    if (currentAccount) {
+      addNewOrUpdateReadHistory({
+        book: book._id,
+        user: currentAccount._id,
+      });
+      createOrUpdateUserRecommendationsRequest({
+        user_id: currentAccount._id,
+        book_id: book._id,
+      });
+    }
+    router.replace(`/reader/${book._id}`, undefined, { shallow: true });
+  };
+
   const handleReadBook = async () => {
     if (book.access_level === 0) {
-      increaseTotalReadDaily(book._id);
-      if (currentAccount) {
-        addNewOrUpdateReadHistory({
-          book: book,
-          user: currentAccount._id,
-        });
-      }
-      router.replace(`/reader/${book._id}`, undefined, { shallow: true });
-
-      // setShowPdfViewer(true);
+      readBookSuccess();
     } else {
-      if (currentAccount == null) {
+      if (currentAccount) {
         toast.error(
           "Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!",
           {
@@ -163,12 +178,7 @@ function EBook() {
             duration: 2000,
           });
         } else {
-          increaseTotalReadDaily(book._id);
-          addNewOrUpdateReadHistory({
-            book: book,
-            user: currentAccount._id,
-          });
-          router.replace(`/reader/${book._id}`, undefined, { shallow: true });
+          readBookSuccess();
         }
       }
     }
@@ -185,7 +195,7 @@ function EBook() {
             }
           })
           .catch((err) => {
-
+            console.log("err", err);
           });
       }),
       {
@@ -197,37 +207,46 @@ function EBook() {
   };
 
   const handleSendReview = () => {
-    redirectLogin();
-    const request = {
-      user_id: currentAccount._id,
-      book_id: id,
-      rating: rating.toString(),
-      content: content,
-    };
-    toast.promise(
-      new Promise((resolve, reject) => {
-        reviewBookRequest(request).then((resp) => {
-          if (resp.message) {
-            resolve("Thêm review thành công!");
-            setReload(p => p + 1)
-          } else {
-            reject(new Error("Thêm review thất bại!"));
-          }
-        });
-      }),
-      {
-        loading: "Processing...",
-        success: (message) => message,
-        error: (error) => error.message,
-      }
-    );
-    setContent("");
+    if(!currentAccount){
+      toast.error("Vui lòng đăng nhập để review sách", {
+        duration: 2000,
+      });
+      redirectLogin();
+    }
+    else{
+      const request = {
+        user_id: currentAccount._id,
+        book_id: id,
+        rating: rating.toString(),
+        content: content,
+      };
+      toast.promise(
+        new Promise((resolve, reject) => {
+          reviewBookRequest(request).then((resp) => {
+            if (resp.message) {
+              resolve("Thêm review thành công!");
+              setReload((p) => p + 1);
+            } else {
+              reject(new Error("Thêm review thất bại!"));
+            }
+          });
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error.message,
+        }
+      );
+      setContent("");
+    }
   };
 
   const handleSaveToLibrary = () => {
     currentAccount = JSON.parse(localStorage.getItem("user"));
     if (!currentAccount) {
-      router.push("/login");
+      toast.error("Vui lòng đăng nhập để thêm sách vào thư viện của bạn", {
+        duration: 2000,
+      });
     } else {
       var register = confirm(`Thêm sách ${book.name} vào thư viện?`);
       if (register == true) {
@@ -264,17 +283,17 @@ function EBook() {
   const fetchRecommendations = async () => {
     try {
       const response = await getRecommendationsOfBookRequest(id);
-
+      console.log("resp", response.recommendations);
       setRecommendations(response.recommendations);
     } catch (error) {
-      console.error('Error fetching recommendations:', error);
+      console.error("Error fetching recommendations:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const currentAccount = JSON.parse(localStorage.getItem('user'));
+    const currentAccount = JSON.parse(localStorage.getItem("user"));
     setCurrentAccount(currentAccount);
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
@@ -297,7 +316,6 @@ function EBook() {
     return <Loading />;
   }
 
-
   return (
     <>
       <div className={styles.bookContainer}>
@@ -307,17 +325,18 @@ function EBook() {
           <div className={styles.bookContent}>
             <section className={styles.novelHeader}>
               <div className={styles.left}>
-                <img class="" src={`${types.BACKEND_URL}/api/bookimg/${book.image}`} alt="book img" />
+                <img
+                  class=""
+                  src={`${types.BACKEND_URL}/api/bookimg/${book.image}`}
+                  alt="book img"
+                />
               </div>
               <div className={styles.right}>
                 <div className={styles.mainHead}>
                   <h1 className={styles.novelTitle}>{book.name}</h1>
                   <div className={styles.author}>
                     <span>Tác giả: </span>
-                    <a
-                      title={book.author}
-                      class="property-item"
-                    >
+                    <a title={book.author} class="property-item">
                       <span>{book.author}</span>
                     </a>
                   </div>
@@ -396,13 +415,18 @@ function EBook() {
                   </div>
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    <Link href={"/book-category/tamlykynang"} prefetch={false} shallow>
-                      <button className={styles.tag}>
-                        Tâm lý - Kỹ năng sống
-                      </button>
-                    </Link>
+                    {book.tags.map((tag, index) => (
+                      <React.Fragment key={index}>
+                        <Link
+                          href={`/book-category/${tag}`}
+                          prefetch={false}
+                          shallow
+                        >
+                          <button className={styles.tag}>{tag}</button>
+                        </Link>{" "}
+                      </React.Fragment>
+                    ))}
                   </div>
-
                   <div className={styles.nextAction}>
                     <button
                       className={styles.read}
@@ -480,129 +504,10 @@ function EBook() {
                 <div className={styles.ruler}></div>
               </div>
               <div className={styles.productReviewWrapper}>
-                {/* <div className={styles.reviewSidebar}>
-                  <div className={styles.ratingOverview}>
-                    <div className={styles.rating__current}>5</div>
-                    <div className={styles.rating__left}>
-                      <div className={styles.ratingStars}>
-                        <div className={styles.rating__star}>
-                          <div className={styles.reviewStars}>
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                          </div>
-                        </div>
-                        <div className={styles.rating__secondary}>
-                          (Đánh giá: 3)
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.starDetail}>
-                    <div className={styles.starLines}>
-                      <div>5</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="100"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>4</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>3</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>2</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>1</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                  </div>
-                </div> */}
                 <div className={styles.reviewMainContent}>
                   <div className={styles.reviewNavigation}>
-                    <div className={styles.reviewNavigationList}>
-                      {/* <div className={styles.reviewNavigationItemChoosen}>
-                        All review
-                      </div>
-                      <div className={styles.reviewNavigationItem}>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                        <div
-                          className={styles.reviewNavigationItem__starNumber}
-                        >
-                          5
-                        </div>
-                      </div> */}
-                    </div>
+                    <div className={styles.reviewNavigationList}></div>
                   </div>
-                  {/* <div className={styles.ruler}></div> */}
                   {isLoadingReview ? (
                     <Loading />
                   ) : (
@@ -617,7 +522,10 @@ function EBook() {
                               <div className={styles.info}>
                                 <div className={styles.reviewAvatar}>
                                   {review.user.avatar && (
-                                    <img src={`${types.BACKEND_URL}/api/accountimg/${review.user.avatar}`} alt="avatar" />
+                                    <img
+                                      src={`${types.BACKEND_URL}/api/accountimg/${review.user.avatar}`}
+                                      alt="avatar"
+                                    />
                                   )}
                                 </div>
                                 <div className={styles.reviewProfileWrapper}>
@@ -640,20 +548,41 @@ function EBook() {
                                   </div>
                                 </div>
                               </div>
-                              <div key={review._id} className={styles.option} onClick={() => {
-                                setIsOpenReviewOption(p => !p);
-                                setIsOpenReview(review)
-                                setCurrentReviewContent(review.content)
-                              }} >
-                                <FontAwesomeIcon className={styles.menu} icon={faEllipsisVertical} />
+                              <div
+                                key={review._id}
+                                className={styles.option}
+                                onClick={() => {
+                                  setIsOpenReviewOption((p) => !p);
+                                  setIsOpenReview(review);
+                                  setCurrentReviewContent(review.content);
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  className={styles.menu}
+                                  icon={faEllipsisVertical}
+                                />
 
-                                {isOpenReviewOption && review.user._id === currentAccount?._id && review._id === isOpenReview._id
-                                  // {isOpenReviewOption && isOpenReview._id === review._id
-                                  ? <div className={styles.actionWrapper}>
-                                    <div className={styles.actionItem} onClick={onOpenModifyReview}>Modify</div>
+                                {isOpenReviewOption &&
+                                review.user._id === currentAccount?._id &&
+                                review._id === isOpenReview._id ? (
+                                  <div className={styles.actionWrapper}>
+                                    <div
+                                      className={styles.actionItem}
+                                      onClick={onOpenModifyReview}
+                                    >
+                                      Modify
+                                    </div>
                                     <div className={styles.optionRuler}></div>
-                                    <div className={styles.actionItem} onClick={onOpenDeleteReview}>Delete</div>
-                                  </div> : <></>}
+                                    <div
+                                      className={styles.actionItem}
+                                      onClick={onOpenDeleteReview}
+                                    >
+                                      Delete
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )}
                               </div>
                             </div>
                           )}
@@ -667,45 +596,30 @@ function EBook() {
                 </div>
               </div>
             </section>
-            {!recommendations.length ? (
+            {!recommendations ? (
               <Loading />
             ) : (
               <section className={styles.moreProducts}>
                 <div className={styles.header}>Sách cùng loại</div>
                 <Splide
-                  className={styles.splideType1}
-                  options={{
-                    type: 'loop',
-                    perPage: 1,
-                    perMove: 1,
-                  }}
-                  aria-label="My Favorite Images"
-                >
-                  {recommendations.map((book) => (
-                    <SplideSlide key={book.id}>
-                      <BookItemSplide itemsPerRow={1} book={book} />
-                    </SplideSlide>
-                  ))}
-                </Splide>
-                {/* <Splide
                   className={styles.splideType2}
                   options={{
-                    type: 'loop',
+                    type: "loop",
                     perPage: 3,
                     perMove: 1,
                   }}
                   aria-label="My Favorite Images"
                 >
-                  {!booksByCate ? (
+                  {!recommendations ? (
                     <Loading />
                   ) : (
-                    booksByCate.map((book) => (
-                      <SplideSlide key={book.id}>
+                    recommendations.map((book) => (
+                      <SplideSlide key={book._id}>
                         <BookItemSplide itemsPerRow={1} book={book} />
                       </SplideSlide>
                     ))
                   )}
-                </Splide> */}
+                </Splide>
               </section>
             )}
           </div>
@@ -715,7 +629,11 @@ function EBook() {
         <Footer />
         <Toaster />
       </div>
-      <Modal placement="center" isOpen={isOpenModifyReview} onOpenChange={onOpenChangeModifyReview}>
+      <Modal
+        placement="center"
+        isOpen={isOpenModifyReview}
+        onOpenChange={onOpenChangeModifyReview}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -724,12 +642,20 @@ function EBook() {
                 <div className={styles.modifyWrapper}>
                   <div className={styles.userWrapper}>
                     <div className={styles.avatar}>
-                      <img src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`} alt="img" />
+                      <img
+                        src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`}
+                        alt="img"
+                      />
                     </div>
-                    <div className={styles.name}>{isOpenReview.user.displayName}</div>
+                    <div className={styles.name}>
+                      {isOpenReview.user.displayName}
+                    </div>
                   </div>
                   <div className={styles.inputWrapper}>
-                    <Input value={currentReviewContent} onChange={e => setCurrentReviewContent(e.target.value)} />
+                    <Input
+                      value={currentReviewContent}
+                      onChange={(e) => setCurrentReviewContent(e.target.value)}
+                    />
                   </div>
                 </div>
               </ModalBody>
@@ -737,26 +663,43 @@ function EBook() {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={() => { onClose; handleUpdateReview() }}>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    onClose;
+                    handleUpdateReview();
+                  }}
+                >
                   Submit
                 </Button>
               </ModalFooter>
             </>
           )}
         </ModalContent>
-      </Modal >
-      <Modal placement="center" isOpen={isOpenDeleteReview} onOpenChange={onOpenChangeDeleteReview}>
+      </Modal>
+      <Modal
+        placement="center"
+        isOpen={isOpenDeleteReview}
+        onOpenChange={onOpenChangeDeleteReview}
+      >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Delete this review?</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                Delete this review?
+              </ModalHeader>
               <ModalBody>
                 <div className={styles.modifyWrapper}>
                   <div className={styles.userWrapper}>
                     <div className={styles.avatar}>
-                      <img src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`} alt="img" />
+                      <img
+                        src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`}
+                        alt="img"
+                      />
                     </div>
-                    <div className={styles.name}>{isOpenReview.user.displayName}</div>
+                    <div className={styles.name}>
+                      {isOpenReview.user.displayName}
+                    </div>
                   </div>
                   <div className={styles.inputWrapper}>
                     <Input value={isOpenReview.content} />
@@ -767,7 +710,13 @@ function EBook() {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={() => { onClose; handleDeleteReview() }}>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    onClose;
+                    handleDeleteReview();
+                  }}
+                >
                   Yes
                 </Button>
               </ModalFooter>

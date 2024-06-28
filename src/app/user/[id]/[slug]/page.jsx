@@ -174,6 +174,25 @@ const Profile = () => {
               <div className={styles.accountInfo}>
                 <div className={styles.top}>
                   <div className={styles.title}>{user?.displayName}</div>
+                  {currentAccount?._id !== userId && <>
+                    {
+                      isFollowing ?
+                        <Button color="primary" variant="flat" onPress={onOpenChangeUnfollowConfirm} >
+                          {
+                            isLoadingUnfollowRequest ?
+                              <Spinner /> :
+                              "Hủy theo dõi"
+                          }
+                        </Button> :
+                        <Button color="primary" variant="flat" onClick={() => handleFollowUser()}>
+                          {
+                            isLoadingFollowRequest ?
+                              <Spinner /> :
+                              "Theo dõi"
+                          }
+                        </Button>
+                    }
+                  </>}
                 </div>
 
                 <div className={styles.followInfo}>

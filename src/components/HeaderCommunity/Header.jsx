@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper';
 import { ListboxProfileWrapper } from '../ListboxWrapper/ListboxProfileWrapper'
-import { getNotificationsRequest, markAllNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
+import { getNotificationsRequest, markAllNotificationaAsReadRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
 import readingGoalImg from '../../../public/readinggoal.png'
@@ -230,7 +230,7 @@ const HeaderCommunity = () => {
                                               "Kiểm duyệt bình luận"
                                     }</span>
                                     <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`}
-                                      style={{ maxHeight: "46px" }}>
+                                    >
                                       {
                                         noti.action === "like" ? "Đã thích bài viết của bạn." :
                                           noti.action === "share" ? "Đã chia sẻ bài viết của bạn." :
@@ -301,6 +301,11 @@ const HeaderCommunity = () => {
                   Bảng xếp hạng
                 </Link>
               </div>
+              <div className={styles.menuItem}>
+                <Link href="/community" prefetch={false}>
+                  Review sách
+                </Link>
+              </div>
               <div className={styles.menuItem} >
                 <Link href={"/account/profile"} prefetch={false}>
                   <FontAwesomeIcon
@@ -334,6 +339,11 @@ const HeaderCommunity = () => {
                 <div className={styles.menuItem}>
                   <Link href="/ranking/sachdoc" prefetch={false}>
                     Bảng xếp hạng
+                  </Link>
+                </div>
+                <div className={styles.menuItem}>
+                  <Link href="/community" prefetch={false}>
+                    Review sách
                   </Link>
                 </div>
                 <div className={styles.menuItem} >
@@ -387,6 +397,10 @@ const HeaderCommunity = () => {
           <Link href="/ranking/sachdoc" prefetch={false}>
             <li className={styles.bottomMenuItem}>Bảng xếp hạng</li>
           </Link>
+          <Link href="/community" prefetch={false}>
+            Review sách
+          </Link>
+
 
         </ul>
       </div>

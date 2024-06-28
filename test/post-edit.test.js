@@ -83,7 +83,7 @@ describe("Create Post Page", function() {
         const richTextEditor = await driver.findElement(By.xpath("//div[@role='textbox']"));
         await richTextEditor.clear();
         await sleep(1000);
-        await richTextEditor.sendKeys('Nội dung bài viết chỉnh sửa');
+        await richTextEditor.sendKeys('NNội dung bài viết chỉnh sửa');
 
         // Submit the form
         const submitButton = await driver.findElement(By.css('.EditPost_submitBtn__t3NP6'));
@@ -92,7 +92,7 @@ describe("Create Post Page", function() {
 
         let message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
         while (message === 'Processing...') {
-            await driver.sleep(1000);
+            await driver.sleep(1500);
             message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
         }
         await checkToastMessage(driver, '.go3958317564', 'Bài viết được cập nhật thành công!');

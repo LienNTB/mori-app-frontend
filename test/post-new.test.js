@@ -91,7 +91,7 @@ describe("Create Post Page", function() {
 
         let message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
         while (message === 'Processing...') {
-            await driver.sleep(1000);
+            await driver.sleep(1500);
             message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
         }
         await checkToastMessage(driver, '.go3958317564', 'Bài viết được tạo thành công!');

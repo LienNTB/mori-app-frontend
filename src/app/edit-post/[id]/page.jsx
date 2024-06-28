@@ -111,7 +111,7 @@ const EditPost = () => {
                 image: respUploadImg.filename,
                 book: selectedSearchingBook ? selectedSearchingBook._id : null
               }
-              editPostRequest(postRequest)
+              editPostRequest(postRequest, id)
                 .then((respEditPost) => {
                   if (respEditPost.message) {
                     resolve(respEditPost.message);

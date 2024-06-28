@@ -44,25 +44,25 @@ describe("Create Post Page", function() {
 
     it('should create a new post', async function()  {
         await login('lientest', 'bichLien#20110335');
-        await driver.get('http://localhost:3000/new-post');
+        await driver.get('http://localhost:3000/edit-post/667e5af0769934a526d56a00');
 
         // Điền tiêu đề
-        const titleInput = await driver.findElement(By.css('input[placeholder="Nhập tiêu đề..."]'));
+        const titleInput = await driver.wait(until.elementLocated(By.css('input[placeholder="Nhập tiêu đề..."]')), 5000);
         await titleInput.sendKeys('Test - Tiêu đề bài viết');
 
         // Chọn ảnh cho bài viết
-        const imageInput = await driver.findElement(By.css('input[type="file"]'));
-        await imageInput.sendKeys(`${process.cwd()}/test/test-newpost.png`);
+        // const imageInput = await driver.findElement(By.css('input[type="file"]'));
+        // await imageInput.sendKeys(`${process.cwd()}/test/test-newpost.png`);
 
         // Select tags
-        const selectTagButton = await driver.findElement(By.css('.NewPost_tagInput___Epnt .NewPost_btn__D69JG'));
+        const selectTagButton = await driver.findElement(By.css('.EditPost_tagInput__kMi7c .EditPost_btn__m0EBk'));
         await selectTagButton.click();
         await sleep(1000); // Đợi modal mở ra
 
         // Tìm và chọn một tag
         const dropdownButton = await driver.findElement(By.css('button[data-slot="trigger"]'));
         await dropdownButton.click();
-        await sleep(2000); // Đợi dropdown mở ra
+        await sleep(1000); // Đợi dropdown mở ra
         
         // Tìm và click vào phần tử trong dropdown dựa trên text
         const dropdownItems = await driver.findElements(By.css('ul[data-slot="list"]'));
@@ -77,28 +77,24 @@ describe("Create Post Page", function() {
 
         const modalCloseButton = await driver.findElement(By.xpath("(//button[normalize-space()='Close'])[1]"));
         await modalCloseButton.click();
-        await sleep(1000);
-        // await modalCloseButton.click();
-        // await sleep(1000); // Đợi modal đóng lại
+        await sleep(500);
 
         // Enter content in the rich text editor
         const richTextEditor = await driver.findElement(By.xpath("//div[@role='textbox']"));
-        await richTextEditor.sendKeys('Nội dung bài viết');
+        await richTextEditor.clear();
+        await sleep(1000);
+        await richTextEditor.sendKeys('Nội dung bài viết chỉnh sửa');
 
         // Submit the form
-        const submitButton = await driver.findElement(By.css('.NewPost_submitBtn__67fBx'));
+        const submitButton = await driver.findElement(By.css('.EditPost_submitBtn__t3NP6'));
         await submitButton.click();
+        await sleep(2000);
 
         let message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
         while (message === 'Processing...') {
             await driver.sleep(1000);
             message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
         }
-        await checkToastMessage(driver, '.go3958317564', 'Bài viết được tạo thành công!');
-
-        // // Kiểm tra điều hướng về trang cộng đồng và bài viết mới có hiển thị
-        // await driver.wait(until.urlContains('/community'), 30000);
-        // const newPostTitle = await driver.findElement(By.contains('Test - Tiêu đề bài viết'));
-        // assert(await newPostTitle.isDisplayed(), 'Bài viết mới không hiển thị trong trang cộng đồng');
+        await checkToastMessage(driver, '.go3958317564', 'Bài viết được cập nhật thành công!');
     });
 });

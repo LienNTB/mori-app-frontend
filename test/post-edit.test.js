@@ -80,9 +80,9 @@ describe("Create Post Page", function() {
         await sleep(500);
 
         // Enter content in the rich text editor
+        await sleep(3000);
         const richTextEditor = await driver.findElement(By.xpath("//div[@role='textbox']"));
         await richTextEditor.clear();
-        await sleep(1000);
         await richTextEditor.sendKeys('NNội dung bài viết chỉnh sửa');
 
         // Submit the form

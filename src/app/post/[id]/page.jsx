@@ -1,5 +1,4 @@
 "use client";
-import Header from "@/components/Header/Header";
 import React, { useEffect, useState } from "react";
 import tempImg from "../../../../public/book.png";
 import styles from "./post.module.scss";

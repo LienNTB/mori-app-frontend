@@ -31,14 +31,16 @@ describe("Profile Page", function() {
     await driver.wait(until.urlContains('/homepage'), 20000);
   }
 
-  async function checkToastMessage(driver, cssSelector, expectedMessage) {
+  async function checkToastMessage(driver, cssSelector, expectedMessages) {
     const toastMessage = await driver.wait(
       until.elementLocated(By.css(cssSelector)),
       10000
     );
     const isDisplayed = await toastMessage.isDisplayed();
     const text = await toastMessage.getText();
-    assert.strictEqual(isDisplayed && text === expectedMessage, true, `Toast message không hiển thị hoặc không chứa nội dung mong đợi. Message: ${text}`);
+    // Kiểm tra xem text có nằm trong expectedMessages hay không
+    const isExpectedMessage = expectedMessages.includes(text);
+    assert.strictEqual(isDisplayed && isExpectedMessage, true, `Toast message không hiển thị hoặc không chứa nội dung mong đợi. Message: ${text}`);
   }
 
   async function getAccountElements(driver) {
@@ -167,7 +169,7 @@ describe("Profile Page", function() {
       while (message === 'Processing...') {
         message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();
         await driver.sleep(500);
-        await checkToastMessage(driver, '.go3958317564', 'Tạo mục tiêu mới thành công!' || 'Bạn đã có mục tiêu đọc sách cho Ngày rồi!');
+        await checkToastMessage(driver, '.go3958317564', ['Tạo mục tiêu mới thành công!','Bạn đã có mục tiêu đọc sách cho Ngày rồi!']);
       }
 
       //edit reading goal

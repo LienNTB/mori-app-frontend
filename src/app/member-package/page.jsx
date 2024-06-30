@@ -48,12 +48,14 @@ const MemberPackage = () => {
       return;
     }
     else{
+      console.log("membertype", membertype);
       if (checkMembership) {
         toast.error(
           "Vui lòng sử dụng hết gói cước đã đăng kí!"
         );
         console.log("The expiration date is still valid.");
-      } else{
+      } else if(membertype){
+        console.log("membertype", membertype);
         // set membership
         const membership = {
           user: currentAccount._id,
@@ -89,6 +91,12 @@ const MemberPackage = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (membertype) {
+      handleMemberRegisterBtnOnclick();
+    }
+  }, [membertype]);
   
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
@@ -151,7 +159,6 @@ const MemberPackage = () => {
               className={styles.registerBtn}
               onClick={() => {
                 setMembertype("year");
-                handleMemberRegisterBtnOnclick();
               }}
             >
               Mua gói năm
@@ -168,7 +175,6 @@ const MemberPackage = () => {
               className={styles.registerBtn}
               onClick={() => {
                 setMembertype("3month");
-                handleMemberRegisterBtnOnclick();
               }}
             >
               Mua gói 3 tháng
@@ -184,7 +190,6 @@ const MemberPackage = () => {
               className={styles.registerBtn}
               onClick={() => {
                 setMembertype("1month");
-                handleMemberRegisterBtnOnclick();
               }}
             >
               Mua gói tháng

@@ -155,7 +155,9 @@
       padding: 10px 20px;
       cursor: pointer;
       font-weight: 700;
+      font-size: 0.8rem;
       transition: all 0.2s linear;
+      white-space: nowrap;
       &:hover {
         background-color: rgb(151, 200, 241);
       }

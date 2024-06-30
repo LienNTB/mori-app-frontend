@@ -15,10 +15,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
 import { ListboxProfileWrapper } from '../ListboxWrapper/ListboxProfileWrapper'
-import { getNotificationsRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
+import { getNotificationsRequest, markAllNotificationaAsReadRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
 import readingGoalImg from '../../../public/readinggoal.png'
+import toast from 'react-hot-toast'
 const Header = () => {
   const dispatch = useDispatch()
   const [isOpenListbox, setIsOpenListbox] = useState(false)

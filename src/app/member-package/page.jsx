@@ -3,8 +3,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./member-package.module.scss";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
-import { useDispatch, useSelector } from "react-redux";
-import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
 import * as request from "../redux/saga/requests/membership";
@@ -15,15 +13,9 @@ const MemberPackage = () => {
   const [membertype, setMembertype] = useState(null);
   const [user, setUser] = useState("");
   const [membershipTypes, setMembershipTypes] = useState(0);
+  const [checkMembership, setCheckMembership] = useState();
   let currentAccount = user;
-
-  const redirectLogin = () => {
-    currentAccount = user;
-    if (!currentAccount) {
-      router.push("/login");
-    }
-  };
-
+  
   const getCurrentDate = () => {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -47,59 +39,74 @@ const MemberPackage = () => {
     const day = expiredDate.getDate();
     return `${year}-${month + 1}-${day}`;
   };
-  const currentDate = new Date(getCurrentDate());
-  const expiredDate = new Date(getExpiredDate()); // Set the expire date
 
   const handleMemberRegisterBtnOnclick = () => {
-    redirectLogin();
-
-    // if (currentDate < expiredDate) {
-    //   toast.error(
-    //     "Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!"
-    //   );
-    //   console.log("The expiration date is still valid."); // Perform actions for a valid date
-    // }
-    // else
-    if (membertype) {
-      const membership = {
-        user: currentAccount._id,
-        type: membertype,
-        start_date: getCurrentDate(),
-        outdated_on: getExpiredDate(),
-      };
-
-      let price = 0;
-      var type = null;
-      let productId = null;
-      let description = ""
-      membershipTypes.map((membershipType) => {
-        if (membershipType.name == membertype) {
-          price = membershipType.price;
-          description = membershipType.description;
-          productId = membershipType._id;
-        }
-      });
-      var type = "Membership";
-      var payment = {
-        price: price,
-        description: description,
-        type: type,
-        productId: productId,
-      };
-      localStorage.setItem("payment", JSON.stringify(payment));
-
-      localStorage.setItem("membership", JSON.stringify(membership));
-
-      router.replace("/payment", undefined, { shallow: true });
-      // handleRegisterMembership(membership)
+    const currentAccount = JSON.parse(localStorage.getItem("user"));
+    if (!currentAccount) {
+      router.push("/login");
+      toast.error("Vui lòng đăng nhập trước khi đăng ký gói cước!");
+      return;
+    }
+    else{
+      if (checkMembership) {
+        toast.error(
+          "Vui lòng sử dụng hết gói cước đã đăng kí!"
+        );
+        console.log("The expiration date is still valid.");
+      } else{
+        // set membership
+        const membership = {
+          user: currentAccount._id,
+          type: membertype,
+          start_date: getCurrentDate(),
+          outdated_on: getExpiredDate(),
+        };
+        localStorage.setItem("membership", JSON.stringify(membership));
+    
+        // set transaction
+        let price = 0;
+        let type = "Membership";
+        let productId = null;
+        let description = "";
+    
+        membershipTypes.map((membershipType) => {
+          if (membershipType.name === membertype) {
+            price = membershipType.price;
+            description = membershipType.description;
+            productId = membershipType._id;
+          }
+        });
+    
+        const payment = {
+          price: price,
+          description: description,
+          type: type,
+          productId: productId,
+        };
+        localStorage.setItem("payment", JSON.stringify(payment));
+    
+        router.push("/payment");
+      }
     }
   };
+  
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
     request.getAllMembershipTypeRequest().then((res) => {
       setMembershipTypes(res.membershipTypes);
     });
   }, []);
+
+  useEffect(() => {
+    if(currentAccount){
+      request.getMembershipByIdRequest(currentAccount._id).then((res) => {
+        if(res.membership){
+          setCheckMembership(true);
+          console.log("res.membership", res.membership);
+        }
+      });
+    }
+  }, [user]);
 
   return (
     <div className={styles.memberPackContainer}>

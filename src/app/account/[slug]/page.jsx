@@ -83,7 +83,7 @@ const Profile = () => {
     }
     return book.chapters && book.chapters.length > 0 ? "audio-book" : "ebook";
   }
-  
+
   useEffect(() => {
     if (deleteBookResult === 0) {
       toast("Xoá sách khỏi thư viện thành công!", {
@@ -99,7 +99,7 @@ const Profile = () => {
   }, [deleteBookResult, click]);
 
   useEffect(() => {
-    if(currentAccount){
+    if (currentAccount) {
       dispatch(getBooksFromMyLibrary(currentAccount._id));
     }
   }, [click]);
@@ -632,81 +632,79 @@ const Profile = () => {
                 Danh sách sách, truyện bạn đã mua
               </div>
             </div>
-            
-            {userTrans.length === 0 ?(
+
+            {userTrans.length === 0 ? (
               <>Bạn chưa mua quyển sách nào</>
             ) : (
 
-            <div className={styles.libraryBody}>
-              <table class="table-auto w-full">
-                <thead class="bg-slate-300">
-                  <tr>
-                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
-                      Hình
-                    </th>
-                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
-                      Sách
-                    </th>
-                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
-                      Tác giả
-                    </th>
-                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
-                      Thể loại
-                    </th>
-                    <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
-                      Hành động
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                    <div className={styles.uTable}>
-                      {isLoadingUserTrans ? (
-                        <Loading />
-                      ) : (
-                        userTrans.map((trans) => (
-                          <tr>
-                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                              <img
-                                src={`${types.BACKEND_URL}/api/bookimg/${trans.product.image}`}
-                                alt="image"
-                                className={styles.bookLibImg}
-                              />
-                            </td>
-                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
+              <div className={styles.libraryBody}>
+                <table class="table-auto w-full">
+                  <thead class="bg-slate-300">
+                    <tr>
+                      <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                        Hình
+                      </th>
+                      <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                        Sách
+                      </th>
+                      <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                        Tác giả
+                      </th>
+                      <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                        Thể loại
+                      </th>
+                      <th class="bg-gray-200 border-b border-gray-400 px-4 py-2">
+                        Hành động
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isLoadingUserTrans ? (
+                      <Loading />
+                    ) : (
+                      userTrans.map((trans) => (
+                        <tr>
+                          <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                            <img
+                              src={`${types.BACKEND_URL}/api/bookimg/${trans.product.image}`}
+                              alt="image"
+                              className={styles.bookLibImg}
+                            />
+                          </td>
+                          <td class="border-b text-center border-gray-400 px-4 py-2 max-w-200">
+                            <Link
+                              href={`/${getBookType(trans.product)}/${trans.product._id}`}
+                              prefetch={false}
+                              shallow
+                            >
+                              {trans.product.name}
+                            </Link>
+                          </td>
+                          <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                            {trans.product.author}
+                          </td>
+                          <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                            {trans.product.tags.map((tag, index) => (
+                              <React.Fragment key={index}>{tag}</React.Fragment>
+                            ))}
+                          </td>
+                          <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
+                            <div className={styles.readBtn}>
                               <Link
-                                href={`/${getBookType(trans.product)}/${trans.product._id}`}
+                                href={`/reader/${trans.product._id}`}
                                 prefetch={false}
-                                shallow
                               >
-                                {trans.product.name}
+                                Đọc sách
                               </Link>
-                            </td>
-                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                              {trans.product.author}
-                            </td>
-                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                              {trans.product.tags.map((tag, index) => (
-                                <React.Fragment key={index}>{tag}</React.Fragment>
-                              ))}
-                            </td>
-                            <td class="border-b text-center border-gray-400 px-4 py-2 max-w-100">
-                              <div className={styles.readBtn}>
-                                <Link
-                                  href={`/reader/${trans.product._id}`}
-                                  prefetch={false}
-                                >
-                                  Đọc sách
-                                </Link>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                   </div>
-                </tbody>
-              </table>
-            </div>
-          )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
         ) : (
           <></>
@@ -805,7 +803,7 @@ const Profile = () => {
         isOpen={isOpenDeleteReadingGoalConfirm}
         onOpenChange={onOpenChangeDeleteReadingGoalConfirm}
         deleteReadingGoal={deleteReadingGoal} />
-    </div>
+    </div >
   );
 };
 

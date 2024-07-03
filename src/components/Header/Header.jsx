@@ -15,10 +15,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
 import { ListboxProfileWrapper } from '../ListboxWrapper/ListboxProfileWrapper'
-import { getNotificationsRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
+import { getNotificationsRequest, markAllNotificationaAsReadRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
 import readingGoalImg from '../../../public/readinggoal.png'
+import toast from 'react-hot-toast'
 const Header = () => {
   const dispatch = useDispatch()
   const [isOpenListbox, setIsOpenListbox] = useState(false)
@@ -159,23 +160,7 @@ const Header = () => {
               {isAccountMenuOpen && <div className={styles.menuAccount}>
                 <ListboxProfileWrapper>
                   <Listbox variant="flat" aria-label="Listbox menu with sections"
-                    topContent={<div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between"
-                      }}
-                    >
-                      <div>Thông báo</div>
-                      <div
-                        style={{
-                          fontWeight: "normal",
-                          fontSize: "0.8rem",
-                          paddingTop: "20px"
-                        }}
-                        onClick={() => handleMarkAllAsRead()}
-                      >Đánh dấu tất cả đã đọc</div>
-                    </div>}>
+                  >
                     <ListboxItem
                       key="new"
                       startContent={<FontAwesomeIcon icon={faUser} />}
@@ -198,7 +183,24 @@ const Header = () => {
               {currentAccount && isNotificationMenuOpen && <div className={styles.menuNotification}>
                 <ListboxWrapper >
                   <Listbox variant="flat" aria-label="Listbox menu with sections"
-                    className={"max-h-80 overflow-y-scroll"}>
+                    className={"max-h-80 overflow-y-scroll"}
+                    topContent={<div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <div>Thông báo</div>
+                      <div
+                        style={{
+                          fontWeight: "normal",
+                          fontSize: "0.8rem",
+                          paddingTop: "20px"
+                        }}
+                        onClick={() => handleMarkAllAsRead()}
+                      >Đánh dấu tất cả đã đọc</div>
+                    </div>}>
                     <ListboxSection title="Thông báo">
                       {
                         notifications.length == 0 ?

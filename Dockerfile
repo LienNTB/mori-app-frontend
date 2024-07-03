@@ -1,9 +1,12 @@
-# Dockerfile cho Frontend
-FROM node:18 AS build
+# frontend/Dockerfile
+
+# Build stage
+FROM node:18 as build
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json .
+COPY yarn.lock .
 
 RUN yarn install
 
@@ -11,10 +14,10 @@ COPY . .
 
 RUN yarn build
 
-# Sử dụng nginx để phục vụ tệp tĩnh
+# Production stage
 FROM nginx:alpine
-COPY --from=build /app/out /usr/share/nginx/html
-COPY nginx/frontend.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=build /app/build /usr/share/nginx/html
 
 EXPOSE 80
 

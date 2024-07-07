@@ -420,17 +420,15 @@ function EBook() {
                   </div>
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    {book.tags.map((tag, index) => (
-                      <React.Fragment key={index}>
-                        <Link
-                          href={`/book-category/${tag}`}
-                          prefetch={false}
-                          shallow
-                        >
-                          <button className={styles.tag}>{tag}</button>
-                        </Link>{" "}
-                      </React.Fragment>
-                    ))}
+                    <div className={styles.tagList}>
+                      {book.tags.map((tag, index) => (
+                        <div className={styles.tagContainer}>
+                          <Link href={`/book-category/${tag}`} prefetch={false} shallow>
+                            {tag}
+                          </Link>{" "}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div className={styles.nextAction}>
                     <button

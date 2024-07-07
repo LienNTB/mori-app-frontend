@@ -54,12 +54,14 @@ import {
 } from "@nextui-org/react";
 import { getUserTransactionsRequest } from "@/app/redux/saga/requests/transaction";
 import * as types from "@/app/redux/types";
+import { calculateDiscountPrice } from "@/utils/numberUtils";
 
 function Book() {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.books.loading);
   const book = useSelector((state) => state.books.book);
   const [productPrice, setProductPrice] = useState(0);
+  const [discountPrice, setDiscountPrice] = useState(0);
   const isLoadingReview = useSelector((state) => state.reviews.loading);
   const reviews = useSelector((state) => state.reviews.reviews);
   let [currentAccount, setCurrentAccount] = useState(null)
@@ -460,13 +462,15 @@ function Book() {
                   </div>
                   <div className={styles.category}>
                     <div className={styles.title}>Thể loại</div>
-                    {book.tags.map((tag, index) => (
-                      <React.Fragment key={index}>
-                        <Link href={`/book-category/${tag}`} prefetch={false} shallow>
-                          <button className={styles.tag}>{tag}</button>
-                        </Link>{" "}
-                      </React.Fragment>
-                    ))}
+                    <div className={styles.tagList}>
+                      {book.tags.map((tag, index) => (
+                        <div className={styles.tagContainer}>
+                          <Link href={`/book-category/${tag}`} prefetch={false} shallow>
+                            {tag}
+                          </Link>{" "}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div className={styles.priceWrapper}>
                     <div className={styles.title}>Tạm tính</div>
@@ -474,10 +478,10 @@ function Book() {
                       <div className={styles.originalPrice}>
                         {productPrice}đ
                       </div>
-                      <div className={styles.discountPrice}>
-                        {productPrice}đ
-                      </div>
-                      <div className={styles.discountTag}>-33%</div>
+                      {book.discountPercent !== 0 && <div className={styles.discountPrice}>
+                        {calculateDiscountPrice(productPrice, book.discountPercent)}đ
+                      </div>}
+                      {book.discountPercent !== 0 && <div className={styles.discountTag}>{book.discountPercent}%</div>}
                     </div>
                   </div>
                   <div className={styles.nextAction}>

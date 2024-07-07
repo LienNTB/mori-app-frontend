@@ -27,7 +27,21 @@ export const reviewBookRequest = async (request) => {
       throw error;
     });
 };
+export const ratingBookRequest = async (request) => {
+  return fetch(`${type.BACKEND_URL}/api/review/rate`, {
+    method: "POST",
+    headers: type.requestHeader,
 
+    body: JSON.stringify(request),
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
 export const updateReviewRequest = async (id, content) => {
   return fetch(`${type.BACKEND_URL}/api/review/${id}`, {
     method: "PUT",

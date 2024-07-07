@@ -39,6 +39,7 @@ import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
 import {
   deleteReviewRequest,
+  ratingBookRequest,
   reviewBookRequest,
   updateReviewRequest,
 } from "@/app/redux/saga/requests/review";
@@ -157,7 +158,7 @@ function Book() {
         user: currentAccount._id,
       });
       createOrUpdateUserRecommendationsRequest({
-        user_id : currentAccount._id,
+        user_id: currentAccount._id,
         book_id: book._id
       })
     }
@@ -203,13 +204,13 @@ function Book() {
   };
 
   const handleSendReview = () => {
-    if(!currentAccount){
+    if (!currentAccount) {
       toast.error("Vui lòng đăng nhập để review sách", {
         duration: 2000,
       });
       redirectLogin();
     }
-    else{
+    else {
       const request = {
         user_id: currentAccount._id,
         book_id: id,
@@ -275,6 +276,36 @@ function Book() {
 
   const handleSetBookRating = (ratingData) => {
     setRating(ratingData);
+    if (currentAccount !== null) {
+      const request = {
+        book_id: id,
+        user_id: currentAccount._id,
+        rating: rating
+      }
+
+      toast.promise(
+        new Promise((resolve, reject) => {
+          ratingBookRequest(request).then((resp) => {
+            if (resp.message) {
+              resolve("Thêm rating thành công!");
+            }
+            else {
+              console.log("resp", resp.error)
+              reject(resp.error);
+            }
+          });
+        }),
+        {
+          loading: "Processing...",
+          success: (message) => message,
+          error: (error) => error,
+        }
+      );
+
+    }
+    else {
+      toast.error("Vui lòng đăng nhập để đánh giá sách!")
+    }
   };
 
   const checkBuyBook = () => {
@@ -336,7 +367,7 @@ function Book() {
   useEffect(() => {
     if (book) {
       setProductPrice(book.price);
-      if(currentAccount){
+      if (currentAccount) {
         getUserTransactions();
       }
     }
@@ -381,35 +412,9 @@ function Book() {
                     </a>
                   </div>
                   <div className={styles.rating}>
-                    <FontAwesomeIcon
-                      icon={faStar}
-                      width={25}
-                      height={25}
-                      style={{ color: "#f8d80d" }}
-                    />
-                    <FontAwesomeIcon
-                      icon={faStar}
-                      width={25}
-                      height={25}
-                      style={{ color: "#f8d80d" }}
-                    />
-                    <FontAwesomeIcon
-                      icon={faStar}
-                      width={25}
-                      height={25}
-                      style={{ color: "#f8d80d" }}
-                    />
-                    <FontAwesomeIcon
-                      icon={faStar}
-                      width={25}
-                      height={25}
-                      style={{ color: "#f8d80d" }}
-                    />
-                    <FontAwesomeIcon
-                      icon={faStar}
-                      width={25}
-                      height={25}
-                      style={{ color: "#cfcfcf" }}
+                    <RatingStars
+                      setRatingData={handleSetBookRating}
+                      currentRating={5}
                     />
                   </div>
                   <div className={styles.yourRating}>
@@ -457,7 +462,7 @@ function Book() {
                     <div className={styles.title}>Thể loại</div>
                     {book.tags.map((tag, index) => (
                       <React.Fragment key={index}>
-                        <Link href={`/book-category/${tag}`} prefetch={false}  shallow>
+                        <Link href={`/book-category/${tag}`} prefetch={false} shallow>
                           <button className={styles.tag}>{tag}</button>
                         </Link>{" "}
                       </React.Fragment>

@@ -26,7 +26,9 @@ import {
 } from "@/app/redux/saga/requests/book";
 import {
   addNoteForBookRequest,
+  deleteNoteForBookRequest,
   getNotesForBookByUserRequest,
+  updateNoteForBookRequest,
 } from "@/app/redux/saga/requests/note";
 import * as types from "@/app/redux/types";
 import {
@@ -45,7 +47,7 @@ const Reader = () => {
   const [book, setBook] = useState(null);
   const [selections, setSelections] = useState([]);
   const [rendition, setRendition] = useState(null);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [scrollBehavior, setScrollBehavior] = React.useState("inside");
   const [currentAccount, setCurrentAccount] = useState(0);
   const [isSelectionMenuOpen, setSelectionMenuOpen] = useState(false);
@@ -58,11 +60,20 @@ const Reader = () => {
   const [showChapterMenu, setShowChapterMenu] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [selectedNote, setSelectedNote] = useState(null)
+  const [editNoteInput, setEditNoteInput] = useState("")
+  const [isLoadingNote, setIsLoadingNote] = useState(false)
   const {
     isOpen: isOpenChapters,
     onOpen: onOpenChapters,
     onOpenChange: onOpenChangeChapters,
     onClose: onCloseChapters,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenEditNote,
+    onOpen: onOpenEditNote,
+    onOpenChange: onOpenChangeEditNote,
+    onClose: onCloseEditNote,
   } = useDisclosure();
 
   const [audioUrl, setAudioUrl] = useState("");
@@ -116,6 +127,7 @@ const Reader = () => {
 
   const handleSelectHighlighter = (event) => {
     const selectedValue = event.target.value;
+    setSelectedHighlighter(selectedValue)
   };
 
   const handleSaveNote = () => {
@@ -151,7 +163,10 @@ const Reader = () => {
         cfiRange: currentCfiRange,
         color: selectedHighlighter,
       };
-      addNoteForBookRequest(request);
+      addNoteForBookRequest(request)
+        .then(() => {
+          getNoteData()
+        })
     } else {
       alert("Vui lòng đăng nhập nếu bạn muốn lưu lại ghi chú");
     }
@@ -264,6 +279,40 @@ const Reader = () => {
     }
   }
 
+  const handleEditNote = () => {
+    if (!currentAccount) {
+      return;
+    }
+    const request = {
+      user: currentAccount._id,
+      book: id,
+      content: editNoteInput,
+      cfiRange: selectedNote.cfiRange,
+      color: selectedNote.color
+    }
+    toast.promise(
+      new Promise((resolve, reject) => {
+        updateNoteForBookRequest(request, selectedNote._id)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.message);
+              getNoteData()
+
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error,
+      }
+    );
+  }
 
   // gọi đầu tiên
   useEffect(() => {
@@ -312,13 +361,25 @@ const Reader = () => {
     }
   }, [rendition, isDarkMode]);
 
-  useEffect(() => {
+  const getNoteData = () => {
+    setIsLoadingNote(true)
     if (isRenditionReady && currentAccount) {
       getNotesForBookByUserRequest(book._id, currentAccount._id).then((res) => {
         setSelections(res.notes);
         renderAnnotations(res.notes);
       });
     }
+    setIsLoadingNote(false)
+  }
+  const handleRemoveNote = (note) => {
+    console.log("note", note._id)
+    deleteNoteForBookRequest(note._id)
+      .then(() => {
+        getNoteData()
+      })
+  }
+  useEffect(() => {
+    getNoteData()
   }, [isRenditionReady]);
 
   // remove vị trí selection thôi
@@ -480,6 +541,7 @@ const Reader = () => {
       playAudio();
     }
   }, [audioUrl]);
+  console.log("isLoadingNote", isLoadingNote)
 
   const handleAudioEnded = async () => {
     if (currentSentenceIndex < sentences.length - 1) {
@@ -638,47 +700,60 @@ const Reader = () => {
                 Danh sách ghi chú
               </ModalHeader>
               <ModalBody>
-                <div className="border border-stone-400 bg-white min-h-[100px] p-2 rounded">
-                  <ul className="grid grid-cols-1 divide-y divide-stone-400 border-stone-400 -mx-2 p-2">
-                    {selections.length === 0 ? (
+                <div className=" bg-white min-h-[100px] p-2 rounded">
+                  <ul className="grid grid-cols-1 divide-y  -mx-2 p-2">
+                    {!isLoadingNote && selections.length === 0 ? (
                       <>Bạn chưa có ghi chú</>
                     ) : (
                       selections.map(
-                        ({ text, cfiRange, content, color }, i) => (
+                        (note, i) => (
                           <li key={i} className="p-2">
-                            <span style={{ backgroundColor: color }}>
-                              {text}
+                            <span style={{ backgroundColor: note.color }}>
+                              {note.text}
                             </span>
                             <br />
-                            <span>Ghi chú: {content}</span>
+                            <span>Ghi chú: {note.content}</span>
                             <br />
                             <button
-                              className="underline hover:no-underline text-sm mx-1"
+                              className=" hover:no-underline text-sm mx-1"
                               onClick={() => {
-                                rendition?.display(cfiRange);
+                                rendition?.display(note.cfiRange);
                               }}
                             >
                               Show
                             </button>
 
                             <button
-                              className="underline hover:no-underline text-sm mx-1"
+                              className=" hover:no-underline text-sm mx-1"
                               onClick={() => {
                                 rendition?.annotations.remove(
-                                  cfiRange,
+                                  note.cfiRange,
                                   "highlight"
                                 );
                                 setSelections(
                                   selections.filter((item, j) => j !== i)
                                 );
+                                handleRemoveNote(note)
                               }}
                             >
                               Remove
+                            </button>
+                            <button
+                              className=" hover:no-underline text-sm mx-1"
+                              onClick={() => {
+                                setSelectedNote(note)
+                                setEditNoteInput(note.content)
+                                onOpenEditNote()
+                              }}
+                            >
+                              Edit
                             </button>
                           </li>
                         )
                       )
                     )}
+                    {isLoadingNote &&
+                      <>Loading...</>}
                   </ul>
                 </div>
               </ModalBody>
@@ -693,7 +768,7 @@ const Reader = () => {
             </>
           )}
         </ModalContent>
-      </Modal>
+      </Modal >
       <Modal
         isOpen={isSelectionMenuOpen}
         onOpenChange={() => setSelectionMenuOpen(false)}
@@ -774,6 +849,41 @@ const Reader = () => {
           )}
         </ModalContent>
       </Modal>
+      <Modal isOpen={isOpenEditNote} onOpenChange={onOpenChangeEditNote}>
+        <ModalContent>
+          {(onCloseChapters) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Edit note
+              </ModalHeader>
+              <ModalBody>
+                <input type="text" value={editNoteInput} onChange={(e) => setEditNoteInput(e.target.value)} />
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={onCloseEditNote}
+                >
+                  Close
+                </Button>
+                <Button
+                  color="primary"
+                  variant="light"
+                  onPress={() => {
+                    handleEditNote()
+                    onCloseEditNote()
+                    onClose()
+                  }}
+                >
+                  Submit
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Toaster />
     </>
   );
 };

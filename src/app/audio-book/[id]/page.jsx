@@ -68,6 +68,8 @@ function AudioBookPage() {
   const id = params.id;
   const [recommendations, setRecommendations] = useState("")
   const [loading, setLoading] = useState(true);
+  const [reload, setReload] = useState(0);
+
 
   const onListenHandler = (e) => {
     setCurTime(e.target.currentTime);
@@ -149,7 +151,6 @@ function AudioBookPage() {
       toast.error("Vui lòng đăng nhập để review sách", {
         duration: 2000,
       });
-      redirectLogin();
     }
     else {
       const request = {
@@ -455,128 +456,7 @@ function AudioBookPage() {
                 <div className={styles.ruler}></div>
               </div>
               <div className={styles.productReviewWrapper}>
-                <div className={styles.reviewSidebar}>
-                  <div className={styles.ratingOverview}>
-                    <div className={styles.rating__current}>5</div>
-                    <div className={styles.rating__left}>
-                      <div className={styles.ratingStars}>
-                        <div className={styles.rating__star}>
-                          <div className={styles.reviewStars}>
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                          </div>
-                        </div>
-                        <div className={styles.rating__secondary}>
-                          (Đánh giá: 3)
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.starDetail}>
-                    <div className={styles.starLines}>
-                      <div>5</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="100"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>4</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>3</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>2</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                    <div className={styles.starLines}>
-                      <div>1</div>
-                      <div>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                      </div>
-
-                      <progress
-                        className={styles.starLine__line}
-                        max="100"
-                        value="0"
-                      ></progress>
-                      <div className={styles.starLine__percentage}>100%</div>
-                    </div>
-                  </div>
-                </div>
                 <div className={styles.reviewMainContent}>
-                  <div className={styles.reviewNavigation}>
-                    <div className={styles.reviewNavigationList}>
-                      <div className={styles.reviewNavigationItemChoosen}>
-                        All review
-                      </div>
-                      <div className={styles.reviewNavigationItem}>
-                        <FontAwesomeIcon
-                          className={styles.star}
-                          icon={faStar}
-                        />
-                        <div
-                          className={styles.reviewNavigationItem__starNumber}
-                        >
-                          5
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                   <div className={styles.ruler}></div>
                   {isLoadingReview ? (
                     <Loading />

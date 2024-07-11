@@ -1,0 +1,333 @@
+{
+  "stats": {
+    "suites": 3,
+    "tests": 8,
+    "passes": 7,
+    "pending": 0,
+    "failures": 1,
+    "start": "2024-07-11T10:42:46.552Z",
+    "end": "2024-07-11T10:43:22.249Z",
+    "duration": 35697,
+    "testsRegistered": 8,
+    "passPercent": 87.5,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "43f3d421-59ba-4695-957b-6d7462b169eb",
+      "title": "",
+      "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\login.test.js",
+      "file": "\\test\\login.test.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "4a6a3818-ef0e-422a-92f7-aa0fec72db2b",
+          "title": "Login Page",
+          "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\login.test.js",
+          "file": "\\test\\login.test.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Login Page\"",
+              "fullTitle": "Login Page \"before all\" hook in \"Login Page\"",
+              "timedOut": false,
+              "duration": 2017,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "95da38db-b4a8-4408-a2d4-0d51f989e481",
+              "parentUUID": "4a6a3818-ef0e-422a-92f7-aa0fec72db2b",
+              "isHook": true,
+              "skipped": false
+            },
+            {
+              "title": "\"before each\" hook in \"Login Page\"",
+              "fullTitle": "Login Page \"before each\" hook in \"Login Page\"",
+              "timedOut": false,
+              "duration": 1240,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.get('http://localhost:3000/login');",
+              "err": {},
+              "uuid": "1c7baff0-b7d4-4bd7-aa53-42177cd74514",
+              "parentUUID": "4a6a3818-ef0e-422a-92f7-aa0fec72db2b",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Login Page\"",
+              "fullTitle": "Login Page \"after all\" hook in \"Login Page\"",
+              "timedOut": false,
+              "duration": 189,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "295bb0fa-7a48-43f5-8c3f-cc5868d2b487",
+              "parentUUID": "4a6a3818-ef0e-422a-92f7-aa0fec72db2b",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "95eee7f0-03b0-4202-88e8-5dbd5f7daa74",
+              "title": "Login",
+              "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\login.test.js",
+              "file": "\\test\\login.test.js",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should display login form",
+                  "fullTitle": "Login Page Login should display login form",
+                  "timedOut": false,
+                  "duration": 220,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "const welcomeText = await driver.findElement(By.xpath(\"//*[contains(text(), 'WELCOME BACK!')]\"));\nconst usernameInput = await driver.findElement(By.css('input.login_div7__ond80'));\nconst passwordInput = await driver.findElement(By.css('input.login_div9__yOW_d'));\nconst signInButton = await driver.findElement(By.xpath(\"//*[contains(text(), 'Sign In')]\"));\nconst continueWithText = await driver.findElement(By.xpath(\"//*[contains(text(), 'or continue with')]\"));\nconst socialLoginDiv = await driver.findElement(By.css('div.login_div16__86GRZ'));\nassert(await welcomeText.isDisplayed());\nassert(await usernameInput.isDisplayed());\nassert(await passwordInput.isDisplayed());\nassert(await signInButton.isDisplayed());\nassert(await continueWithText.isDisplayed());\nassert(await socialLoginDiv.isDisplayed());",
+                  "err": {},
+                  "uuid": "e4f222dc-e1b1-4f7a-bed7-07fcb7662299",
+                  "parentUUID": "95eee7f0-03b0-4202-88e8-5dbd5f7daa74",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should log in successfully with correct credentials",
+                  "fullTitle": "Login Page Login should log in successfully with correct credentials",
+                  "timedOut": false,
+                  "duration": 1819,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "const usernameInput = await driver.findElement(By.css('input.login_div7__ond80'));\nconst passwordInput = await driver.findElement(By.css('input.login_div9__yOW_d'));\nconst signInButton = await driver.findElement(By.css('.login_div14__bjpo5'));\nawait usernameInput.sendKeys('lientest');\nawait passwordInput.sendKeys('bichLien#20110335');\nawait signInButton.click();\nawait sleep(1000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nconst myCssSelector = '.go2072408551';\nawait checkToastMessage(driver, myCssSelector, 'Đăng nhập thành công!');\nawait sleep(3000);\nconst currentUrl = await driver.getCurrentUrl();\nassert(currentUrl.includes('/homepage'));",
+                  "err": {
+                    "message": "StaleElementReferenceError: stale element reference: stale element not found in the current frame\n  (Session info: chrome=126.0.6478.127)",
+                    "estack": "StaleElementReferenceError: stale element reference: stale element not found in the current frame\n  (Session info: chrome=126.0.6478.127)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:740:17)\n    at async checkToastMessage (test\\login.test.js:32:25)\n    at async Context.<anonymous> (test\\login.test.js:66:7)",
+                    "diff": null
+                  },
+                  "uuid": "0f2257a2-6af2-45ba-95ab-812efb1fb055",
+                  "parentUUID": "95eee7f0-03b0-4202-88e8-5dbd5f7daa74",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should display error for missing username",
+                  "fullTitle": "Login Page Login should display error for missing username",
+                  "timedOut": false,
+                  "duration": 1335,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "// Kiểm tra trường hợp không có tên người dùng\nconst usernameInput = await driver.findElement(By.css('input.login_div7__ond80'));\nconst passwordInput = await driver.findElement(By.css('input.login_div9__yOW_d'));\nconst signInButton = await driver.findElement(By.css('.login_div14__bjpo5'));\nawait passwordInput.sendKeys('bichLien#20110335');\nawait signInButton.click();\nawait sleep(1000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nconst myCssSelector = '.go2072408551';\nawait checkToastMessage(driver, myCssSelector, 'Vui lòng nhập đủ thông tin đăng nhập!');",
+                  "err": {},
+                  "uuid": "28731779-f5a7-4c80-a810-717df50c257b",
+                  "parentUUID": "95eee7f0-03b0-4202-88e8-5dbd5f7daa74",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should display error for missing password",
+                  "fullTitle": "Login Page Login should display error for missing password",
+                  "timedOut": false,
+                  "duration": 1302,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "const usernameInput = await driver.findElement(By.css('input.login_div7__ond80'));\nconst passwordInput = await driver.findElement(By.css('input.login_div9__yOW_d'));\nconst signInButton = await driver.findElement(By.css('.login_div14__bjpo5'));\n// Kiểm tra trường hợp không có mật khẩu\nawait usernameInput.sendKeys('lientest');\nawait signInButton.click();\nawait sleep(1000);\nconst myCssSelector = '.go2072408551';\nawait checkToastMessage(driver, myCssSelector, 'Vui lòng nhập đủ thông tin đăng nhập!');",
+                  "err": {},
+                  "uuid": "99bfdc5d-6eb1-49a7-a522-cb9d81f0257d",
+                  "parentUUID": "95eee7f0-03b0-4202-88e8-5dbd5f7daa74",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should display error for invalid login credentials",
+                  "fullTitle": "Login Page Login should display error for invalid login credentials",
+                  "timedOut": false,
+                  "duration": 6758,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "const usernameInput = await driver.findElement(By.css('input.login_div7__ond80'));\nconst passwordInput = await driver.findElement(By.css('input.login_div9__yOW_d'));\nconst signInButton = await driver.findElement(By.css('.login_div14__bjpo5'));\n// Nhập sai username\nawait usernameInput.sendKeys('lienaaaa');\nawait passwordInput.sendKeys('bichLien#20110335');\nawait signInButton.click();\nawait sleep(3000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nconst myCssSelector = '.go2072408551';\nawait checkToastMessage(driver, myCssSelector, 'Thông tin đăng nhập không đúng!');\n// Nhập sai password\nawait usernameInput.clear();\nawait usernameInput.sendKeys('lientest');\nawait passwordInput.clear();\nawait passwordInput.sendKeys('20110335');\nawait signInButton.click();\nawait sleep(3000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nawait checkToastMessage(driver, myCssSelector, 'Mật khẩu bạn nhập chưa chính xác');",
+                  "err": {},
+                  "uuid": "9b9c6753-0908-488c-9a82-d88d38aa206e",
+                  "parentUUID": "95eee7f0-03b0-4202-88e8-5dbd5f7daa74",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "e4f222dc-e1b1-4f7a-bed7-07fcb7662299",
+                "28731779-f5a7-4c80-a810-717df50c257b",
+                "99bfdc5d-6eb1-49a7-a522-cb9d81f0257d",
+                "9b9c6753-0908-488c-9a82-d88d38aa206e"
+              ],
+              "failures": [
+                "0f2257a2-6af2-45ba-95ab-812efb1fb055"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 11434,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 30000
+            },
+            {
+              "uuid": "aa193d4f-c20a-4f56-bbdd-ee3576c12c6a",
+              "title": "Forgot Password",
+              "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\login.test.js",
+              "file": "\\test\\login.test.js",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "Account not found",
+                  "fullTitle": "Login Page Forgot Password Account not found",
+                  "timedOut": false,
+                  "duration": 4396,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "const forgotPasswordLink = await driver.findElement(By.xpath(\"//*[contains(text(), 'Forget password?')]\"));\nawait forgotPasswordLink.click();\nconst emailInput = await driver.findElement(By.css('input[type=\"text\"]'));\nconst resetPasswordButton = await driver.findElement(By.xpath(\"//*[contains(text(), 'Reset password')]\"));\nawait emailInput.sendKeys('test@example.com');\nawait resetPasswordButton.click();\nawait sleep(3000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nconst myCssSelector = '.go2072408551';\ncheckToastMessage(driver, myCssSelector, 'Account not found');",
+                  "err": {},
+                  "uuid": "a6e71003-d07c-450b-b762-7a8760be25fd",
+                  "parentUUID": "aa193d4f-c20a-4f56-bbdd-ee3576c12c6a",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "Password reset email sent",
+                  "fullTitle": "Login Page Forgot Password Password reset email sent",
+                  "timedOut": false,
+                  "duration": 3845,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "const forgotPasswordLink = await driver.findElement(By.xpath(\"//*[contains(text(), 'Forget password?')]\"));\nawait forgotPasswordLink.click();\nconst emailInput = await driver.findElement(By.css('input[type=\"text\"]'));\nconst resetPasswordButton = await driver.findElement(By.xpath(\"//*[contains(text(), 'Reset password')]\"));\nawait emailInput.sendKeys('20110335@student.hcmute.edu.vn');\nawait resetPasswordButton.click();\nawait sleep(3000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nconst myCssSelector = '.go2072408551';\ncheckToastMessage(driver, myCssSelector, 'Password reset email sent!');",
+                  "err": {},
+                  "uuid": "4a1a20c5-815d-447a-9daf-8e6d60a9f277",
+                  "parentUUID": "aa193d4f-c20a-4f56-bbdd-ee3576c12c6a",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "Missing email",
+                  "fullTitle": "Login Page Forgot Password Missing email",
+                  "timedOut": false,
+                  "duration": 3454,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "const forgotPasswordLink = await driver.findElement(By.xpath(\"//*[contains(text(), 'Forget password?')]\"));\nawait forgotPasswordLink.click();\nconst resetPasswordButton = await driver.findElement(By.xpath(\"//*[contains(text(), 'Reset password')]\"));\nawait resetPasswordButton.click();\nawait sleep(3000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nconst myCssSelector = '.go2072408551';\ncheckToastMessage(driver, myCssSelector, 'Vui lòng nhập email!');",
+                  "err": {},
+                  "uuid": "972c27e9-b5bc-4db1-ab35-b7746dc8874c",
+                  "parentUUID": "aa193d4f-c20a-4f56-bbdd-ee3576c12c6a",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "a6e71003-d07c-450b-b762-7a8760be25fd",
+                "4a1a20c5-815d-447a-9daf-8e6d60a9f277",
+                "972c27e9-b5bc-4db1-ab35-b7746dc8874c"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 11695,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 30000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 30000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.4.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": null,
+      "version": "6.2.0"
+    }
+  }
+}

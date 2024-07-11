@@ -1,0 +1,216 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 4,
+    "passes": 4,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-07-11T13:35:33.648Z",
+    "end": "2024-07-11T13:35:56.644Z",
+    "duration": 22996,
+    "testsRegistered": 4,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "1fc994c9-9b13-46bb-b198-2e23f069bf0d",
+      "title": "",
+      "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\homepage.test.js",
+      "file": "\\test\\homepage.test.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "d20f92dd-51ba-4527-87c4-887a5a416988",
+          "title": "HomePage",
+          "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\homepage.test.js",
+          "file": "\\test\\homepage.test.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"HomePage\"",
+              "fullTitle": "HomePage \"before all\" hook in \"HomePage\"",
+              "timedOut": false,
+              "duration": 2538,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "28ae1c6f-3e2e-42c6-a509-a6fab682fe8d",
+              "parentUUID": "d20f92dd-51ba-4527-87c4-887a5a416988",
+              "isHook": true,
+              "skipped": false
+            },
+            {
+              "title": "\"before each\" hook in \"HomePage\"",
+              "fullTitle": "HomePage \"before each\" hook in \"HomePage\"",
+              "timedOut": false,
+              "duration": 778,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.get('http://localhost:3000');",
+              "err": {},
+              "uuid": "0fa4ed2c-a976-4bad-8352-62b1de81d012",
+              "parentUUID": "d20f92dd-51ba-4527-87c4-887a5a416988",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"HomePage\"",
+              "fullTitle": "HomePage \"after all\" hook in \"HomePage\"",
+              "timedOut": false,
+              "duration": 66,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "d88e2d28-c9fd-458e-9bc4-8b86bce91099",
+              "parentUUID": "d20f92dd-51ba-4527-87c4-887a5a416988",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "display",
+              "fullTitle": "HomePage display",
+              "timedOut": false,
+              "duration": 2677,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "//check header\nawait driver.findElement(By.css(\".Header_menuLaptop__2tD7o\")).click()\nawait driver.findElement(By.css(\".Header_menuLaptop__2tD7o input\")).click()\n//check footer\nconst footer = await driver.findElement(By.css('footer'));\n// check danh mục\nawait driver.findElement(By.css(\".Header_danhmuc__vbubx\")).click()\nawait sleep(2000);// chờ danh mục load tags - cuộn chuột check \nconst danhMucElement = await driver.findElement(By.css(\".gap-1\"))\nconst actions = driver.actions({async: true});\nawait actions.move({origin: danhMucElement}).press().perform();\nawait driver.actions({ bridge: true }).move(danhMucElement).perform()\nawait driver.actions({ bridge: true }).move(danhMucElement).release().perform()\nconst danhMucText = await danhMucElement.getText();\nassert.strictEqual(danhMucText.trim() !== '', true, 'Danh mục bị trống - lỗi load tags');",
+              "err": {},
+              "uuid": "18382fc5-f89c-4dc2-8570-2436b43d5619",
+              "parentUUID": "d20f92dd-51ba-4527-87c4-887a5a416988",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should display book categories",
+              "fullTitle": "HomePage should display book categories",
+              "timedOut": false,
+              "duration": 3460,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const bookSections = await driver.findElements(By.css('.homepage_bookSectionContainer__Og0C8'));\nassert(bookSections.length > 0, 'No book sections found');\nawait sleep(3000);\nfor (let section of bookSections) {\n  const sectionHeader = await section.findElement(By.css('.homepage_sectionHeader__pfYbU'));\n  assert(await sectionHeader.isDisplayed(), 'Section header not displayed');\n  \n  const bookList = await section.findElement(By.css('.homepage_sectionBody__QmY5K'));\n  const listbookText = await bookList.getText();\n  assert.strictEqual(listbookText.trim() !== '', true , 'Book list or bookcategories not displayed');\n}",
+              "err": {},
+              "uuid": "835fd23e-dfad-4ce1-b26e-70800bbbd15f",
+              "parentUUID": "d20f92dd-51ba-4527-87c4-887a5a416988",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to category pages when 'Xem thêm' is clicked",
+              "fullTitle": "HomePage should navigate to category pages when 'Xem thêm' is clicked",
+              "timedOut": false,
+              "duration": 3619,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const viewMoreButtons = await driver.findElements(By.css('.homepage_bookSectionContainer__Og0C8:nth-child(4) .homepage_getmorebtn__fLrAS'));\nassert(viewMoreButtons.length > 0, 'No \"Xem thêm\" buttons found');\nfor (let button of viewMoreButtons) {\n  const href = await button.getAttribute('href');\n  await button.click();\n  await driver.wait(until.urlContains(href), 10000);\n  const currentUrl = await driver.getCurrentUrl();\n  assert(currentUrl.includes(href), `Failed to navigate to ${href}`);\n  await driver.navigate().back();\n  await sleep(2000); // Đợi trang tải lại trước khi kiểm tra nút tiếp theo\n}",
+              "err": {},
+              "uuid": "1e29afd7-a899-41ce-9391-3fdc14b35718",
+              "parentUUID": "d20f92dd-51ba-4527-87c4-887a5a416988",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should display user recommendations if logged in",
+              "fullTitle": "HomePage should display user recommendations if logged in",
+              "timedOut": false,
+              "duration": 7437,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Đăng nhập tài khoản\nawait driver.wait(until.elementLocated(By.linkText(\"Login\"))).click();\nawait sleep(3000);\nconst usernameInput = await driver.findElement(By.css('input.login_div7__ond80'));\nconst passwordInput = await driver.findElement(By.css('input.login_div9__yOW_d'));\nconst signInButton = await driver.findElement(By.css('.login_div14__bjpo5'));\nawait usernameInput.sendKeys('lientest');\nawait passwordInput.sendKeys('bichLien#20110335');\nawait signInButton.click();\nawait sleep(4000); // Đợi một thời gian để dữ liệu tải xong\nconst recommendationSection = await driver.findElement(By.xpath(\"//h3[contains(text(), 'Mori nghĩ bạn sẽ thích')]\"));\nassert(await recommendationSection.isDisplayed(), 'Recommendation section not displayed');",
+              "err": {},
+              "uuid": "d3d2ef6a-2096-41e4-b83f-801a226722e4",
+              "parentUUID": "d20f92dd-51ba-4527-87c4-887a5a416988",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "18382fc5-f89c-4dc2-8570-2436b43d5619",
+            "835fd23e-dfad-4ce1-b26e-70800bbbd15f",
+            "1e29afd7-a899-41ce-9391-3fdc14b35718",
+            "d3d2ef6a-2096-41e4-b83f-801a226722e4"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 17193,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 30000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.4.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "homepage",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "mocha-reports",
+        "reportFilename": "homepage"
+      },
+      "version": "6.2.0"
+    }
+  }
+}

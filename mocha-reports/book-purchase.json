@@ -1,0 +1,293 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 8,
+    "passes": 8,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-07-11T11:06:41.675Z",
+    "end": "2024-07-11T11:07:47.644Z",
+    "duration": 65969,
+    "testsRegistered": 8,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "781e5269-25fc-4dfb-a552-6fcf1fcfbbae",
+      "title": "",
+      "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\book-purchase.test.js",
+      "file": "\\test\\book-purchase.test.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "0f56707e-b302-4860-ad99-d73920c950a4",
+          "title": "Book Purchase Page",
+          "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\book-purchase.test.js",
+          "file": "\\test\\book-purchase.test.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Book Purchase Page\"",
+              "fullTitle": "Book Purchase Page \"before all\" hook in \"Book Purchase Page\"",
+              "timedOut": false,
+              "duration": 3771,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "ca5441ef-c7fd-4640-b841-68636dd6a3fd",
+              "parentUUID": "0f56707e-b302-4860-ad99-d73920c950a4",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Book Purchase Page\"",
+              "fullTitle": "Book Purchase Page \"after all\" hook in \"Book Purchase Page\"",
+              "timedOut": false,
+              "duration": 121,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "44183548-40ff-4cce-b028-9ec8b500742e",
+              "parentUUID": "0f56707e-b302-4860-ad99-d73920c950a4",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "a2e4edf9-6b13-4206-b239-a76e62cdfc9b",
+              "title": "BOOK PURCHASE",
+              "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\book-purchase.test.js",
+              "file": "\\test\\book-purchase.test.js",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should display purchase page elements",
+                  "fullTitle": "Book Purchase Page BOOK PURCHASE should display purchase page elements",
+                  "timedOut": false,
+                  "duration": 4183,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await driver.get('http://localhost:3000/book/659330e9ff7f147158b2036c');\nconst { buyButton, readButton, heartButton } = await getPurchaseElements(driver);\nassert(await buyButton.isDisplayed());\nassert(await readButton.isDisplayed());\nassert(await heartButton.isDisplayed());",
+                  "err": {},
+                  "uuid": "cb197c8b-c94e-4969-8d56-040cdc986915",
+                  "parentUUID": "a2e4edf9-6b13-4206-b239-a76e62cdfc9b",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show error when trying to read book without purchasing",
+                  "fullTitle": "Book Purchase Page BOOK PURCHASE should show error when trying to read book without purchasing",
+                  "timedOut": false,
+                  "duration": 3903,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await driver.get('http://localhost:3000/book/659330e9ff7f147158b2036c');\nconst { readButton } = await getPurchaseElements(driver);\nawait driver.executeScript('localStorage.clear();'); // Simulate not having purchased the book\nawait readButton.click();\nawait sleep(500);\n// Check for toast message\nawait checkToastMessage(driver, '.go3958317564', 'Vui lòng đăng nhập và mua sách để đọc sách này!');",
+                  "err": {},
+                  "uuid": "fe8710e5-43e7-4add-b927-71715217fe95",
+                  "parentUUID": "a2e4edf9-6b13-4206-b239-a76e62cdfc9b",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should send review successfully with correct details",
+                  "fullTitle": "Book Purchase Page BOOK PURCHASE should send review successfully with correct details",
+                  "timedOut": false,
+                  "duration": 12845,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await login('nguyenlien', 'bichLien#20110335');\nawait driver.get('http://localhost:3000/book/659330e9ff7f147158b2036c');\nconst { reviewTextarea, sendReviewButton } = await getPurchaseElements(driver);\nawait reviewTextarea.sendKeys('Great book!');\nawait sendReviewButton.click();\nawait sleep(2000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nawait checkToastMessage(driver, '.go3958317564', 'Thêm review thành công!');",
+                  "err": {},
+                  "uuid": "1c97d812-4638-4f1b-8a28-c778bc85c45f",
+                  "parentUUID": "a2e4edf9-6b13-4206-b239-a76e62cdfc9b",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should read book successfully when clicking 'Read' button",
+                  "fullTitle": "Book Purchase Page BOOK PURCHASE should read book successfully when clicking 'Read' button",
+                  "timedOut": false,
+                  "duration": 9925,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await login('lientest', 'bichLien#20110335');\nawait driver.get('http://localhost:3000/book/659330e9ff7f147158b2036c');\nconst { readButton } = await getPurchaseElements(driver);\nawait readButton.click();\nawait driver.wait(until.urlContains('/reader'), 10000);\nconst currentUrl = await driver.getCurrentUrl();\nassert(currentUrl.includes('/reader'), 'Không chuyển hướng đến trang đọc sách.');",
+                  "err": {},
+                  "uuid": "277eac4c-a1c9-4ec5-b1b3-9c983789409a",
+                  "parentUUID": "a2e4edf9-6b13-4206-b239-a76e62cdfc9b",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show error when trying to buy book when already purchased",
+                  "fullTitle": "Book Purchase Page BOOK PURCHASE should show error when trying to buy book when already purchased",
+                  "timedOut": false,
+                  "duration": 8702,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await login('lientest', 'bichLien#20110335');\nawait driver.get('http://localhost:3000/book/659330e9ff7f147158b2036c');\nconst { buyButton } = await getPurchaseElements(driver);\nawait buyButton.click();\nawait sleep(500);\n// Check for toast message\nawait checkToastMessage(driver, '.go3958317564', 'Bạn đã mua sách này, để đọc tiếp vui lòng chọn đọc ngay');",
+                  "err": {},
+                  "uuid": "f6e3a1b0-4e2d-4858-a817-c407434abf94",
+                  "parentUUID": "a2e4edf9-6b13-4206-b239-a76e62cdfc9b",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should purchase book successfully when clicking 'Buy' button",
+                  "fullTitle": "Book Purchase Page BOOK PURCHASE should purchase book successfully when clicking 'Buy' button",
+                  "timedOut": false,
+                  "duration": 7303,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await login('nguyenlien', 'bichLien#20110335');\nawait driver.get('http://localhost:3000/book/659330e9ff7f147158b2036c');\nconst { buyButton } = await getPurchaseElements(driver);\nawait buyButton.click();\n// Check for redirect to payment page\nawait driver.wait(until.urlContains('/payment'), 10000);\nconst currentUrl = await driver.getCurrentUrl();\nassert(currentUrl.includes('/payment'), 'Không chuyển hướng đến trang thanh toán.');",
+                  "err": {},
+                  "uuid": "34403dd8-44fe-4c26-b204-b95a64e0a800",
+                  "parentUUID": "a2e4edf9-6b13-4206-b239-a76e62cdfc9b",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should like book successfully when clicking 'Heart' button",
+                  "fullTitle": "Book Purchase Page BOOK PURCHASE should like book successfully when clicking 'Heart' button",
+                  "timedOut": false,
+                  "duration": 8035,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await login('nguyenlien', 'bichLien#20110335');\nawait driver.get('http://localhost:3000/book/659330e9ff7f147158b2036c');\nconst { heartButton } = await getPurchaseElements(driver);\nawait heartButton.click();\nawait sleep(1000);\n// Check for toast message\nawait checkToastMessage(driver, '.go3958317564', 'Hearted!');",
+                  "err": {},
+                  "uuid": "e224556f-6474-486d-b081-d164e501a767",
+                  "parentUUID": "a2e4edf9-6b13-4206-b239-a76e62cdfc9b",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show error when trying to read book without purchasing",
+                  "fullTitle": "Book Purchase Page BOOK PURCHASE should show error when trying to read book without purchasing",
+                  "timedOut": false,
+                  "duration": 7158,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await login('nguyenlien', 'bichLien#20110335');\nawait driver.get('http://localhost:3000/book/659330e9ff7f147158b2036c');\nconst { readButton } = await getPurchaseElements(driver);\nawait readButton.click();\nawait sleep(1000);\n// Check for toast message\nawait checkToastMessage(driver, '.go3958317564', 'Vui lòng mua sách để đọc sách này!');",
+                  "err": {},
+                  "uuid": "b0c3223f-d7a2-440f-ad83-311f2b9b6020",
+                  "parentUUID": "a2e4edf9-6b13-4206-b239-a76e62cdfc9b",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "cb197c8b-c94e-4969-8d56-040cdc986915",
+                "fe8710e5-43e7-4add-b927-71715217fe95",
+                "1c97d812-4638-4f1b-8a28-c778bc85c45f",
+                "277eac4c-a1c9-4ec5-b1b3-9c983789409a",
+                "f6e3a1b0-4e2d-4858-a817-c407434abf94",
+                "34403dd8-44fe-4c26-b204-b95a64e0a800",
+                "e224556f-6474-486d-b081-d164e501a767",
+                "b0c3223f-d7a2-440f-ad83-311f2b9b6020"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 62054,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 30000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 30000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.4.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "book-purchase",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "mocha-reports",
+        "reportFilename": "book-purchase"
+      },
+      "version": "6.2.0"
+    }
+  }
+}

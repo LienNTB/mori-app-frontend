@@ -1,0 +1,273 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 7,
+    "passes": 7,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-07-11T12:16:15.243Z",
+    "end": "2024-07-11T12:17:15.969Z",
+    "duration": 60726,
+    "testsRegistered": 7,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "2395ac41-562b-4406-b12b-cb687805a781",
+      "title": "",
+      "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\community.test.js",
+      "file": "\\test\\community.test.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+          "title": "Community Page",
+          "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\community.test.js",
+          "file": "\\test\\community.test.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Community Page\"",
+              "fullTitle": "Community Page \"before all\" hook in \"Community Page\"",
+              "timedOut": false,
+              "duration": 8510,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser('chrome').build();\nawait login('lientest', 'bichLien#20110335');",
+              "err": {},
+              "uuid": "df85249f-35d7-424d-ac4c-40a5e9d2b31b",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": true,
+              "skipped": false
+            },
+            {
+              "title": "\"before each\" hook in \"Community Page\"",
+              "fullTitle": "Community Page \"before each\" hook in \"Community Page\"",
+              "timedOut": false,
+              "duration": 816,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.get('http://localhost:3000/community');",
+              "err": {},
+              "uuid": "5d46dbc1-9d62-4158-90c6-20234bf0dacb",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Community Page\"",
+              "fullTitle": "Community Page \"after all\" hook in \"Community Page\"",
+              "timedOut": false,
+              "duration": 52,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "8e9a7af5-9f6b-4942-97c3-af122e246635",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should display the header",
+              "fullTitle": "Community Page should display the header",
+              "timedOut": false,
+              "duration": 177,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const header = await driver.findElement(By.css('.Header_menuLaptop__KWZHU'));\nassert(await header.isDisplayed(), 'Header is not displayed');",
+              "err": {},
+              "uuid": "811b6817-406f-4755-9fa7-a3e63f2d9b33",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should display posts",
+              "fullTitle": "Community Page should display posts",
+              "timedOut": false,
+              "duration": 3087,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await sleep(3000); // Wait for posts to load\nconst posts = await driver.findElements(By.css('.Community_postList___mc5j'));\nassert(posts.length > 0, 'No posts found');\nfor (let post of posts) {\n  const postTitle = await post.findElement(By.css('.Community_postTitle__yMMwb'));\n  assert(await postTitle.isDisplayed(), 'Post title not displayed');\n  const postBody = await post.findElement(By.css('.Community_postBody__LHpSR'));\n  assert(await postBody.isDisplayed(), 'Post body not displayed');\n}",
+              "err": {},
+              "uuid": "f6dd2201-3b8b-46a1-b43f-0b9d5840ba7f",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to user profile when clicking on user avatar",
+              "fullTitle": "Community Page should navigate to user profile when clicking on user avatar",
+              "timedOut": false,
+              "duration": 2049,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const userAvatar = await driver.wait(until.elementLocated(By.xpath(\"//img[@alt='avt']\")),10000);\nawait userAvatar.click();\nawait sleep(500);\nconst acc = await driver.wait(until.elementLocated(By.xpath(\"//li[@role='presentation']//li[1]\")),1000);\nawait acc.click();\n\nawait driver.wait(until.urlContains('/account'), 10000);",
+              "err": {},
+              "uuid": "9b208c1f-9efd-4743-8999-e5ac707e673f",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should display post details when clicking on post title",
+              "fullTitle": "Community Page should display post details when clicking on post title",
+              "timedOut": false,
+              "duration": 2299,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const postTitle = await driver.wait(until.elementLocated(By.xpath(\"(//div[@class='Community_postTitle__yMMwb']/a)[1]\")), 10000);\nconst postDetailUrl = await postTitle.getAttribute('href');\nawait postTitle.click();\nawait driver.wait(until.urlContains(postDetailUrl), 10000);\nconst currentUrl = await driver.getCurrentUrl();\nassert(currentUrl.includes(postDetailUrl), `Failed to navigate to ${postDetailUrl}`);",
+              "err": {},
+              "uuid": "25cd6040-c9ab-4b38-a676-2e0bf6343e55",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to post detail page when post title is clicked",
+              "fullTitle": "Community Page should navigate to post detail page when post title is clicked",
+              "timedOut": false,
+              "duration": 25273,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Chờ trang tải hoàn toàn\nawait driver.wait(until.elementLocated(By.xpath(\"//div[@class='Community_postTitle__yMMwb']\")), 10000);\n  \nlet postItems = await driver.findElements(By.xpath(\"//div[@class='Community_postTitle__yMMwb']\"));\nassert(postItems.length > 0, 'No post items found');\n  \nfor (let i = 0; i < postItems.length; i++) {\n  // Xác định lại các phần tử sau khi quay lại trang trước\n  postItems = await driver.findElements(By.xpath(\"//div[@class='Community_postTitle__yMMwb']\"));\n  const postItem = postItems[i];\n  const postTitle = await postItem.findElement(By.xpath(\".//a\")); // Sửa XPath để chỉ tìm kiếm trong postItem\n  const href = await postTitle.getAttribute('href');\n  await postTitle.click();\n  await driver.wait(until.urlContains(href), 10000);\n  const currentUrl = await driver.getCurrentUrl();\n  assert(currentUrl.includes(href), `Failed to navigate to ${href}`);\n  \n  await driver.navigate().back();\n  await sleep(2000); // Đợi trang tải lại trước khi kiểm tra nút tiếp theo\n}",
+              "err": {},
+              "uuid": "508a89a8-2e4f-4feb-939d-7a5c141b1d13",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should display tags associated with posts",
+              "fullTitle": "Community Page should display tags associated with posts",
+              "timedOut": false,
+              "duration": 10039,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.sleep(10000); // Chờ bài đăng tải\nconst tagListElements = await driver.findElements(By.className('Community_tagList__r1ut8'));\nassert(tagListElements.length > 0, 'Elements containing tags were not found.');\n  \nconst tagElements = await tagListElements[0].findElements(By.className('Tag_container__cy7A5'));\nassert(tagElements.length > 0, 'Tags not found');\n  \nfor (let tagElement of tagElements) {\n  assert(await tagElement.isDisplayed(), 'Tags are not displayed');\n}",
+              "err": {},
+              "uuid": "bd52eda1-1d3d-4fb8-a5ab-af9452601570",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should display the footer",
+              "fullTitle": "Community Page should display the footer",
+              "timedOut": false,
+              "duration": 59,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const footer = await driver.findElement(By.css('footer'));\nassert(await footer.isDisplayed(), 'Footer is not displayed');",
+              "err": {},
+              "uuid": "3092bc90-ea95-4ae2-90b2-9f710f190225",
+              "parentUUID": "6eb931e4-1546-415d-8b9f-4e44700e282e",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "811b6817-406f-4755-9fa7-a3e63f2d9b33",
+            "f6dd2201-3b8b-46a1-b43f-0b9d5840ba7f",
+            "9b208c1f-9efd-4743-8999-e5ac707e673f",
+            "25cd6040-c9ab-4b38-a676-2e0bf6343e55",
+            "508a89a8-2e4f-4feb-939d-7a5c141b1d13",
+            "bd52eda1-1d3d-4fb8-a5ab-af9452601570",
+            "3092bc90-ea95-4ae2-90b2-9f710f190225"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 42983,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 30000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.4.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "community",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "mocha-reports",
+        "reportFilename": "community"
+      },
+      "version": "6.2.0"
+    }
+  }
+}

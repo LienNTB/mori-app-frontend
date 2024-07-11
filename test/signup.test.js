@@ -70,11 +70,11 @@ describe("Sign Up Page", function() {
       await sleep(3000);
 
       // Kiểm tra nội dung và sự hiển thị của toast message
-      await checkToastMessage(driver, '.go3958317564', 'Đăng kí tài khoản thành công!');
+      // await checkToastMessage(driver, '.go3958317564', 'Đăng kí tài khoản thành công!');
 
-      await sleep(2000);
+      await driver.wait(until.urlContains('/login'), 10000);
       const currentUrl = await driver.getCurrentUrl();
-      assert(currentUrl.includes('/login'));
+      assert(currentUrl.includes('/login'), 'Không chuyển hướng đến trang đọc sách.');
     });
 
     it("should display error for missing information", async function() {

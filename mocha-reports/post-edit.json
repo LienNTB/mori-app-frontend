@@ -1,0 +1,141 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-07-11T13:37:29.857Z",
+    "end": "2024-07-11T13:37:50.247Z",
+    "duration": 20390,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "fcc51c33-2743-4e31-981d-b49437b91034",
+      "title": "",
+      "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\post-edit.test.js",
+      "file": "\\test\\post-edit.test.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "891048ed-fa83-4c80-bcb2-945dfc3ad771",
+          "title": "Create Post Page",
+          "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\post-edit.test.js",
+          "file": "\\test\\post-edit.test.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Create Post Page\"",
+              "fullTitle": "Create Post Page \"before all\" hook in \"Create Post Page\"",
+              "timedOut": false,
+              "duration": 938,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "97feee0a-6064-4660-846d-179adbb02ffe",
+              "parentUUID": "891048ed-fa83-4c80-bcb2-945dfc3ad771",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Create Post Page\"",
+              "fullTitle": "Create Post Page \"after all\" hook in \"Create Post Page\"",
+              "timedOut": false,
+              "duration": 356,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "c59637ef-2fe6-4ce8-9b04-51cceebf2355",
+              "parentUUID": "891048ed-fa83-4c80-bcb2-945dfc3ad771",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should create a new post",
+              "fullTitle": "Create Post Page should create a new post",
+              "timedOut": false,
+              "duration": 19088,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await login('lientest', 'bichLien#20110335');\nawait driver.get('http://localhost:3000/edit-post/667e5af0769934a526d56a00');\n// Điền tiêu đề\nconst titleInput = await driver.wait(until.elementLocated(By.css('input[placeholder=\"Nhập tiêu đề...\"]')), 5000);\nawait titleInput.sendKeys('Test - Tiêu đề bài viết');\n// Chọn ảnh cho bài viết\n// const imageInput = await driver.findElement(By.css('input[type=\"file\"]'));\n// await imageInput.sendKeys(`${process.cwd()}/test/test-newpost.png`);\n// Select tags\nconst selectTagButton = await driver.findElement(By.css('.EditPost_tagInput__kMi7c .EditPost_btn__m0EBk'));\nawait selectTagButton.click();\nawait sleep(1000); // Đợi modal mở ra\n// Tìm và chọn một tag\nconst dropdownButton = await driver.findElement(By.css('button[data-slot=\"trigger\"]'));\nawait dropdownButton.click();\nawait sleep(1000); // Đợi dropdown mở ra\n\n// Tìm và click vào phần tử trong dropdown dựa trên text\nconst dropdownItems = await driver.findElements(By.css('ul[data-slot=\"list\"]'));\nfor (const item of dropdownItems) {\n    if ((await item.getText()).trim() === \"Review sách\") {\n      await item.click();\n    }\n  }\nawait dropdownButton.click();\nawait sleep(500); // Đợi dropdown đóng lại\nconst modalCloseButton = await driver.findElement(By.xpath(\"(//button[normalize-space()='Close'])[1]\"));\nawait modalCloseButton.click();\nawait sleep(500);\n// Enter content in the rich text editor\nawait sleep(3000);\nconst richTextEditor = await driver.findElement(By.xpath(\"//div[@role='textbox']\"));\nawait richTextEditor.clear();\nawait richTextEditor.sendKeys('NNội dung bài viết chỉnh sửa');\n// Submit the form\nconst submitButton = await driver.findElement(By.css('.EditPost_submitBtn__t3NP6'));\nawait submitButton.click();\nawait sleep(2000);\nlet message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();\nwhile (message === 'Processing...') {\n    await driver.sleep(1500);\n    message = await driver.wait(until.elementLocated(By.css('.go3958317564')), 10000).getText();\n}\nawait checkToastMessage(driver, '.go3958317564', 'Bài viết được cập nhật thành công!');",
+              "err": {},
+              "uuid": "f96e928e-83ad-4ba5-bf3a-1a6f44aa4443",
+              "parentUUID": "891048ed-fa83-4c80-bcb2-945dfc3ad771",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "f96e928e-83ad-4ba5-bf3a-1a6f44aa4443"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 19088,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 60000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.4.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "post-edit",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "mocha-reports",
+        "reportFilename": "post-edit"
+      },
+      "version": "6.2.0"
+    }
+  }
+}

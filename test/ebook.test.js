@@ -123,14 +123,21 @@ describe("EBook Page", function() {
         // Kiểm tra nội dung và sự hiển thị của toast message
         await checkToastMessage(driver, '.go3958317564', 'Thêm review thành công!');
     });
-    });
+  });
 
   describe("BOOK MEMBER", function() {
     it("should show error when reading book without logging in", async function() {
         await driver.get('http://localhost:3000/ebook/664c95c134e9d01f77e6f1b6');
         await sleep(1000);
+
         // đăng xuất tài khoản
-        await driver.executeScript('localStorage.clear();');
+        const account = await driver.wait(until.elementLocated(By.css('.Header_accountAvt__puLhX')),10000);
+        await account.click();
+        await driver.findElement(By.xpath("//div[@class='Header_container__Aasa1']//li[2]")).click();
+        await sleep(1000);
+        //
+        await driver.get('http://localhost:3000/ebook/664c95c134e9d01f77e6f1b6');
+        await sleep(1000);
 
         const { readButton } = await getEBookElements(driver);
         await readButton.click();

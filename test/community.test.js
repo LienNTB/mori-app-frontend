@@ -64,39 +64,49 @@ describe("Community Page", function() {
     await driver.wait(until.urlContains('/account'), 10000);
   });
 
-    it("should display post details when clicking on post title", async function() {
-        const postTitle = await driver.wait(until.elementLocated(By.xpath("(//div[@class='Community_postTitle__yMMwb']/a)[1]")), 10000);
-        const postDetailUrl = await postTitle.getAttribute('href');
-        await postTitle.click();
-        await driver.wait(until.urlContains(postDetailUrl), 10000);
-        const currentUrl = await driver.getCurrentUrl();
-        assert(currentUrl.includes(postDetailUrl), `Failed to navigate to ${postDetailUrl}`);
-    });
+  it("should display post details when clicking on post title", async function() {
+      const postTitle = await driver.wait(until.elementLocated(By.xpath("(//div[@class='Community_postTitle__yMMwb']/a)[1]")), 10000);
+      const postDetailUrl = await postTitle.getAttribute('href');
+      await postTitle.click();
+      await driver.wait(until.urlContains(postDetailUrl), 10000);
+      const currentUrl = await driver.getCurrentUrl();
+      assert(currentUrl.includes(postDetailUrl), `Failed to navigate to ${postDetailUrl}`);
+  });
 
-    // it('should navigate to post detail page when post title is clicked', async function() {
-    //     const postItems = await driver.findElements(By.xpath("(//div[@class='Community_postTitle__yMMwb'])"));
-    //     assert(postItems.length > 0, 'No post items found');
-
-    //     for (let postItem of postItems) {
-    //         const postTitle = await postItem.findElement(By.xpath("(//div[@class='Community_postTitle__yMMwb']/a)"));
-    //         const href = await postTitle.getAttribute('href');
-    //         await postTitle.click();
-    //         await driver.wait(until.urlContains(href), 10000);
-    //         const currentUrl = await driver.getCurrentUrl();
-    //         assert(currentUrl.includes(href), `Failed to navigate to ${href}`);
-
-    //         await driver.navigate().back();
-    //         await sleep(2000); // Đợi trang tải lại trước khi kiểm tra nút tiếp theo
-    //     }
-    // });
+  it('should navigate to post detail page when post title is clicked', async function() {
+    // Chờ trang tải hoàn toàn
+    await driver.wait(until.elementLocated(By.xpath("//div[@class='Community_postTitle__yMMwb']")), 10000);
+  
+    let postItems = await driver.findElements(By.xpath("//div[@class='Community_postTitle__yMMwb']"));
+    assert(postItems.length > 0, 'No post items found');
+  
+    for (let i = 0; i < postItems.length; i++) {
+      // Xác định lại các phần tử sau khi quay lại trang trước
+      postItems = await driver.findElements(By.xpath("//div[@class='Community_postTitle__yMMwb']"));
+      const postItem = postItems[i];
+      const postTitle = await postItem.findElement(By.xpath(".//a")); // Sửa XPath để chỉ tìm kiếm trong postItem
+      const href = await postTitle.getAttribute('href');
+      await postTitle.click();
+      await driver.wait(until.urlContains(href), 10000);
+      const currentUrl = await driver.getCurrentUrl();
+      assert(currentUrl.includes(href), `Failed to navigate to ${href}`);
+  
+      await driver.navigate().back();
+      await sleep(2000); // Đợi trang tải lại trước khi kiểm tra nút tiếp theo
+    }
+  });
 
   it("should display tags associated with posts", async function() {
-    await sleep(3000); // Wait for posts to load
-    const tags = await driver.findElements(By.css('.Community_tagList__r1ut8'));
-    assert(tags.length > 0, 'No tags found');
+    await driver.sleep(10000); // Chờ bài đăng tải
 
-    for (let tag of tags) {
-      assert(await tag.isDisplayed(), 'Tag not displayed');
+    const tagListElements = await driver.findElements(By.className('Community_tagList__r1ut8'));
+    assert(tagListElements.length > 0, 'Elements containing tags were not found.');
+  
+    const tagElements = await tagListElements[0].findElements(By.className('Tag_container__cy7A5'));
+    assert(tagElements.length > 0, 'Tags not found');
+  
+    for (let tagElement of tagElements) {
+      assert(await tagElement.isDisplayed(), 'Tags are not displayed');
     }
   });
 

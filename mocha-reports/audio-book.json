@@ -1,0 +1,313 @@
+{
+  "stats": {
+    "suites": 3,
+    "tests": 8,
+    "passes": 8,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-07-11T10:59:23.843Z",
+    "end": "2024-07-11T11:00:29.470Z",
+    "duration": 65627,
+    "testsRegistered": 8,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "bfee66fd-88e8-4f7a-82dd-22f3e42cca8c",
+      "title": "",
+      "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\audio-book.test.js",
+      "file": "\\test\\audio-book.test.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "d841cf9f-2417-44f2-a074-6e35f8cbadac",
+          "title": "AudioBook Page",
+          "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\audio-book.test.js",
+          "file": "\\test\\audio-book.test.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"AudioBook Page\"",
+              "fullTitle": "AudioBook Page \"before all\" hook in \"AudioBook Page\"",
+              "timedOut": false,
+              "duration": 2336,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "79c65641-6a6a-4840-a88b-3c2c726bb13b",
+              "parentUUID": "d841cf9f-2417-44f2-a074-6e35f8cbadac",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"AudioBook Page\"",
+              "fullTitle": "AudioBook Page \"after all\" hook in \"AudioBook Page\"",
+              "timedOut": false,
+              "duration": 400,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "af6f07d4-1c90-4fa7-886d-5aada62635e1",
+              "parentUUID": "d841cf9f-2417-44f2-a074-6e35f8cbadac",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "85c2eec1-1f95-4c51-bc0a-66d03674d2ef",
+              "title": "AUDIO BOOK FREE",
+              "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\audio-book.test.js",
+              "file": "\\test\\audio-book.test.js",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should display audiobook page elements",
+                  "fullTitle": "AudioBook Page AUDIO BOOK FREE should display audiobook page elements",
+                  "timedOut": false,
+                  "duration": 11667,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await driver.get('http://localhost:3000/audio-book/656eef18a09708917971ab2b');\nconst { listenButton, saveButton, heartButton, reviewTextarea, sendReviewButton} = await getAudioBookElements(driver);\nassert(await listenButton.isDisplayed());\nassert(await saveButton.isDisplayed());\nassert(await heartButton.isDisplayed());\nassert(await reviewTextarea.isDisplayed());\nassert(await sendReviewButton.isDisplayed());\n// assert(await audioPlayer.isDisplayed());",
+                  "err": {},
+                  "uuid": "c9288986-b273-4add-bf2e-411bc4c51315",
+                  "parentUUID": "85c2eec1-1f95-4c51-bc0a-66d03674d2ef",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should play audio successfully when clicking 'Listen' button",
+                  "fullTitle": "AudioBook Page AUDIO BOOK FREE should play audio successfully when clicking 'Listen' button",
+                  "timedOut": false,
+                  "duration": 4124,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await driver.get('http://localhost:3000/audio-book/656eef18a09708917971ab2b');\nconst { listenButton } = await getAudioBookElements(driver);\nawait listenButton.click();\nawait sleep(500);\n// Chờ cho phần tử audioPlayer xuất hiện\nconst audioPlayer = await driver.wait(until.elementLocated(By.xpath(\"//div[@class='ChapterAudioPlayer_chapterAudioPlayer__SijhM']\")), 5000)\n// Lấy giá trị currentTime từ phần tử audioPlayer\naudioPlayer.findElement(By.tagName('audio')).getAttribute('currentTime').then(currentTime => {\n  // Kiểm tra giá trị currentTime\n  assert(parseFloat(currentTime) > 0, 'Audio không bắt đầu phát.');\n});",
+                  "err": {},
+                  "uuid": "26d196b5-1e65-4066-b88a-8f6d0dd4bb0e",
+                  "parentUUID": "85c2eec1-1f95-4c51-bc0a-66d03674d2ef",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should save audiobook successfully when clicking 'Save' button",
+                  "fullTitle": "AudioBook Page AUDIO BOOK FREE should save audiobook successfully when clicking 'Save' button",
+                  "timedOut": false,
+                  "duration": 11459,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await login('nguyenlien', 'bichLien#20110335');\nawait driver.get('http://localhost:3000/audio-book/656eef18a09708917971ab2b');\nconst { saveButton } = await getAudioBookElements(driver);\nawait saveButton.click();\nawait sleep(1000);\n// Lấy giá trị của cửa sổ cảnh báo\nconst alert = await driver.switchTo().alert();\nconst registerAlertText = await alert.getText();\n// Kiểm tra giá trị của cửa sổ cảnh báo\nconst expectedAlertText = 'Thêm sách Atomic habits - Thói quen nguyên tử vào thư viện?';\nif (registerAlertText === expectedAlertText) {\n    console.log('Giá trị cửa sổ cảnh báo đúng');\n} else {\n    console.error('Giá trị cửa sổ cảnh báo không đúng');\n}\n// Chấp nhận cửa sổ cảnh báo\nawait alert.accept();\n// Kiểm tra nội dung và sự hiển thị của toast message\nawait sleep(2000);\nawait checkToastMessage(driver, '.go3958317564', 'Sách đã tồn tại trong thư viện!');",
+                  "err": {},
+                  "uuid": "c7d12c00-2996-4084-9009-6721821024c1",
+                  "parentUUID": "85c2eec1-1f95-4c51-bc0a-66d03674d2ef",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should like audiobook successfully when clicking 'Heart' button",
+                  "fullTitle": "AudioBook Page AUDIO BOOK FREE should like audiobook successfully when clicking 'Heart' button",
+                  "timedOut": false,
+                  "duration": 4761,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await driver.get('http://localhost:3000/audio-book/656eef18a09708917971ab2b');\nconst { heartButton } = await getAudioBookElements(driver);\nawait heartButton.click();\nawait sleep(1000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nawait checkToastMessage(driver, '.go3958317564', 'Hearted!');",
+                  "err": {},
+                  "uuid": "efb0fa36-f214-470c-9783-977f0326e0f2",
+                  "parentUUID": "85c2eec1-1f95-4c51-bc0a-66d03674d2ef",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should send review successfully with correct details",
+                  "fullTitle": "AudioBook Page AUDIO BOOK FREE should send review successfully with correct details",
+                  "timedOut": false,
+                  "duration": 9574,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await login('nguyenlien', 'bichLien#20110335');\nawait driver.get('http://localhost:3000/audio-book/656eef18a09708917971ab2b');\nconst { reviewTextarea, sendReviewButton } = await getAudioBookElements(driver);\nawait reviewTextarea.sendKeys('Great audiobook!');\nawait sendReviewButton.click();\nawait sleep(2000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nawait checkToastMessage(driver, '.go3958317564', 'Thêm review thành công!');",
+                  "err": {},
+                  "uuid": "365d08de-8041-48bf-b121-96ca75f5152e",
+                  "parentUUID": "85c2eec1-1f95-4c51-bc0a-66d03674d2ef",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "c9288986-b273-4add-bf2e-411bc4c51315",
+                "26d196b5-1e65-4066-b88a-8f6d0dd4bb0e",
+                "c7d12c00-2996-4084-9009-6721821024c1",
+                "efb0fa36-f214-470c-9783-977f0326e0f2",
+                "365d08de-8041-48bf-b121-96ca75f5152e"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 41585,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 30000
+            },
+            {
+              "uuid": "64ad9362-f848-4dfc-a59e-eee3a62de40c",
+              "title": "AUDIO BOOK MEMBER",
+              "fullFile": "D:\\GitHub\\mori-app-frontend\\test\\audio-book.test.js",
+              "file": "\\test\\audio-book.test.js",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should show error when listening to audiobook without logging in",
+                  "fullTitle": "AudioBook Page AUDIO BOOK MEMBER should show error when listening to audiobook without logging in",
+                  "timedOut": false,
+                  "duration": 4436,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "await driver.get('http://localhost:3000/audio-book/6570bfb8080acd8b8e1c2fd7');\nawait sleep(1000);\n// đăng xuất tài khoản\nawait driver.executeScript('localStorage.clear();');\nconst { listenButton } = await getAudioBookElements(driver);\nawait listenButton.click();\nawait sleep(1000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nawait checkToastMessage(driver, '.go3958317564', 'Vui lòng đăng nhập và đăng ký gói cước người dùng để nghe sách này!');",
+                  "err": {},
+                  "uuid": "6be52ef0-98f3-40c1-a6af-75c5a0401b43",
+                  "parentUUID": "64ad9362-f848-4dfc-a59e-eee3a62de40c",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show error when listening to audiobook without a membership plan",
+                  "fullTitle": "AudioBook Page AUDIO BOOK MEMBER should show error when listening to audiobook without a membership plan",
+                  "timedOut": false,
+                  "duration": 9108,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "// đăng nhập\nawait login('nguyenlien', 'bichLien#20110335');\n// nghe sách\nawait driver.get('http://localhost:3000/audio-book/6570bfb8080acd8b8e1c2fd7');\nconst { listenButton } = await getAudioBookElements(driver);\nawait listenButton.click();\nawait sleep(1000);\n// Kiểm tra nội dung và sự hiển thị của toast message\nawait checkToastMessage(driver, '.go3958317564', 'Vui lòng đăng kí gói cước người dùng để nghe sách này!');",
+                  "err": {},
+                  "uuid": "fb5d9782-43fd-4972-a8b5-6a8c2bf4f944",
+                  "parentUUID": "64ad9362-f848-4dfc-a59e-eee3a62de40c",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should listen to audiobook successfully when clicking 'Listen' button",
+                  "fullTitle": "AudioBook Page AUDIO BOOK MEMBER should listen to audiobook successfully when clicking 'Listen' button",
+                  "timedOut": false,
+                  "duration": 7737,
+                  "state": "passed",
+                  "speed": "slow",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "// đăng nhập\nawait login('lientest', 'bichLien#20110335');\n// nghe sách\nawait driver.get('http://localhost:3000/audio-book/6570bfb8080acd8b8e1c2fd7');\nconst { listenButton} = await getAudioBookElements(driver);\nawait listenButton.click();\nawait sleep(500);\n\n// Chờ cho phần tử audioPlayer xuất hiện\nconst audioPlayer = await driver.wait(until.elementLocated(By.xpath(\"//div[@class='ChapterAudioPlayer_chapterAudioPlayer__SijhM']\")), 5000)\n// Lấy giá trị currentTime từ phần tử audioPlayer\naudioPlayer.findElement(By.tagName('audio')).getAttribute('currentTime').then(currentTime => {\n  // Kiểm tra giá trị currentTime\n  assert(parseFloat(currentTime) > 0, 'Audio không bắt đầu phát.');\n});",
+                  "err": {},
+                  "uuid": "b002c76e-846c-425b-9bb1-88f140e6ae36",
+                  "parentUUID": "64ad9362-f848-4dfc-a59e-eee3a62de40c",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "6be52ef0-98f3-40c1-a6af-75c5a0401b43",
+                "fb5d9782-43fd-4972-a8b5-6a8c2bf4f944",
+                "b002c76e-846c-425b-9bb1-88f140e6ae36"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 21281,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 30000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 30000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.4.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "audio-book",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "mocha-reports",
+        "reportFilename": "audio-book"
+      },
+      "version": "6.2.0"
+    }
+  }
+}

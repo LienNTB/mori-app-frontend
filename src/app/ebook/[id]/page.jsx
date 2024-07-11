@@ -43,6 +43,7 @@ import {
   ratingBookRequest,
   reviewBookRequest,
   updateReviewRequest,
+  getRatingsByBookRequest
 } from "@/app/redux/saga/requests/review";
 import RatingStars from "@/components/RatingStars/RatingStars";
 import {
@@ -68,6 +69,8 @@ function EBook() {
   const router = useRouter();
   const [isOpenReviewOption, setIsOpenReviewOption] = useState(false);
   const [isOpenReview, setIsOpenReview] = useState(null);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
   const {
     isOpen: isOpenModifyReview,
     onOpen: onOpenModifyReview,
@@ -329,6 +332,10 @@ function EBook() {
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
     fetchRecommendations();
+    getRatingsByBookRequest(id).then((resp) => {
+      setTotalReviews(resp.totalReviews);
+      setAverageRating(resp.averageRating);
+    });
   }, [id]);
 
   useEffect(() => {
@@ -377,9 +384,17 @@ function EBook() {
                       currentRating={5}
                     />
                   </div>
-                  <div className={styles.yourRating}>
-                    Đánh giá: 4.2/5 từ 28 lượt. Đánh giá của bạn?
-                  </div>
+                  {totalReviews == 0 ?
+                  (
+                    <div className={styles.yourRating}>
+                      Sách chưa có lượt đánh giá
+                    </div>
+                  ) : (
+                    <div className={styles.yourRating}>
+                    Đánh giá: {averageRating}/5 từ {totalReviews} lượt. Đánh giá của bạn?
+                    </div>
+                    )
+                  }
                   <div className={styles.headerStats}>
                     <div className={styles.statItem}>
                       <small>Lượt đọc</small>

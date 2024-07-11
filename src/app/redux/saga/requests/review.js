@@ -72,3 +72,17 @@ export const deleteReviewRequest = async (id) => {
       throw error;
     });
 };
+
+export const getRatingsByBookRequest = async (id) => {
+  return fetch(`${type.BACKEND_URL}/api/review/getRatings/${id}`, {
+    method: "GET",
+    headers: type.requestHeader,
+  })
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};

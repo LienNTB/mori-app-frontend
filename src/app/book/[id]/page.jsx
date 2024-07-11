@@ -213,7 +213,6 @@ function Book() {
       toast.error("Vui lòng đăng nhập để review sách", {
         duration: 2000,
       });
-      redirectLogin();
     }
     else {
       const request = {

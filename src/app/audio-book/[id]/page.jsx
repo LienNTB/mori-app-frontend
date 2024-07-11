@@ -39,7 +39,8 @@ import {
 import { createOrUpdateUserRecommendationsRequest } from "@/app/redux/saga/requests/account";
 import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import { getReviewsById } from "@/app/redux/actions/review";
-import { ratingBookRequest, reviewBookRequest } from "@/app/redux/saga/requests/review";
+import { ratingBookRequest, reviewBookRequest, getRatingsByBookRequest } from "@/app/redux/saga/requests/review";
+
 import RatingStars from "@/components/RatingStars/RatingStars";
 
 import "react-h5-audio-player/lib/styles.css";
@@ -68,8 +69,9 @@ function AudioBookPage() {
   const id = params.id;
   const [recommendations, setRecommendations] = useState("")
   const [loading, setLoading] = useState(true);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
   const [reload, setReload] = useState(0);
-
 
   const onListenHandler = (e) => {
     setCurTime(e.target.currentTime);
@@ -268,6 +270,10 @@ function AudioBookPage() {
     dispatch(getBookById(id));
     dispatch(getReviewsById(id));
     fetchRecommendations();
+    getRatingsByBookRequest(id).then((resp) => {
+      setTotalReviews(resp.totalReviews);
+      setAverageRating(resp.averageRating);
+    });
   }, [id]);
 
   useEffect(() => {
@@ -318,9 +324,17 @@ function AudioBookPage() {
                       currentRating={5}
                     />
                   </div>
-                  <div className={styles.yourRating}>
-                    Đánh giá: 4.2/5 từ 28 lượt. Đánh giá của bạn?
-                  </div>
+                  {totalReviews == 0 ?
+                  (
+                    <div className={styles.yourRating}>
+                      Sách chưa có lượt đánh giá
+                    </div>
+                  ) : (
+                    <div className={styles.yourRating}>
+                    Đánh giá: {averageRating}/5 từ {totalReviews} lượt. Đánh giá của bạn?
+                    </div>
+                    )
+                  }
                   <div className={styles.headerStats}>
                     <div className={styles.statItem}>
                       <small>Lượt đọc</small>

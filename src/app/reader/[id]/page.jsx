@@ -30,6 +30,7 @@ import {
   getNotesForBookByUserRequest,
   updateNoteForBookRequest,
 } from "@/app/redux/saga/requests/note";
+import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import * as types from "@/app/redux/types";
 import {
   faArrowRight,
@@ -442,21 +443,30 @@ const Reader = () => {
   };
 
   const handleReadPage = async () => {
-    if (rendition) {
-      const text = await getCurrentPageText(rendition);
-      // Thay thế các ký tự xuống dòng và tab bằng dấu cách, loại bỏ khoảng trắng dư thừa và sau đó tách thành các câu
-      const sentences = text
-        .replace(/[\n\t]/g, " ")
-        .replace(/\s+/g, " ")
-        .match(/[^\.!\?]+[\.!\?]+/g) || [text];
-      // Lọc ra các câu không chỉ toàn dấu cách hoặc không có ký tự
-      const filteredSentences = sentences.filter(
-        (sentence) => /[^\s.]/.test(sentence.trim()) // Kiểm tra câu không chỉ toàn dấu cách
-      );
-      setSentences(filteredSentences);
-      setCurrentSentenceIndex(0);
-      setIsReading((prevState) => !prevState); // Đảo ngược giá trị của isReading để gọi useffect
-      setIsPaused(false);
+    const membershipRequest = await getMembershipByIdRequest(
+      currentAccount._id
+    );
+    if (!membershipRequest.membership) {
+      toast.error("Vui lòng đăng kí gói cước để sử dụng tính năng này!", {
+        duration: 2000,
+      });
+    } else {
+      if (rendition) {
+        const text = await getCurrentPageText(rendition);
+        // Thay thế các ký tự xuống dòng và tab bằng dấu cách, loại bỏ khoảng trắng dư thừa và sau đó tách thành các câu
+        const sentences = text
+          .replace(/[\n\t]/g, " ")
+          .replace(/\s+/g, " ")
+          .match(/[^\.!\?]+[\.!\?]+/g) || [text];
+        // Lọc ra các câu không chỉ toàn dấu cách hoặc không có ký tự
+        const filteredSentences = sentences.filter(
+          (sentence) => /[^\s.]/.test(sentence.trim()) // Kiểm tra câu không chỉ toàn dấu cách
+        );
+        setSentences(filteredSentences);
+        setCurrentSentenceIndex(0);
+        setIsReading((prevState) => !prevState); // Đảo ngược giá trị của isReading để gọi useffect
+        setIsPaused(false);
+      }
     }
   };
 

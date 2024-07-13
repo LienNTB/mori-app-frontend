@@ -109,11 +109,22 @@ const Reader = () => {
 
   };
 
+  // Thiết lập debounce timeout
+  let debounceTimeout;
+
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
     setLocation(newPosition);
-    saveReadPositionToDatabase(newPosition);
+    // Xóa timeout trước đó nếu có
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+    // Thiết lập timeout mới
+    debounceTimeout = setTimeout(() => {
+      saveReadPositionToDatabase(newPosition);
+    }, 1000); // 1s là khoảng thời gian debounce, có thể điều chỉnh tùy ý
   };
+
 
   // Hàm để lưu vị trí đọc vào database
   const saveReadPositionToDatabase = (newPosition) => {
@@ -257,7 +268,8 @@ const Reader = () => {
           .start;
 
         // Update the location state to move the reader to the selected chapter
-        handlePageChange(currentLocation);
+        // epubview đã cập nhật, không cần gọi hàm này
+        // handlePageChange(JSON.stringify(currentLocation));
 
         // Hide the chapter menu
         setShowChapterMenu(false);

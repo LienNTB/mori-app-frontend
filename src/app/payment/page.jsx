@@ -5,7 +5,7 @@ import styles from "./payment.module.scss";
 import React from "react";
 import momo from "../../../public/logo-momo.png";
 import vnpay from "../../../public/logo-vnpay.png";
-import { faArrowLeft, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faBook, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
 import * as types from "@/app/redux/types";
@@ -14,6 +14,10 @@ import { useRouter } from "next/navigation";
 import {
   orderPaymentRequest,
 } from "@/app/redux/saga/requests/order";
+import DiscountVoucherModal from "@/components/Modals/DiscountVoucherModal/DiscountVoucherModal";
+import { useDisclosure } from "@nextui-org/react";
+import { getAllUserVouchersByUserIdRequest } from "../redux/saga/requests/userVoucher";
+import { getAllDiscountVouchersRequest } from "../redux/saga/requests/discountVoucher";
 
 function Payment() {
   const router = useRouter();
@@ -23,6 +27,13 @@ function Payment() {
   const [isOpen, setIsOpen] = useState(false); // State for dropdown visibility
   const [membership, setMembership] = useState(0);
   const [payment, setPayment] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [selectedVoucher, setSelectedVoucher] = useState(null)
+  const [userVouchers, setUserVouchers] = useState([]);
+  const [discountVouchers, setDiscountVouchers] = useState([]);
+  const { isOpen: isOpenDiscountVoucher, onOpen: onOpenDiscountVoucher,
+    onOpenChange: onOpenChangeDiscountVoucher, onClose: onCloseDiscountVoucher }
+    = useDisclosure();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -60,6 +71,25 @@ function Payment() {
     setPaymentMethod(e.target.value);
   };
 
+  console.log("userVouchers", userVouchers)
+  console.log("discountVouchers", discountVouchers)
+  const getUserVoucherData = (userId) => {
+    console.log('getUserVoucherData')
+    getAllUserVouchersByUserIdRequest(userId).then(resp => {
+      setUserVouchers(resp.data)
+    })
+  }
+  const getDiscountVouchers = () => {
+    getAllDiscountVouchersRequest().then(resp => {
+      setDiscountVouchers(resp.data)
+    })
+  }
+  useEffect(() => {
+    if (currentAccount) {
+      console.log('currentAccount', currentAccount)
+      getUserVoucherData(currentAccount._id)
+    }
+  }, [currentAccount])
   useEffect(() => {
     const currentAccount = JSON.parse(localStorage.getItem("user"));
     setCurrentAccount(currentAccount);
@@ -69,8 +99,11 @@ function Payment() {
 
     const payment = JSON.parse(localStorage.getItem("payment"));
     setPayment(payment);
+    setTotalPrice(payment.price)
 
     setPaymentMethod("cod");
+
+    getDiscountVouchers()
   }, []);
 
   const banks = [
@@ -317,8 +350,20 @@ function Payment() {
                 </td>
               </tr>
               <tr>
+                <td className={styles.label}>Mã khuyến mại:</td>
+                <td className={styles.chooseVoucherBtn}>
+                  <span> <FontAwesomeIcon
+                    icon={faBook}
+                    class="cursor-pointer"
+                    width={20}
+                    onClick={() => handleDeleteBook(book.book)}
+                  /></span>
+                  <span onClick={() => onOpenDiscountVoucher()}>Chọn mã khuyến mại</span>
+                </td>
+              </tr>
+              <tr>
                 <td className={styles.label}>Tạm tính</td>
-                <td className={styles.price}>{payment.price}</td>
+                <td className={styles.price}>{totalPrice}</td>
               </tr>
               <tr>
                 <td className={styles.label}>Hình thức thanh toán</td>
@@ -354,6 +399,9 @@ function Payment() {
       </div>
 
       <Footer />
+      <DiscountVoucherModal isOpen={isOpenDiscountVoucher} onOpenChange={onOpenChangeDiscountVoucher}
+        discountVouchers={discountVouchers}
+        userVouchers={userVouchers} />
     </>
   );
 }

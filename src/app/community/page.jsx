@@ -44,7 +44,7 @@ const Community = () => {
                   <div className={styles.mainPost}>
                     <img className={styles.imgPost} src={postList[lastPost]?.image ? `${type.BACKEND_URL}/api/postimg/${postList[lastPost]?.image}` : tempImg} alt="main post img" />
                     <div className={styles.postInfo}>
-                      <Link href={`/user/${postList[lastPost].account._id}/profile`} prefetch={false}>
+                      {postList[lastPost].account && <Link href={`/user/${postList[lastPost].account._id}/profile`} prefetch={false}>
                         <div className={styles.postItem}>
                           <img className={styles.userAvt}
                             src={isGoogleAvatar(postList[lastPost].account?.avatar) ?
@@ -55,7 +55,7 @@ const Community = () => {
                             {postList[lastPost]?.account?.displayName}
                           </div>
                         </div>
-                      </Link>
+                      </Link>}
                       <div className={styles.postItem}>
                         {new Date(postList[lastPost].created_at).toLocaleDateString('en-GB')}
                       </div>
@@ -86,7 +86,7 @@ const Community = () => {
                           <div className={styles.postListItem}>
                             <img className={styles.imgPost} src={post?.image ? `${type.BACKEND_URL}/api/postimg/${post?.image}` : tempImg} alt="main post img" />
                             <div className={styles.postInfo}>
-                              <Link href={`/user/${post.account._id}/profile`} prefetch={false}>
+                              {post.account && <Link href={`/user/${post.account._id}/profile`} prefetch={false}>
                                 <div className={styles.postItem}>
                                   <img
                                     className={styles.userAvt}
@@ -97,7 +97,7 @@ const Community = () => {
                                     {post?.account?.displayName}
                                   </div>
                                 </div>
-                              </Link>
+                              </Link>}
 
                               <div className={styles.postItem}>
                                 {new Date(post.created_at).toLocaleDateString('en-GB')}

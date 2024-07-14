@@ -20,6 +20,7 @@ import {
 import { Toaster, toast } from "react-hot-toast";
 import { Router, useRouter } from "next/navigation";
 import Link from "next/link";
+import Loading from "@/components/Loading/Loading";
 
 const ResetPassword = () => {
   const router = useRouter();
@@ -27,8 +28,8 @@ const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [retypePassword, setRetypePassword] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [checkToken, setCheckToken] = useState();
-
+  const [checkToken, setCheckToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -83,24 +84,22 @@ const ResetPassword = () => {
   useEffect(() => {
     checkTokenRequest(token).then((resp) => {
       if (resp.message) {
-        // resolve("Reset mật khẩu thành công!");
         setCheckToken(1);
       }
       if (resp.error) {
         if (resp.error == "Token expires") {
-          // reject(
-          //   new Error(
-          //     "Thời gian đặt lại mật khẩu đã hết hạn, bạn vui lòng gửi lại yêu cầu đặt mật khẩu"
-          //   )
-          // );
           setCheckToken(0);
         } else if (resp.error == "Token invalid") {
-          // reject(new Error("Mã xác thực không tồn tại"));
           setCheckToken(-1);
         }
       }
+      setIsLoading(false);
     });
   }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -154,8 +153,7 @@ const ResetPassword = () => {
 
               {checkToken != 1 && checkToken != 0 && (
                 <div className={styles.div3}>
-                  Mã xác thực không tồn tại, vui lòng kiểm tra lại tài khoản của
-                  bạn
+                  Mã xác thực không tồn tại, vui lòng kiểm tra lại tài khoản của bạn
                 </div>
               )}
             </div>

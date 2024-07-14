@@ -30,6 +30,7 @@ import {
   getNotesForBookByUserRequest,
   updateNoteForBookRequest,
 } from "@/app/redux/saga/requests/note";
+import { getMembershipByIdRequest } from "@/app/redux/saga/requests/membership";
 import * as types from "@/app/redux/types";
 import {
   faArrowRight,
@@ -100,19 +101,38 @@ const Reader = () => {
     highlighters[0].color
   );
 
+  // Biến toàn cục để lưu trữ timeout hiện tại
+  let debounceChapterTimeout;
+  // Hàm để xử lý thay đổi của thanh trượt
   const handleSliderChange = (val) => {
-    setSelectedSliderChapter(val)
-    handleChapterSelect(chapters[val]);
-    // update books progress for reading goal for user
-    setCheckFinalPageCounter(p => p + 1);
-
+    setSelectedSliderChapter(val);
+    // Xóa timeout trước đó nếu có
+    if (debounceChapterTimeout) {
+      clearTimeout(debounceChapterTimeout);
+    }
+    // Thiết lập timeout mới để gọi handleChapterSelect sau một khoảng thời gian nhất định
+    debounceChapterTimeout = setTimeout(() => {
+      handleChapterSelect(chapters[val]);
+      // update books progress for reading goal for user
+      setCheckFinalPageCounter(p => p + 1);
+    }, 300); // 300ms là khoảng thời gian debounce, có thể điều chỉnh tùy ý
   };
 
+  // Thiết lập debounce timeout
+  let debounceTimeout;
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
     setLocation(newPosition);
-    saveReadPositionToDatabase(newPosition);
+    // Xóa timeout trước đó nếu có
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+    // Thiết lập timeout mới
+    debounceTimeout = setTimeout(() => {
+      saveReadPositionToDatabase(newPosition);
+    }, 1000); // 1s là khoảng thời gian debounce, có thể điều chỉnh tùy ý
   };
+
 
   // Hàm để lưu vị trí đọc vào database
   const saveReadPositionToDatabase = (newPosition) => {
@@ -250,13 +270,6 @@ const Reader = () => {
       try {
         // Display the selected chapter
         await epubViewRef.current.rendition.display(chapter.href);
-
-        // Get the current location
-        const currentLocation = await epubViewRef.current.rendition.location
-          .start;
-
-        // Update the location state to move the reader to the selected chapter
-        handlePageChange(currentLocation);
 
         // Hide the chapter menu
         setShowChapterMenu(false);
@@ -442,21 +455,30 @@ const Reader = () => {
   };
 
   const handleReadPage = async () => {
-    if (rendition) {
-      const text = await getCurrentPageText(rendition);
-      // Thay thế các ký tự xuống dòng và tab bằng dấu cách, loại bỏ khoảng trắng dư thừa và sau đó tách thành các câu
-      const sentences = text
-        .replace(/[\n\t]/g, " ")
-        .replace(/\s+/g, " ")
-        .match(/[^\.!\?]+[\.!\?]+/g) || [text];
-      // Lọc ra các câu không chỉ toàn dấu cách hoặc không có ký tự
-      const filteredSentences = sentences.filter(
-        (sentence) => /[^\s.]/.test(sentence.trim()) // Kiểm tra câu không chỉ toàn dấu cách
-      );
-      setSentences(filteredSentences);
-      setCurrentSentenceIndex(0);
-      setIsReading((prevState) => !prevState); // Đảo ngược giá trị của isReading để gọi useffect
-      setIsPaused(false);
+    const membershipRequest = await getMembershipByIdRequest(
+      currentAccount._id
+    );
+    if (!membershipRequest.membership) {
+      toast.error("Vui lòng đăng kí gói cước để sử dụng tính năng này!", {
+        duration: 2000,
+      });
+    } else {
+      if (rendition) {
+        const text = await getCurrentPageText(rendition);
+        // Thay thế các ký tự xuống dòng và tab bằng dấu cách, loại bỏ khoảng trắng dư thừa và sau đó tách thành các câu
+        const sentences = text
+          .replace(/[\n\t]/g, " ")
+          .replace(/\s+/g, " ")
+          .match(/[^\.!\?]+[\.!\?]+/g) || [text];
+        // Lọc ra các câu không chỉ toàn dấu cách hoặc không có ký tự
+        const filteredSentences = sentences.filter(
+          (sentence) => /[^\s.]/.test(sentence.trim()) // Kiểm tra câu không chỉ toàn dấu cách
+        );
+        setSentences(filteredSentences);
+        setCurrentSentenceIndex(0);
+        setIsReading((prevState) => !prevState); // Đảo ngược giá trị của isReading để gọi useffect
+        setIsPaused(false);
+      }
     }
   };
 
@@ -541,7 +563,6 @@ const Reader = () => {
       playAudio();
     }
   }, [audioUrl]);
-  console.log("isLoadingNote", isLoadingNote)
 
   const handleAudioEnded = async () => {
     if (currentSentenceIndex < sentences.length - 1) {

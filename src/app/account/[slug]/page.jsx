@@ -42,6 +42,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import EditReadingGoalModal from "@/components/Modals/EditReadingGoalModal/CreateReadingGoalModal";
 import DeleteReadingGoalConfirmModal from "@/components/Modals/DeleteReadingGoalConfirmModal/DeleteReadingGoalConfirmModal";
+import { deleteBookFromLibraryRequest } from "@/app/redux/saga/requests/myLibrary";
 
 const Profile = () => {
   const router = useRouter();
@@ -109,8 +110,28 @@ const Profile = () => {
       user: currentAccount._id,
       book: choosenBook,
     };
-    await dispatch(deleteBookFromLibrary(request));
-    setClick((p) => p + 1);
+
+    toast.promise(
+      new Promise((resolve, reject) => {
+        deleteBookFromLibraryRequest(request)
+          .then((resp) => {
+            if (resp.message) {
+              resolve(resp.message);
+              setClick((p) => p + 1);
+            } else {
+              reject(resp.error);
+            }
+          })
+          .catch((err) => {
+          });
+      }),
+      {
+        loading: "Processing...",
+        success: (message) => message,
+        error: (error) => error,
+      }
+    );
+
   };
 
   const getPostData = () => {

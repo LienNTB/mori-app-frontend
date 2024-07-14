@@ -202,48 +202,61 @@ const Header = () => {
                       >Đánh dấu tất cả đã đọc</div>
                     </div>}>
                     <ListboxSection title="Thông báo">
-                      {
-                        notifications.length == 0 ?
-                          <ListboxItem
-                            key="new"
-                          >
-                            Bạn chưa có thông báo nào.
-                          </ListboxItem> :
+                      {notifications.length == 0 ? (
+                        <ListboxItem key="new">Bạn chưa có thông báo nào.</ListboxItem>
+                      ) : (
+                        notifications.map((noti) => {
+                          const isPerformedByDeleted = !noti.performedBy; // Kiểm tra xem performedBy có tồn tại hay không
+                          const isPostDeleted = !noti.post; // Kiểm tra xem post có tồn tại hay không
+                          const isReadingGoalDeleted = !noti.readingGoal; // Kiểm tra xem readingGoal có tồn tại hay không
 
-                          notifications.map(noti => (
+                          return (
                             <ListboxItem
-                              key="new"
+                              key={noti._id}
                               onClick={() => {
-                                !noti.isRead && handleMarkAsRead(noti._id);
-                                if (noti.action === "comment" || noti.action === "like" || noti.action === "share" || noti.action === "comment_approved" || noti.action === "comment_disapproved") {
-                                  router.replace(`/post/${noti.post._id}`, undefined, { shallow: true })
+                                if (!noti.isRead) handleMarkAsRead(noti._id);
+                                if (!isPostDeleted && (noti.action === "comment" || noti.action === "like" || noti.action === "share" || noti.action === "comment_approved" || noti.action === "comment_disapproved")) {
+                                  router.replace(`/post/${noti.post._id}`, undefined, { shallow: true });
                                 }
-                                if (noti.action === "readingGoal") {
-                                  router.replace(`/reading-milestone-reached/${noti.readingGoal}`)
+                                if (!isReadingGoalDeleted && noti.action === "readingGoal") {
+                                  router.replace(`/reading-milestone-reached/${noti.readingGoal}`);
                                 }
                               }}
                             >
                               <div className="flex gap-2 justify-between items-center">
                                 <div className="flex gap-2 items-center">
-                                  <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]"
-                                    src={noti.performedBy ? noti.performedBy?.avatar
-                                      : noti.performedBy && noti.performedBy?.avatar.includes("googleusercontent") ? `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`
-                                        : { readingGoalImg }
-                                    } />
+                                  <Avatar
+                                    alt="avt"
+                                    className="flex-shrink-0"
+                                    size="sm/[20px]"
+                                    src={
+                                      isPerformedByDeleted ? null : (noti.performedBy.avatar.includes("googleusercontent")
+                                        ? noti.performedBy.avatar 
+                                        : `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`)
+                                    }
+                                  />
                                   <div className="flex flex-col">
                                     <span className="text-sm/[17px] font-medium ">
-                                      {noti.action == "comment" ? noti.performedBy :
-                                        noti.action == "like" ? noti.performedBy :
-                                          noti.action == "share" ? noti.performedBy :
-                                            noti.action == "readingGoal" ? "Mục tiêu đọc sách" :
-                                              noti.action == "voucher" ? "Voucher giảm giá" :
-                                                "Kiểm duyệt bình luận"}
+                                      {noti.action === "comment" ||
+                                      noti.action === "like" ||
+                                      noti.action === "share"
+                                        ? isPerformedByDeleted
+                                          ? "Tài khoản đã bị xóa"
+                                          : noti.performedBy.displayName
+                                        : noti.action === "readingGoal"
+                                        ? "Mục tiêu đọc sách"
+                                        : noti.action === "voucher"
+                                        ? "Voucher giảm giá"
+                                        : "Kiểm duyệt bình luận"}
                                     </span>
-                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`} >
-                                      {noti.action === "like" ? "Đã thích bài viết của bạn." :
-                                        noti.action === "share" ? "Đã chia sẻ bài viết của bạn." :
-                                          noti.action === "comment" ? `Đã bình luận bài viết của bạn: ${noti.message}` :
-                                            noti.message}
+                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`}>
+                                      {noti.action === "like"
+                                        ? "Đã thích bài viết của bạn."
+                                        : noti.action === "share"
+                                        ? "Đã chia sẻ bài viết của bạn."
+                                        : noti.action === "comment"
+                                        ? `Đã bình luận bài viết của bạn: ${noti.message}`
+                                        : noti.message}
                                     </span>
                                     <span className='text-sm/[12px] text-sky-600 font-medium my-1'>
                                       {timeUtils.getTimeElapsed(noti.createdAt)}
@@ -251,12 +264,13 @@ const Header = () => {
                                   </div>
                                 </div>
                                 {!noti.isRead && <FontAwesomeIcon className={styles.newNotiIcon} icon={faCircle} />}
-
                               </div>
                             </ListboxItem>
-                          ))
-                      }
+                          );
+                        })
+                      )}
                     </ListboxSection>
+
                   </Listbox>
                 </ListboxWrapper>
               </div>}

@@ -1,6 +1,5 @@
-import Link from "next/link";
-import { FacebookButton } from "react-social";
 import * as types from '../../app/redux/types'
+import { FacebookShareButton } from 'react-share'
 
 export default function Hero({ readingGoal }) {
   return (
@@ -74,7 +73,7 @@ export default function Hero({ readingGoal }) {
                 data-aos-delay="300"
               >
                 <div>
-                  <FacebookButton
+                  <FacebookShareButton
                     url={`https://ebook.workon.space/reading-milestone-reached/${readingGoal._id}`}
                     appId={types.FACEBOOK_APP_ID}
                   >
@@ -83,7 +82,7 @@ export default function Hero({ readingGoal }) {
                     >
                       Chia sẻ thành tựu
                     </div>
-                  </FacebookButton>
+                  </FacebookShareButton>
                 </div>
 
               </div>

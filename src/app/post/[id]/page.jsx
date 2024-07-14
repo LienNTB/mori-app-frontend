@@ -32,6 +32,7 @@ import "@splidejs/react-splide/css/sea-green";
 import "@splidejs/react-splide/css/core";
 import { getBooks, getBooksByCate } from "@/app/redux/actions/book";
 import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
+import { FacebookShareButton } from 'react-share'
 
 const Post = () => {
   const dispatch = useDispatch();
@@ -66,26 +67,8 @@ const Post = () => {
           post: post._id,
           content: commentInput,
         };
-        toast.promise(
-          new Promise((resolve, reject) => {
-            addNewCommentRequest(request)
-              .then((resp) => {
-                if (resp.message) {
-                  resolve("Bình luận đã được gửi cho ban kiểm duyệt!");
-                } else {
-                  reject(resp.error);
-                }
-              })
-              .catch((err) => {
-                reject("Gửi bình luận thất bại! Vui lòng thử lại");
-              });
-          }),
-          {
-            loading: "Processing...",
-            success: (message) => message,
-            error: (error) => error.message,
-          }
-        );
+        toast.success("Bình luận đã được gửi cho ban kiểm duyệt!")
+        addNewCommentRequest(request)
       }
       setCommentInput("");
     } else {
@@ -246,7 +229,7 @@ const Post = () => {
                   />
                 </div>
                 {/* <span>{postShares}</span> */}
-                <FacebookButton
+                <FacebookShareButton
                   onClick={handleSharePost}
                   className={styles.shareBtnContainer}
                   url={`https://ebook.workon.space/post/${post._id}`}
@@ -264,7 +247,7 @@ const Post = () => {
                       width={20}
                     />
                   </div>
-                </FacebookButton>
+                </FacebookShareButton>
                 {currentAccount?._id == post.account._id &&
                   <Link href={`/edit-post/${post._id}`}>
                     <FontAwesomeIcon

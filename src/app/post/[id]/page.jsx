@@ -67,26 +67,8 @@ const Post = () => {
           post: post._id,
           content: commentInput,
         };
-        toast.promise(
-          new Promise((resolve, reject) => {
-            addNewCommentRequest(request)
-              .then((resp) => {
-                if (resp.message) {
-                  resolve("Bình luận đã được gửi cho ban kiểm duyệt!");
-                } else {
-                  reject(resp.error);
-                }
-              })
-              .catch((err) => {
-                reject("Gửi bình luận thất bại! Vui lòng thử lại");
-              });
-          }),
-          {
-            loading: "Processing...",
-            success: (message) => message,
-            error: (error) => error.message,
-          }
-        );
+        toast.success("Bình luận đã được gửi cho ban kiểm duyệt!")
+        addNewCommentRequest(request)
       }
       setCommentInput("");
     } else {

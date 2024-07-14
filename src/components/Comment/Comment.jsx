@@ -4,6 +4,8 @@ import ReplyComment from '../ReplyComment/ReplyComment'
 import { likeCommentRequest, replyCommentRequest } from '@/app/redux/saga/requests/comment'
 import { Toaster, toast } from 'react-hot-toast'
 import { useDispatch } from 'react-redux'
+import readingGoalImg from '../../../public/readinggoal.png'
+
 
 const Comment = (props) => {
   const dispatch = useDispatch()
@@ -131,13 +133,13 @@ const Comment = (props) => {
                     <div class="flex flex-row mx-auto justify-between px-1 py-1 w-full h-auto">
                       <div class="flex mr-2">
                         <div class="items-center justify-center w-12 h-12 mx-auto">
-                          <img alt="profil"
-                            src={commentItem.account.avatar}
+                          <img alt="profile"
+                            src={commentItem.account ? commentItem.account.avatar : { readingGoalImg }}
                             class="object-cover w-12 h-12 mx-auto rounded-full" />
                         </div>
                       </div>
                       <div class="flex-1 pl-1 w-full">
-                        <div class="text-base font-semibold text-gray-600">{commentItem.account.displayName}<span
+                        <div class="text-base font-semibold text-gray-600">{commentItem.account ? commentItem.account.displayName : "Deleted account"}<span
                           class="text-sm font-normal text-gray-500"> - {new Date(commentItem.created_at).toLocaleDateString('en-GB')}</span>
                         </div>
                         <div class="text-sm text-gray-600 h-auto w-full text-wrap">

@@ -90,6 +90,7 @@ const Login = () => {
             }
             else {
               localStorage.setItem("user", JSON.stringify(resp.user))
+              localStorage.setItem("token", JSON.stringify(resp.token))
               router.replace('/homepage', undefined, { shallow: true })
               resolve(resp.message)
             }

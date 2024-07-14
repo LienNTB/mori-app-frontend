@@ -196,9 +196,11 @@ const Post = () => {
                   <img
                     className={styles.imgAvt}
                     src={
-                      post?.account.avatar.includes("googleusercontent")
+                      post?.account && post?.account.avatar.includes("googleusercontent")
                         ? post.account.avatar
-                        : `${types.BACKEND_URL}/api/accountimg/${post.account.avatar}`
+                        : post?.account && `${types.BACKEND_URL}/api/accountimg/${post.account.avatar}` ?
+                          `${types.BACKEND_URL}/api/accountimg/${post.account.avatar}` :
+                          'http://ebook.workon.space/api/accountimg/avt.jpg'
                     }
                     alt="user avt"
                   />
@@ -248,7 +250,7 @@ const Post = () => {
                     />
                   </div>
                 </FacebookShareButton>
-                {currentAccount?._id == post.account._id &&
+                {currentAccount && post.account && currentAccount?._id == post.account._id &&
                   <Link href={`/edit-post/${post._id}`}>
                     <FontAwesomeIcon
                       icon={faEdit}

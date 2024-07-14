@@ -32,6 +32,7 @@ import "@splidejs/react-splide/css/sea-green";
 import "@splidejs/react-splide/css/core";
 import { getBooks, getBooksByCate } from "@/app/redux/actions/book";
 import BookItemSplide from "@/components/BookItemSplide/BookItemSplide";
+import { FacebookShareButton } from 'react-share'
 
 const Post = () => {
   const dispatch = useDispatch();
@@ -246,7 +247,7 @@ const Post = () => {
                   />
                 </div>
                 {/* <span>{postShares}</span> */}
-                <FacebookButton
+                <FacebookShareButton
                   onClick={handleSharePost}
                   className={styles.shareBtnContainer}
                   url={`https://ebook.workon.space/post/${post._id}`}
@@ -264,7 +265,7 @@ const Post = () => {
                       width={20}
                     />
                   </div>
-                </FacebookButton>
+                </FacebookShareButton>
                 {currentAccount?._id == post.account._id &&
                   <Link href={`/edit-post/${post._id}`}>
                     <FontAwesomeIcon

@@ -29,6 +29,7 @@ function Payment() {
   const [payment, setPayment] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedVoucher, setSelectedVoucher] = useState(null)
+  const [selectedUserVoucher, setSelectedUserVoucher] = useState(null)
   const [userVouchers, setUserVouchers] = useState([]);
   const [discountVouchers, setDiscountVouchers] = useState([]);
   const { isOpen: isOpenDiscountVoucher, onOpen: onOpenDiscountVoucher,
@@ -39,26 +40,45 @@ function Payment() {
     setIsOpen(!isOpen);
   };
 
+  const onChooseVoucher = (discountVoucherValue, userVoucherValue) => {
+    setSelectedVoucher(discountVoucherValue)
+    setSelectedUserVoucher(userVoucherValue)
+    localStorage.setItem("userVoucher", JSON.stringify(userVoucherValue));
+
+  }
   const handlePaymentMethodClick = (method) => {
     setActivePaymentMethod(method);
   };
 
   const handleVNPAY = async () => {
     try {
-      const requestPayment = {
-        amount: payment.price,
-        bankCode: "",
-        language: "vn",
-      };
-      const paymentResp = await orderPaymentRequest(requestPayment);
-
-      // Nếu orderPaymentRequest thành công
-      if (paymentResp && paymentResp.paymentUrl) {
-        // Chuyển hướng trình duyệt đến URL thanh toán từ dữ liệu phản hồi
-        router.push(paymentResp.paymentUrl);
-      } else {
-        throw new Error("Đã có lỗi xảy ra khi thực hiện thanh toán");
+      let requestPayment = {};
+      if (selectedUserVoucher) {
+        requestPayment = {
+          amount: totalPrice,
+          bankCode: "",
+          language: "vn",
+          userVoucher: selectedUserVoucher._id
+        };
       }
+      else {
+        requestPayment = {
+          amount: totalPrice,
+          bankCode: "",
+          language: "vn",
+        };
+      }
+
+      console.log("requestPayment", requestPayment)
+      const paymentResp = await orderPaymentRequest(requestPayment);
+      console.log("paymentResp", paymentResp)
+      // // Nếu orderPaymentRequest thành công
+      // if (paymentResp && paymentResp.paymentUrl) {
+      //   // Chuyển hướng trình duyệt đến URL thanh toán từ dữ liệu phản hồi
+      //   router.push(paymentResp.paymentUrl);
+      // } else {
+      //   throw new Error("Đã có lỗi xảy ra khi thực hiện thanh toán");
+      // }
     } catch (error) {
       console.error("Error placing order:", error);
       throw error;
@@ -71,8 +91,6 @@ function Payment() {
     setPaymentMethod(e.target.value);
   };
 
-  console.log("userVouchers", userVouchers)
-  console.log("discountVouchers", discountVouchers)
   const getUserVoucherData = (userId) => {
     console.log('getUserVoucherData')
     getAllUserVouchersByUserIdRequest(userId).then(resp => {
@@ -105,6 +123,12 @@ function Payment() {
 
     getDiscountVouchers()
   }, []);
+
+  useEffect(() => {
+    if (selectedVoucher) {
+      setTotalPrice(payment.price - (payment.price * selectedVoucher.discount / 100))
+    }
+  }, [selectedVoucher])
 
   const banks = [
     // Replace with your actual bank data
@@ -350,15 +374,20 @@ function Payment() {
                 </td>
               </tr>
               <tr>
-                <td className={styles.label}>Mã khuyến mại:</td>
-                <td className={styles.chooseVoucherBtn}>
-                  <span> <FontAwesomeIcon
-                    icon={faBook}
-                    class="cursor-pointer"
-                    width={20}
-                    onClick={() => handleDeleteBook(book.book)}
-                  /></span>
-                  <span onClick={() => onOpenDiscountVoucher()}>Chọn mã khuyến mại</span>
+                <td className={styles.label}>Mã khuyến mại</td>
+                <td className={styles.voucherInfoContainer}>
+                  <div className={styles.voucherCode}>
+                    {selectedVoucher && selectedVoucher.code}
+                  </div>
+                  <div className={styles.chooseVoucherBtn}>
+                    <span> <FontAwesomeIcon
+                      icon={faBook}
+                      class="cursor-pointer"
+                      width={20}
+                      onClick={() => handleDeleteBook(book.book)}
+                    /></span>
+                    <span onClick={() => onOpenDiscountVoucher()}>Chọn mã khuyến mại</span>
+                  </div>
                 </td>
               </tr>
               <tr>
@@ -381,7 +410,7 @@ function Payment() {
               <tr>
                 <td className={`${styles.label} ${styles.borderTop}`}>TỔNG</td>
                 <td className={`${styles.total} ${styles.borderTop}`}>
-                  {payment.price}
+                  {totalPrice}
                 </td>
               </tr>
             </tbody>
@@ -399,9 +428,13 @@ function Payment() {
       </div>
 
       <Footer />
-      <DiscountVoucherModal isOpen={isOpenDiscountVoucher} onOpenChange={onOpenChangeDiscountVoucher}
+      <DiscountVoucherModal
+        isOpen={isOpenDiscountVoucher}
+        onOpenChange={onOpenChangeDiscountVoucher}
+        onClose={onCloseDiscountVoucher}
         discountVouchers={discountVouchers}
-        userVouchers={userVouchers} />
+        userVouchers={userVouchers}
+        onChooseVoucher={onChooseVoucher} />
     </>
   );
 }

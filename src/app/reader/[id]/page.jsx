@@ -101,17 +101,25 @@ const Reader = () => {
     highlighters[0].color
   );
 
+  // Biến toàn cục để lưu trữ timeout hiện tại
+  let debounceChapterTimeout;
+  // Hàm để xử lý thay đổi của thanh trượt
   const handleSliderChange = (val) => {
-    setSelectedSliderChapter(val)
-    handleChapterSelect(chapters[val]);
-    // update books progress for reading goal for user
-    setCheckFinalPageCounter(p => p + 1);
-
+    setSelectedSliderChapter(val);
+    // Xóa timeout trước đó nếu có
+    if (debounceChapterTimeout) {
+      clearTimeout(debounceChapterTimeout);
+    }
+    // Thiết lập timeout mới để gọi handleChapterSelect sau một khoảng thời gian nhất định
+    debounceChapterTimeout = setTimeout(() => {
+      handleChapterSelect(chapters[val]);
+      // update books progress for reading goal for user
+      setCheckFinalPageCounter(p => p + 1);
+    }, 300); // 300ms là khoảng thời gian debounce, có thể điều chỉnh tùy ý
   };
 
   // Thiết lập debounce timeout
   let debounceTimeout;
-
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
     setLocation(newPosition);
@@ -262,14 +270,6 @@ const Reader = () => {
       try {
         // Display the selected chapter
         await epubViewRef.current.rendition.display(chapter.href);
-
-        // Get the current location
-        const currentLocation = await epubViewRef.current.rendition.location
-          .start;
-
-        // Update the location state to move the reader to the selected chapter
-        // epubview đã cập nhật, không cần gọi hàm này
-        // handlePageChange(JSON.stringify(currentLocation));
 
         // Hide the chapter menu
         setShowChapterMenu(false);
@@ -563,7 +563,6 @@ const Reader = () => {
       playAudio();
     }
   }, [audioUrl]);
-  console.log("isLoadingNote", isLoadingNote)
 
   const handleAudioEnded = async () => {
     if (currentSentenceIndex < sentences.length - 1) {

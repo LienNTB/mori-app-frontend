@@ -350,7 +350,7 @@ function Payment() {
                 </td>
               </tr>
               <tr>
-                <td className={styles.label}>Mã khuyến mại</td>
+                <td className={styles.label}>Mã khuyến mại:</td>
                 <td className={styles.chooseVoucherBtn}>
                   <span> <FontAwesomeIcon
                     icon={faBook}

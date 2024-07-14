@@ -72,13 +72,13 @@ function Payment() {
       console.log("requestPayment", requestPayment)
       const paymentResp = await orderPaymentRequest(requestPayment);
       console.log("paymentResp", paymentResp)
-      // // Nếu orderPaymentRequest thành công
-      // if (paymentResp && paymentResp.paymentUrl) {
-      //   // Chuyển hướng trình duyệt đến URL thanh toán từ dữ liệu phản hồi
-      //   router.push(paymentResp.paymentUrl);
-      // } else {
-      //   throw new Error("Đã có lỗi xảy ra khi thực hiện thanh toán");
-      // }
+      // Nếu orderPaymentRequest thành công
+      if (paymentResp && paymentResp.paymentUrl) {
+        // Chuyển hướng trình duyệt đến URL thanh toán từ dữ liệu phản hồi
+        router.push(paymentResp.paymentUrl);
+      } else {
+        throw new Error("Đã có lỗi xảy ra khi thực hiện thanh toán");
+      }
     } catch (error) {
       console.error("Error placing order:", error);
       throw error;

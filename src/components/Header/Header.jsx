@@ -15,11 +15,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
 import { ListboxProfileWrapper } from '../ListboxWrapper/ListboxProfileWrapper'
-import { getNotificationsRequest, markAllNotificationaAsReadRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
+import { getNotificationsRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
 import readingGoalImg from '../../../public/readinggoal.png'
-import toast from 'react-hot-toast'
 const Header = () => {
   const dispatch = useDispatch()
   const [isOpenListbox, setIsOpenListbox] = useState(false)
@@ -160,7 +159,23 @@ const Header = () => {
               {isAccountMenuOpen && <div className={styles.menuAccount}>
                 <ListboxProfileWrapper>
                   <Listbox variant="flat" aria-label="Listbox menu with sections"
-                  >
+                    topContent={<div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <div>Thông báo</div>
+                      <div
+                        style={{
+                          fontWeight: "normal",
+                          fontSize: "0.8rem",
+                          paddingTop: "20px"
+                        }}
+                        onClick={() => handleMarkAllAsRead()}
+                      >Đánh dấu tất cả đã đọc</div>
+                    </div>}>
                     <ListboxItem
                       key="new"
                       startContent={<FontAwesomeIcon icon={faUser} />}
@@ -182,25 +197,7 @@ const Header = () => {
 
               {currentAccount && isNotificationMenuOpen && <div className={styles.menuNotification}>
                 <ListboxWrapper >
-                  <Listbox variant="flat" aria-label="Listbox menu with sections"
-                    className={"max-h-80 overflow-y-scroll"}
-                    topContent={<div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between"
-                      }}
-                    >
-                      <div>Thông báo</div>
-                      <div
-                        style={{
-                          fontWeight: "normal",
-                          fontSize: "0.8rem",
-                          paddingTop: "20px"
-                        }}
-                        onClick={() => handleMarkAllAsRead()}
-                      >Đánh dấu tất cả đã đọc</div>
-                    </div>}>
+                  <Listbox variant="flat" aria-label="Listbox menu with sections" className={"max-h-80 overflow-y-scroll"}>
                     <ListboxSection title="Thông báo">
                       {notifications.length == 0 ? (
                         <ListboxItem key="new">Bạn chưa có thông báo nào.</ListboxItem>
@@ -249,14 +246,11 @@ const Header = () => {
                                         ? "Voucher giảm giá"
                                         : "Kiểm duyệt bình luận"}
                                     </span>
-                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`}>
-                                      {noti.action === "like"
-                                        ? "Đã thích bài viết của bạn."
-                                        : noti.action === "share"
-                                        ? "Đã chia sẻ bài viết của bạn."
-                                        : noti.action === "comment"
-                                        ? `Đã bình luận bài viết của bạn: ${noti.message}`
-                                        : noti.message}
+                                    <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`} style={{ maxHeight: "46px" }}>
+                                      {noti.action === "like" ? "Đã thích bài viết của bạn." :
+                                        noti.action === "share" ? "Đã chia sẻ bài viết của bạn." :
+                                          noti.action === "comment" ? `Đã bình luận bài viết của bạn: ${noti.message}` :
+                                            noti.message}
                                     </span>
                                     <span className='text-sm/[12px] text-sky-600 font-medium my-1'>
                                       {timeUtils.getTimeElapsed(noti.createdAt)}

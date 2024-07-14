@@ -33,3 +33,11 @@ export function getTimeElapsed(createdAtString) {
 
   return `${elapsedYears} năm trước`;
 }
+export const convertMongoDBTimeToHourMinDate = (mongoTime) => {
+  const dateObj = new Date(mongoTime);
+  const hours = dateObj.getHours();
+  const minutes = dateObj.getMinutes();
+  const date = dateObj.toDateString();
+
+  return `${hours}:${minutes}, ${date}`;
+};

@@ -52,6 +52,7 @@ const HeaderCommunity = () => {
     googleLogout();
     setAuthenticated(null)
     localStorage.removeItem("user")
+    localStorage.removeItem("accessToken")
     window.location.replace("/login")
   }
 

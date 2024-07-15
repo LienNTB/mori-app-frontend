@@ -19,8 +19,7 @@ import { getNotificationsRequest, markAllNotificationaAsReadRequest } from '@/ap
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
 import readingGoalImg from '../../../public/readinggoal.png'
-import { toast } from 'react-hot-toast'
-import { Toaster } from 'react-hot-toast'
+import { toast, Toaster } from 'react-hot-toast'
 
 const HeaderCommunity = () => {
   const dispatch = useDispatch()

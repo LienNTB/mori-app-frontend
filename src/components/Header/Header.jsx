@@ -15,11 +15,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar, Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import { ListboxWrapper } from '../ListboxWrapper/ListboxWrapper'
 import { ListboxProfileWrapper } from '../ListboxWrapper/ListboxProfileWrapper'
-import { getNotificationsRequest, markAllNotificationaAsReadRequest, markNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
+import { getNotificationsRequest, markNotificationaAsReadRequest, markAllNotificationaAsReadRequest } from '@/app/redux/saga/requests/notification'
 import * as timeUtils from '../../utils/timeUtils'
 import * as types from "@/app/redux/types"
-import readingGoalImg from '../../../public/readinggoal.png'
 import { toast, Toaster } from 'react-hot-toast'
+
 const Header = () => {
   const dispatch = useDispatch()
   const [isOpenListbox, setIsOpenListbox] = useState(false)
@@ -43,7 +43,7 @@ const Header = () => {
     toast.promise(
       new Promise((resolve, reject) => {
         markAllNotificationaAsReadRequest(currentAccount._id)
-          .then((resp) => {
+          .then((resp) => {markAllNotificationaAsReadRequest
             if (resp.message) {
               resolve(resp.message);
             } else {
@@ -51,6 +51,7 @@ const Header = () => {
             }
           })
           .catch((err) => {
+
           });
       }),
       {
@@ -158,8 +159,7 @@ const Header = () => {
               </div>
               {isAccountMenuOpen && <div className={styles.menuAccount}>
                 <ListboxProfileWrapper>
-                  <Listbox variant="flat" aria-label="Listbox menu with sections"
-                  >
+                  <Listbox variant="flat" aria-label="Listbox menu with sections">
                     <ListboxItem
                       key="new"
                       startContent={<FontAwesomeIcon icon={faUser} />}
@@ -195,48 +195,59 @@ const Header = () => {
                         style={{
                           fontWeight: "normal",
                           fontSize: "0.8rem",
-                          paddingTop: "20px"
+                          paddingTop: "20px",
+                          color: "rgb(4, 81, 247)"
                         }}
                         onClick={() => handleMarkAllAsRead()}
                       >Đánh dấu tất cả đã đọc</div>
                     </div>}>
-                    <ListboxSection title="Thông báo">
-                      {
-                        notifications.length == 0 ?
-                          <ListboxItem
-                            key="new"
-                          >
-                            Bạn chưa có thông báo nào.
-                          </ListboxItem> :
+                    <ListboxSection>
+                      {notifications.length == 0 ? (
+                        <ListboxItem key="new">Bạn chưa có thông báo nào.</ListboxItem>
+                      ) : (
+                        notifications.map((noti) => {
+                          const isPerformedByDeleted = !noti.performedBy; // Kiểm tra xem performedBy có tồn tại hay không
+                          const isPostDeleted = !noti.post; // Kiểm tra xem post có tồn tại hay không
+                          const isReadingGoalDeleted = !noti.readingGoal; // Kiểm tra xem readingGoal có tồn tại hay không
 
-                          notifications.map(noti => (
+                          return (
                             <ListboxItem
-                              key="new"
+                              key={noti._id}
                               onClick={() => {
-                                !noti.isRead && handleMarkAsRead(noti._id);
-                                if (noti.action === "comment" || noti.action === "like" || noti.action === "share" || noti.action === "comment_approved" || noti.action === "comment_disapproved") {
-                                  router.replace(`/post/${noti.post._id}`, undefined, { shallow: true })
+                                if (!noti.isRead) handleMarkAsRead(noti._id);
+                                if (!isPostDeleted && (noti.action === "comment" || noti.action === "like" || noti.action === "share" || noti.action === "comment_approved" || noti.action === "comment_disapproved")) {
+                                  router.replace(`/post/${noti.post._id}`, undefined, { shallow: true });
                                 }
-                                if (noti.action === "readingGoal") {
-                                  router.replace(`/reading-milestone-reached/${noti.readingGoal}`)
+                                if (!isReadingGoalDeleted && noti.action === "readingGoal") {
+                                  router.replace(`/reading-milestone-reached/${noti.readingGoal}`);
                                 }
                               }}
                             >
                               <div className="flex gap-2 justify-between items-center">
                                 <div className="flex gap-2 items-center">
-                                  <Avatar alt="avt" className="flex-shrink-0" size="sm/[20px]"
-                                    src={noti.performedBy ? noti.performedBy?.avatar
-                                      : noti.performedBy && noti.performedBy?.avatar.includes("googleusercontent") ? `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`
-                                        : { readingGoalImg }
-                                    } />
+                                  <Avatar
+                                    alt="avt"
+                                    className="flex-shrink-0"
+                                    size="sm/[20px]"
+                                    src={
+                                      isPerformedByDeleted ? null : (noti.performedBy.avatar.includes("googleusercontent")
+                                        ? noti.performedBy.avatar 
+                                        : `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`)
+                                    }
+                                  />
                                   <div className="flex flex-col">
                                     <span className="text-sm/[17px] font-medium ">
-                                      {noti.action == "comment" ? noti.performedBy :
-                                        noti.action == "like" ? noti.performedBy :
-                                          noti.action == "share" ? noti.performedBy :
-                                            noti.action == "readingGoal" ? "Mục tiêu đọc sách" :
-                                              noti.action == "voucher" ? "Voucher giảm giá" :
-                                                "Kiểm duyệt bình luận"}
+                                      {noti.action === "comment" ||
+                                      noti.action === "like" ||
+                                      noti.action === "share"
+                                        ? isPerformedByDeleted
+                                          ? "Tài khoản đã bị xóa"
+                                          : noti.performedBy.displayName
+                                        : noti.action === "readingGoal"
+                                        ? "Mục tiêu đọc sách"
+                                        : noti.action === "voucher"
+                                        ? "Voucher giảm giá"
+                                        : "Kiểm duyệt bình luận"}
                                     </span>
                                     <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`} style={{ maxHeight: "46px" }}>
                                       {noti.action === "like" ? "Đã thích bài viết của bạn." :
@@ -250,12 +261,13 @@ const Header = () => {
                                   </div>
                                 </div>
                                 {!noti.isRead && <FontAwesomeIcon className={styles.newNotiIcon} icon={faCircle} />}
-
                               </div>
                             </ListboxItem>
-                          ))
-                      }
+                          );
+                        })
+                      )}
                     </ListboxSection>
+
                   </Listbox>
                 </ListboxWrapper>
               </div>}
@@ -420,7 +432,6 @@ const Header = () => {
 
         </ul>
       </div>
-      <Toaster />
     </div >
   )
 }

@@ -540,7 +540,10 @@ function EBook() {
                                 <div className={styles.reviewAvatar}>
                                   {review.user.avatar && (
                                     <img
-                                      src={`${types.BACKEND_URL}/api/accountimg/${review.user.avatar}`}
+                                      src={
+                                        review.user.avatar.includes("googleusercontent") ?
+                                          review.user.avatar
+                                        : `${types.BACKEND_URL}/api/accountimg/${review.user.avatar}`}
                                       alt="avatar"
                                     />
                                   )}
@@ -660,8 +663,11 @@ function EBook() {
                   <div className={styles.userWrapper}>
                     <div className={styles.avatar}>
                       <img
-                        src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`}
-                        alt="img"
+                        src={
+                          isOpenReview.user.avatar.includes("googleusercontent") ?
+                          isOpenReview.user.avatar
+                          : `${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`}
+                        alt="avatar"
                       />
                     </div>
                     <div className={styles.name}>
@@ -710,8 +716,11 @@ function EBook() {
                   <div className={styles.userWrapper}>
                     <div className={styles.avatar}>
                       <img
-                        src={`${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`}
-                        alt="img"
+                        src={
+                          isOpenReview.user.avatar.includes("googleusercontent") ?
+                          isOpenReview.user.avatar
+                          : `${types.BACKEND_URL}/api/accountimg/${isOpenReview.user.avatar}`}
+                        alt="avatar"
                       />
                     </div>
                     <div className={styles.name}>

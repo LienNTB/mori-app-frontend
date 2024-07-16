@@ -53,7 +53,7 @@ function AudioBookPage() {
   const booksByCate = useSelector((state) => state.books.booksByCate);
   const isLoadingReview = useSelector((state) => state.reviews.loading);
   const reviews = useSelector((state) => state.reviews.reviews);
-  let currentAccount = JSON.parse(localStorage.getItem("user"));
+  const [currentAccount, setCurrentAccount] = useState(null)
   const [similarProducts, setSimilarProducts] = useState([]);
   const [reviewRating, setReviewRating] = useState("5/5");
   const [email, setEmail] = useState("");
@@ -73,15 +73,11 @@ function AudioBookPage() {
   const [averageRating, setAverageRating] = useState(0);
   const [reload, setReload] = useState(0);
 
+  console.log('selectedChapter', selectedChapter)
   const onListenHandler = (e) => {
     setCurTime(e.target.currentTime);
   };
-  const redirectLogin = () => {
-    currentAccount = JSON.parse(localStorage.getItem("user"));
-    if (!currentAccount) {
-      router.push("/login");
-    }
-  };
+
 
   const readBookSuccess = () => {
     increaseTotalReadDaily(book._id);
@@ -183,7 +179,6 @@ function AudioBookPage() {
   };
 
   const handleSaveToLibrary = () => {
-    currentAccount = JSON.parse(localStorage.getItem("user"));
     if (!currentAccount) {
       toast.error("Vui lòng đăng nhập để thêm sách vào thư viện của bạn", {
         duration: 2000,
@@ -282,6 +277,10 @@ function AudioBookPage() {
     }
   }, [book]);
 
+  useEffect(() => {
+    setCurrentAccount(JSON.parse(localStorage.getItem("user")))
+  }, [])
+
   if (isLoading && loading) {
     return <Loading />;
   }
@@ -325,14 +324,14 @@ function AudioBookPage() {
                     />
                   </div>
                   {totalReviews == 0 ?
-                  (
-                    <div className={styles.yourRating}>
-                      Sách chưa có lượt đánh giá
-                    </div>
-                  ) : (
-                    <div className={styles.yourRating}>
-                    Đánh giá: {averageRating}/5 từ {totalReviews} lượt. Đánh giá của bạn?
-                    </div>
+                    (
+                      <div className={styles.yourRating}>
+                        Sách chưa có lượt đánh giá
+                      </div>
+                    ) : (
+                      <div className={styles.yourRating}>
+                        Đánh giá: {averageRating}/5 từ {totalReviews} lượt. Đánh giá của bạn?
+                      </div>
                     )
                   }
                   <div className={styles.headerStats}>
@@ -485,12 +484,12 @@ function AudioBookPage() {
                             <div className={styles.reviewCustomerWrapper}>
                               <div className={styles.reviewAvatar}>
                                 {review.user.avatar && (
-                                  <img 
-                                    src={ 
+                                  <img
+                                    src={
                                       review.user.avatar.includes("googleusercontent") ?
                                         review.user.avatar
                                         : `${types.BACKEND_URL}/api/accountimg/${review.user.avatar}`}
-                                    alt="avatar" 
+                                    alt="avatar"
                                   />
                                 )}
                               </div>

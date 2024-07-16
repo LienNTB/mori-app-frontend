@@ -1,5 +1,5 @@
 import { encode, decode } from "base64-js";
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL_DEV;
+export const BACKEND_URL = "http://localhost:8080"; //process.env.NEXT_PUBLIC_BACKEND_URL_DEV; 
 export const ADMIN_URL_DEV = process.env.NEXT_PUBLIC_ADMIN_URL_DEV;
 export const FRONTEND_URL_DEV = process.env.NEXT_PUBLIC_FRONTEND_URL_DEV;
 export const ALLOW_ORIGIN_TOKEN = process.env.NEXT_PUBLIC_ALLOW_ORIGIN_TOKEN;
@@ -7,10 +7,21 @@ export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 export const FACEBOOK_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID;
 
 const token = Buffer.from(ALLOW_ORIGIN_TOKEN, "base64").toString();
+const accessToken = localStorage.getItem('accessToken') || "";
 
 export const requestHeader = {
   "Content-Type": "application/json",
   Origin: FRONTEND_URL_DEV,
+  // Authorization: `Bearer ${accessToken}`,
+};
+
+export const getRequestHeader = () => {
+  const accessToken = localStorage.getItem('accessToken') || "";
+  return {
+    "Content-Type": "application/json",
+    Origin: FRONTEND_URL_DEV,
+    Authorization: `Bearer ${accessToken}`,
+  };
 };
 
 // * AUTH

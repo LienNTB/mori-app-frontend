@@ -211,7 +211,6 @@ const Reader = () => {
   const loadEpubFile = () => {
     const epub = new Epub(`${types.BACKEND_URL}/api/bookepub/${book.epub}`);
     epubRef.current = epub;
-
     // Get the chapter information
     epub.ready.then(() => {
       const chaptersInfo = epub.navigation.toc;
@@ -232,9 +231,7 @@ const Reader = () => {
     return currentChapterIndex
   }
   const handleNextPage = async () => {
-
     if (epubViewRef.current.rendition) {
-
       // locate to next page
       await epubViewRef.current.rendition.next().then(() => {
         // update current progress for slider
@@ -246,14 +243,11 @@ const Reader = () => {
           updateReadPagesRequest(currentAccount._id)
         }
       })
-
       // retrieve text from current page
       const text = await getCurrentPageText(epubViewRef.current.rendition);
       const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
       setSentences(sentences);
       setCurrentSentenceIndex(0);
-
-
     }
     setPrevEpubViewRef(epubViewRef.current.location)
 
@@ -542,9 +536,6 @@ const Reader = () => {
   useEffect(() => {
     if (audioUrl && audioRef.current) {
       audioRef.current.src = audioUrl;
-      // audioRef.current.play().catch((error) => {
-      //   console.error("Error playing audio:", error);
-      // });
       const playAudio = async () => {
         try {
           audioRef.current.load();
@@ -569,15 +560,6 @@ const Reader = () => {
       setCurrentSentenceIndex((prevIndex) => prevIndex + 1);
     } else {
       await handleNextPageRead();
-    }
-  };
-
-  const handleStopReading = () => {
-    setIsReading(false);
-    setIsPaused(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setCurrentSentenceIndex(0);
     }
   };
 
@@ -671,7 +653,6 @@ const Reader = () => {
                   rendition.themes.select("custom");
                   setRendition(rendition);
                 }}
-              // epubOptions={{ flow: 'scrolled ' }}
               />
             </>
           )}

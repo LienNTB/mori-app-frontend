@@ -42,6 +42,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import EditReadingGoalModal from "@/components/Modals/EditReadingGoalModal/CreateReadingGoalModal";
 import DeleteReadingGoalConfirmModal from "@/components/Modals/DeleteReadingGoalConfirmModal/DeleteReadingGoalConfirmModal";
+import UnfollowConfirmModal from "@/components/Modals/UnfollowConfirmModal/UnfollowConfirmModal";
 
 const Profile = () => {
   const router = useRouter();
@@ -60,6 +61,7 @@ const Profile = () => {
   const [isLoadingPostList, setIsLoadingPostList] = useState(false);
   const [isLoadingUserTrans, setIsLoadingUserTrans] = useState(false);
   const [click, setClick] = useState(0);
+  const [user, setUser] = useState(null)
   const [userTrans, setUserTrans] = useState([]);
   const dispatch = useDispatch();
   const { isOpen: isOpenFollower, onOpen: onOpenFollower, onOpenChange: onOpenChangeFollower } = useDisclosure();
@@ -72,6 +74,8 @@ const Profile = () => {
     onOpenChange: onOpenChangeEditReadingGoal, onClose: onCloseEditReadingGoal } = useDisclosure();
   const { isOpen: isOpenDeleteReadingGoalConfirm, onOpen: onOpenDeleteReadingGoalConfirm,
     onOpenChange: onOpenChangeDeleteReadingGoalConfirm, onClose: onCloseDeleteReadingGoalConfirm } = useDisclosure();
+  const { isOpen: isOpenUnfollowConfirm, onOpen: onOpenUnfollowConfirm, onOpenChange: onOpenChangeUnfollowConfirm, onClose: onCloseChangeUnfollowConfirm } = useDisclosure();
+
   const [readingGoals, setReadingGoals] = useState(null)
   const [isLoadingReadingGoal, setIsLoadingReadingGoal] = useState(false)
   const [currentEditReadingGoal, setCurrentEditReadingGoal] = useState(null)
@@ -128,7 +132,12 @@ const Profile = () => {
     });
     setIsLoadingUserTrans(false);
   };
-
+  const getUserData = () => {
+    getAccountByIdRequest(userId)
+      .then((resp) => {
+        setUser(resp.account)
+      })
+  }
   const getFollowersData = () => {
     getAllFollowers(currentAccount._id).then((resp) => {
       setFollowers(resp.data)
@@ -138,6 +147,21 @@ const Profile = () => {
     getAllFollowings(currentAccount._id).then((resp) => {
       setFollowings(resp.data)
     })
+  }
+
+  const handleUnfollowUser = () => {
+    const request = {
+      follower: currentAccount._id,
+      following: userId
+    }
+    setIsLoadingUnfollowRequest(true)
+    unfollowUserRequest(request)
+      .then(resp => {
+        setIsLoadingUnfollowRequest(false)
+        setIsFollowing(false)
+      })
+
+    onCloseChangeUnfollowConfirm()
   }
 
   const createReadingGoal = (request) => {
@@ -284,15 +308,15 @@ const Profile = () => {
 
                 <div className={styles.followInfo}>
                   <div className={styles.followItem} onClick={() => onOpenFollower()}>
-                    <span>245 </span>
+                    <span>{followers.length} </span>
                     Người theo dõi
                   </div>
                   <div className={styles.followItem} onClick={() => onOpenFollowing()}>
-                    <span>245 </span>
+                    <span>{followings.length} </span>
                     Đang theo dõi
                   </div>
                   <div className={styles.followItem}>
-                    <span>245 </span>
+                    <span>{postList.length} </span>
                     Bài viết
                   </div>
                 </div>
@@ -795,6 +819,10 @@ const Profile = () => {
       <ToastContainerWrapper />
       <FollowerModal isOpen={isOpenFollower} onOpenChange={onOpenChangeFollower} followers={followers} />
       <FollowingModal isOpen={isOpenFollowing} onOpenChange={onOpenChangeFollowing} followings={followings} />
+      <UnfollowConfirmModal isOpen={isOpenUnfollowConfirm}
+        onOpenChange={onOpenChangeUnfollowConfirm}
+        handleUnfollowUser={handleUnfollowUser}
+        user={user} />
       <CreateReadingGoalModal isOpen={isOpenCreateReadingGoal} onOpenChange={onOpenChangeCreateReadingGoal}
         createReadingGoal={createReadingGoal} user={currentAccount?._id} />
       <EditReadingGoalModal isOpen={isOpenEditReadingGoal} onOpenChange={onOpenChangeEditReadingGoal}

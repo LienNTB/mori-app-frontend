@@ -160,12 +160,7 @@ export const findBookByCategoryRequest = async (payload) => {
 export const getReadHistoryRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/readHistory/get-readHistory/${id}`, {
     method: "GET",
-    headers: 
-    // type.requestHeader,
-    {
-      ...type.requestHeader,
-      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-    },
+    headers: type.getRequestHeader(),
     credentials: 'include',
   })
     .then((response) => {
@@ -198,9 +193,7 @@ export const findOneReadHistoryRequest = async (book_id, user_id) => {
     `${type.BACKEND_URL}/api/readHistory/get-readHistory/${book_id}/${user_id}`,
     {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: type.requestHeader,
     }
   )
     .then((response) => {

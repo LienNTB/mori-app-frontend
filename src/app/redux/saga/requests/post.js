@@ -17,7 +17,8 @@ export const getAllPostRequest = async () => {
 export const createNewPostRequest = async (postRequest) => {
   return fetch(`${type.BACKEND_URL}/api/post`, {
     method: "POST",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
     body: JSON.stringify(postRequest),
   })
     .then((response) => {
@@ -31,7 +32,8 @@ export const createNewPostRequest = async (postRequest) => {
 export const editPostRequest = async (postRequest, id) => {
   return fetch(`${type.BACKEND_URL}/api/post/${id}`, {
     method: "PUT",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
     body: JSON.stringify(postRequest),
   })
     .then((response) => {
@@ -45,7 +47,8 @@ export const editPostRequest = async (postRequest, id) => {
 export const deletePostByIdRequest = async (postId) => {
   return fetch(`${type.BACKEND_URL}/api/post/${postId}`, {
     method: "DELETE",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
   })
     .then((response) => {
       return response.json();

@@ -1,8 +1,8 @@
-import * as Type from "../../types";
+import * as type from "../../types";
 export const createTransactionRequest = async (request) => {
-  return fetch(`${Type.BACKEND_URL}/api/transaction/add-transaction`, {
+  return fetch(`${type.BACKEND_URL}/api/transaction/add-transaction`, {
     method: "POST",
-    headers: Type.requestHeader,
+    headers: type.requestHeader,
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -11,12 +11,13 @@ export const createTransactionRequest = async (request) => {
     .catch((error) => {});
 };
 
-export const getUserTransactionsRequest = async (account, type) => {
+export const getUserTransactionsRequest = async (account, typeTrans) => {
   return fetch(
-    `${Type.BACKEND_URL}/api/transaction/get-usertrans?account=${account}&type=${type}`,
+    `${type.BACKEND_URL}/api/transaction/get-usertrans?account=${account}&type=${typeTrans}`,
     {
       method: "GET",
-      headers: type.requestHeader,
+      headers: type.getRequestHeader(),
+      credentials: 'include',
     }
   )
     .then((response) => {

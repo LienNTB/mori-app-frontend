@@ -15,7 +15,8 @@ export const getReviewsByIdRequest = async (id) => {
 export const reviewBookRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/review/comment`, {
     method: "POST",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
 
     body: JSON.stringify(request),
   })
@@ -45,7 +46,8 @@ export const ratingBookRequest = async (request) => {
 export const updateReviewRequest = async (id, content) => {
   return fetch(`${type.BACKEND_URL}/api/review/${id}`, {
     method: "PUT",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
 
     body: JSON.stringify({
       content: content,
@@ -62,7 +64,8 @@ export const updateReviewRequest = async (id, content) => {
 export const deleteReviewRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/review/${id}`, {
     method: "DELETE",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
   })
     .then((response) => {
       return response.json();

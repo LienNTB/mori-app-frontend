@@ -17,9 +17,8 @@ export const getAllMembershipTypeRequest = async () => {
 export const registerMembershipRequest = async (membership) => {
   return fetch(`${type.BACKEND_URL}/api/membership/add-membership`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: type.getRequestHeader(),
+    credentials: 'include',
     body: JSON.stringify(membership),
   })
     .then((response) => {
@@ -34,7 +33,8 @@ export const registerMembershipRequest = async (membership) => {
 export const getMembershipByIdRequest = async (userId) => {
   return fetch(`${type.BACKEND_URL}/api/membership/get-membership/${userId}`, {
     method: "GET",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
   })
     .then((response) => {
       return response.json();

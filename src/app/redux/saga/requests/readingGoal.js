@@ -3,7 +3,8 @@ import * as type from "../../../redux/types";
 export const createReadingGoalRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/readingGoal`, {
     method: "POST",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -18,7 +19,8 @@ export const createReadingGoalRequest = async (request) => {
 export const getReadingGoalsByUserId = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/readingGoal/${id}`, {
     method: "GET",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
   })
     .then((response) => {
       return response.json();
@@ -106,7 +108,8 @@ export const editReadingGoalRequest = async (goalId, request) => {
 export const deleteReadingGoalByIdRequest = async (goalId) => {
   return fetch(`${type.BACKEND_URL}/api/readingGoal/${goalId}`, {
     method: "DELETE",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
   })
     .then((response) => {
       return response.json();

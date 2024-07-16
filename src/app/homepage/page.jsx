@@ -1,7 +1,7 @@
 "use client";
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import styles from "./homepage.module.scss";
 import BookItem from "@/components/BookItem/BookItem";
 import Tag from "@/components/Tag/Tag";
@@ -13,6 +13,8 @@ import {
   resetReadingProgressRequest,
 } from "../redux/saga/requests/readingGoal";
 import { getUserRecommendationsRequest } from "../redux/saga/requests/account";
+import { getMembershipById } from "../redux/actions/membership";
+import { createMembershipWillBeOutdatedNotificationRequest, getMembershipByIdRequest, updateMembershipStatusRequest } from "../redux/saga/requests/membership";
 
 const HomePage = () => {
   const [books, setBooks] = useState(null);
@@ -20,7 +22,10 @@ const HomePage = () => {
   const [userRecommendations, setUserRecommendations] = useState(null);
   const [readingGoals, setReadingGoals] = useState(null);
   const [currentAccount, setCurrentAccount] = useState(null);
-
+  const [membership, setMembership] = useState(null)
+  const [isMembershipEnrichmentRuleTriggered, setIsMembershipEnrichmentRuleTriggered] = useState(false)
+  const [membershipUpdatedTime, setMembershipUpdatedTime] = useState(null)
+  const currentDate = new Date();
   const getReadingGoalData = (userId) => {
     getReadingGoalsByUserId(userId).then((resp) => {
       setReadingGoals(resp);
@@ -28,11 +33,72 @@ const HomePage = () => {
   };
   const getRecommendation = (userId) => {
     getUserRecommendationsRequest(userId).then((resp) => {
-      if (resp.recommendations.length) {
-        setUserRecommendations(resp.recommendations.slice(0, 5));
+      if (resp.recommendations) {
+        if (resp.recommendations.length) {
+          setUserRecommendations(resp.recommendations.slice(0, 5));
+        }
       }
     });
   };
+  const membershipEnrichmentRule = () => {
+    console.log("membershipEnrichmentRule")
+    updateMembershipStatusRule()
+  }
+
+  const updateMembershipStatusRule = () => {
+    // check membership outdated status, if outdate then update new status for account
+    getMembershipByIdRequest(currentAccount._id).then((resp) => {
+      if (membership) {
+        const isOutdated = membership.outdated_on < currentDate;
+        if (isOutdated) {
+          updateMembershipStatusRequest(currentAccount._id, false)
+        }
+      }
+    })
+  }
+  const notifyMembershipWillBeOutdatedRule = () => {
+    console.log("notifyMembershipWillBeOutdatedRule")
+    console.log("membership", membership)
+    if (membership) {
+      console.log("isLessThanTwoDays", isLessThanTwoDays(membership.start_date, membership.outdated_on))
+      if (isLessThanTwoDays(membership.start_date, membership.outdated_on)) {
+        createMembershipWillBeOutdatedNotificationRequest(currentAccount._id, membership._id)
+      }
+    }
+  }
+
+  const isLessThanTwoDays = (date1, date2) => {
+    console.log("isLessThanTwoDays")
+    // Ensure both dates are Date objects
+    date1 = new Date(date1);
+    date2 = new Date(date2);
+
+    // Calculate the difference in milliseconds
+    const differenceInMilliseconds = Math.abs(date2 - date1);
+
+    // Convert milliseconds to days
+    const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
+
+    return differenceInDays <= 2;
+  }
+
+  const isSameDay = (date1String, date2) => {
+    // Ensure both dates are Date objects
+    const date1 = new Date(date1String)
+    return date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate();
+  }
+
+  const getMembershipData = (userId) => {
+    getMembershipByIdRequest(userId).then((resp) => {
+      console.log("resp", resp.membership)
+      if (resp.membership) {
+        setMembership(resp.membership)
+      }
+    })
+  }
+
   // Handle reset reading goal to check when new day pass every time user enter homepage
   useEffect(() => {
     if (readingGoals) {
@@ -51,9 +117,26 @@ const HomePage = () => {
       if (currentAccount) {
         getReadingGoalData(currentAccount._id);
         getRecommendation(currentAccount._id);
+        getMembershipData(currentAccount._id)
+
+
       }
     }
   }, [currentAccount]);
+  useEffect(() => {
+    if (membership) {
+      const membershipUpdatedTime = JSON.parse(localStorage.getItem("membershipUpdatedTime"))
+      if (membershipUpdatedTime === null || !isSameDay(membershipUpdatedTime.updatedDate, currentDate)) {
+        const newMembershipUpdatedTime = {
+          updatedDate: currentDate,
+        }
+        localStorage.setItem('membershipUpdatedTime', JSON.stringify(newMembershipUpdatedTime))
+        membershipEnrichmentRule()
+      }
+      console.log("120")
+      notifyMembershipWillBeOutdatedRule()
+    }
+  }, [membership])
 
   useEffect(() => {
     getAllBooksRequest().then((res) => {

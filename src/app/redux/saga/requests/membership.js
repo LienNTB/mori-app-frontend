@@ -44,3 +44,47 @@ export const getMembershipByIdRequest = async (userId) => {
       throw error;
     });
 };
+
+export const updateMembershipStatusRequest = async (userId, isMember) => {
+  return fetch(
+    `${type.BACKEND_URL}/api/account/update-membership-status/${userId}`,
+    {
+      method: "PUT",
+      headers: type.requestHeader,
+      body: JSON.stringify({
+        is_member: isMember,
+      }),
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const createMembershipWillBeOutdatedNotificationRequest = async (
+  userId,
+  membership
+) => {
+  return fetch(
+    `${type.BACKEND_URL}/api/notification/notify-membership-outdated/${userId}`,
+    {
+      method: "POST",
+      headers: type.requestHeader,
+      body: JSON.stringify({
+        account: userId,
+        membership: membership,
+      }),
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};

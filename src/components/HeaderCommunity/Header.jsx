@@ -227,32 +227,34 @@ const HeaderCommunity = () => {
                                       size="sm/[20px]"
                                       src={
                                         isPerformedByDeleted ? null : (noti.performedBy.avatar.includes("googleusercontent")
-                                        ? noti.performedBy.avatar 
-                                        : `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`)
+                                          ? noti.performedBy.avatar
+                                          : `${types.BACKEND_URL}/api/accountimg/${noti.performedBy.avatar}`)
                                       }
                                     />
                                     <div className="flex flex-col">
                                       <span className="text-sm/[17px] font-medium ">
                                         {noti.action === "comment" ||
-                                        noti.action === "like" ||
-                                        noti.action === "share"
+                                          noti.action === "like" ||
+                                          noti.action === "share"
                                           ? isPerformedByDeleted
                                             ? "Tài khoản đã bị xóa"
                                             : noti.performedBy.displayName
                                           : noti.action === "readingGoal"
-                                          ? "Mục tiêu đọc sách"
-                                          : noti.action === "voucher"
-                                          ? "Voucher giảm giá"
-                                          : "Kiểm duyệt bình luận"}
+                                            ? "Mục tiêu đọc sách"
+                                            : noti.action === "voucher"
+                                              ? "Voucher giảm giá"
+                                              : noti.action === "membership"
+                                                ? "Hội viên sắp hết hạn"
+                                                : "Kiểm duyệt bình luận"}
                                       </span>
                                       <span className={`text-sm/[15px] ${noti.isRead ? "font-light" : "font-normal"} max-w-[230px] overflow-hidden whitespace-normal`}>
                                         {noti.action === "like"
                                           ? "Đã thích bài viết của bạn."
                                           : noti.action === "share"
-                                          ? "Đã chia sẻ bài viết của bạn."
-                                          : noti.action === "comment"
-                                          ? `Đã bình luận bài viết của bạn: ${noti.message}`
-                                          : noti.message}
+                                            ? "Đã chia sẻ bài viết của bạn."
+                                            : noti.action === "comment"
+                                              ? `Đã bình luận bài viết của bạn: ${noti.message}`
+                                              : noti.message}
                                       </span>
                                       <span className='text-sm/[12px] text-sky-600 font-medium my-1'>
                                         {timeUtils.getTimeElapsed(noti.createdAt)}

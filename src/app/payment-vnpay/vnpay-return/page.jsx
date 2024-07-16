@@ -24,6 +24,7 @@ const VNpayreturn = () => {
         request.registerMembershipRequest(membership).then((resp) => {
           if (resp === 0) {
             resolve("Đăng kí gói cước thành công!");
+            request.updateMembershipStatusRequest(currentAccount._id, true)
           }
           if (resp === 1) {
             reject(

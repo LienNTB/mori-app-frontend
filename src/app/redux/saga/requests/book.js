@@ -163,10 +163,12 @@ export const getReadHistoryRequest = async (id) => {
     headers: type.requestHeader,
   })
     .then((response) => {
+      console.log("response", response);
       return response.json();
     })
 
     .catch((error) => {
+      console.log("response", error);
       throw error;
     });
 };
@@ -190,9 +192,7 @@ export const findOneReadHistoryRequest = async (book_id, user_id) => {
     `${type.BACKEND_URL}/api/readHistory/get-readHistory/${book_id}/${user_id}`,
     {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: type.requestHeader,
     }
   )
     .then((response) => {

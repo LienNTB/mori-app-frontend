@@ -2,7 +2,8 @@ import * as type from "../../types";
 export const getUserRecommendationsRequest = async (accountId) => {
   return fetch(`${type.BACKEND_URL}/api/account/get-recommendations/${accountId}`, {
     method: "GET",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
   })
     .then((response) => response.json())
     .catch((error) => {
@@ -26,7 +27,8 @@ export const getAccountsRequest = async (searchValue) => {
 export const getAccountByIdRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/account/get-account/${id}`, {
     method: "GET",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
   })
     .then((response) => response.json())
     .catch((error) => {
@@ -50,7 +52,8 @@ export const createAccountRequest = async (account) => {
 export const getCurrentAccountRequest = async (account) => {
   return fetch(`${type.BACKEND_URL}/api/account/find-account`, {
     method: "POST",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
 
     body: JSON.stringify(account),
   })

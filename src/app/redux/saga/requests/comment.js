@@ -15,7 +15,8 @@ export const addNewCommentRequest = async (request) => {
 export const getAllCommentsRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/comment/user`, {
     method: "POST",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -27,7 +28,8 @@ export const getAllCommentsRequest = async (request) => {
 export const replyCommentRequest = async (request) => {
   return fetch(`${type.BACKEND_URL}/api/comment/reply`, {
     method: "POST",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -40,7 +42,8 @@ export const replyCommentRequest = async (request) => {
 export const likeCommentRequest = async (commentId, accountId) => {
   return fetch(`${type.BACKEND_URL}/api/comment/${commentId}/like`, {
     method: "POST",
-    headers: type.requestHeader,
+    headers: type.getRequestHeader(),
+    credentials: 'include',
     body: JSON.stringify({
       accountId: accountId,
     }),

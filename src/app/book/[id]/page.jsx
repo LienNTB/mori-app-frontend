@@ -170,21 +170,26 @@ function Book() {
     router.replace(`/reader/${book._id}`, undefined, { shallow: true });
   }
 
+  // const handleReadBook = async () => {
+  //   if (!currentAccount) {
+  //     toast.error("Vui lòng đăng nhập và mua sách để đọc sách này!", {
+  //       duration: 2000,
+  //     });
+  //   } else {
+  //     if (!checkBuyBook()) {
+  //       toast.error("Vui lòng mua sách để đọc sách này!", {
+  //         duration: 2000,
+  //       });
+  //     } else {
+  //       readBookSuccess();
+  //     }
+  //   }
+  // };
+
   const handleReadBook = async () => {
-    if (!currentAccount) {
-      toast.error("Vui lòng đăng nhập và mua sách để đọc sách này!", {
-        duration: 2000,
-      });
-    } else {
-      if (!checkBuyBook()) {
-        toast.error("Vui lòng mua sách để đọc sách này!", {
-          duration: 2000,
-        });
-      } else {
-        readBookSuccess();
-      }
-    }
-  };
+    readBookSuccess();
+  }
+
   const handleIncreaseTotalHearted = async () => {
     toast.promise(
       new Promise((resolve, reject) => {

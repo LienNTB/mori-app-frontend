@@ -163,30 +163,34 @@ function EBook() {
   };
 
   const handleReadBook = async () => {
-    if (book.access_level === 0) {
-      readBookSuccess();
-    } else {
-      if (!currentAccount) {
-        toast.error(
-          "Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!",
-          {
-            duration: 2000,
-          }
-        );
-      } else {
-        const membershipRequest = await getMembershipByIdRequest(
-          currentAccount._id
-        );
-        if (!membershipRequest.membership) {
-          toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
-            duration: 2000,
-          });
-        } else {
-          readBookSuccess();
-        }
-      }
-    }
-  };
+    readBookSuccess();
+  }
+
+  // const handleReadBook = async () => {
+  //   if (book.access_level === 0) {
+  //     readBookSuccess();
+  //   } else {
+  //     if (!currentAccount) {
+  //       toast.error(
+  //         "Vui lòng đăng nhập và đăng ký gói cước người dùng để đọc sách này!",
+  //         {
+  //           duration: 2000,
+  //         }
+  //       );
+  //     } else {
+  //       const membershipRequest = await getMembershipByIdRequest(
+  //         currentAccount._id
+  //       );
+  //       if (!membershipRequest.membership) {
+  //         toast.error("Vui lòng đăng kí gói cước người dùng để đọc sách này!", {
+  //           duration: 2000,
+  //         });
+  //       } else {
+  //         readBookSuccess();
+  //       }
+  //     }
+  //   }
+  // };
   const handleIncreaseTotalHearted = async () => {
     toast.promise(
       new Promise((resolve, reject) => {

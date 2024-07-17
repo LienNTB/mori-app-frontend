@@ -101,7 +101,7 @@ const HomePage = () => {
 
   // Handle reset reading goal to check when new day pass every time user enter homepage
   useEffect(() => {
-    if (readingGoals) {
+    if (readingGoals && readingGoals.length > 0 ) {
       readingGoals.forEach((goal) => {
         resetReadingProgressRequest(goal._id);
       });

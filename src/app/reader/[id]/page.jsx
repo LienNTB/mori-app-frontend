@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { EpubView, ReactReader, useReader } from "react-reader";
 import styles from "./reader.module.scss";
 import { getBookByIdRequest } from "@/app/redux/saga/requests/book";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading/Loading";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
@@ -15,7 +15,6 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  Checkbox,
   Textarea,
   Switch,
   Slider,
@@ -40,8 +39,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Epub from "epubjs";
 import { updateReadBooksRequest, updateReadPagesRequest } from "@/app/redux/saga/requests/readingGoal";
+import { getTransactionUserBuyBookRequest } from "@/app/redux/saga/requests/transaction";
 
 const Reader = () => {
+  const router = useRouter();
   const [location, setLocation] = useState(0);
   const params = useParams();
   const id = params.id;
@@ -85,10 +86,13 @@ const Reader = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [selectedSliderChaper, setSelectedSliderChapter] = useState(0);
   const [checkFinalPageCounter, setCheckFinalPageCounter] = useState(0)
-  const [isCurrentSentenceProcessed, setIsCurrentSentenceProcessed] =
-    useState(false);
+  const [isCurrentSentenceProcessed, setIsCurrentSentenceProcessed] = useState(false);
   const audioRef = useRef(null);
 
+  const { isOpen: isTrialModalOpen, onOpen: openTrialModal, onClose: closeTrialModal } = useDisclosure();
+  const [isMembership, setIsMembership] = useState(false);
+  const [isBuyBook, setIsBuyBook] = useState(false);
+  const [MAX_TRIAL_CHAPTERS, setMAX_TRIAL_CHAPTERS] = useState(1000)
 
   const highlighters = [
     { value: "#ff9fae", label: "red", color: "#ff9fae" },
@@ -103,33 +107,42 @@ const Reader = () => {
 
   // Biến toàn cục để lưu trữ timeout hiện tại
   let debounceChapterTimeout;
-  // Hàm để xử lý thay đổi của thanh trượt
+  let lastSelectedChapter = null;
   const handleSliderChange = (val) => {
-    setSelectedSliderChapter(val);
-    // Xóa timeout trước đó nếu có
-    if (debounceChapterTimeout) {
-      clearTimeout(debounceChapterTimeout);
+    if (val < MAX_TRIAL_CHAPTERS) {
+      setSelectedSliderChapter(val);
+      lastSelectedChapter = val;
+      // Xóa timeout trước đó nếu có
+      if (debounceChapterTimeout) {
+        clearTimeout(debounceChapterTimeout);
+      }
+      debounceChapterTimeout = setTimeout(() => {
+        if (lastSelectedChapter === val) { // Kiểm tra nếu chapter hiện tại là chapter cuối cùng mà người dùng chọn
+          handleChapterSelect(chapters[val]);
+          setCheckFinalPageCounter(p => p + 1);
+        }
+      }, 500); // 300ms là khoảng thời gian debounce, có thể điều chỉnh tùy ý
+    }else{
+      openTrialModal();
     }
-    // Thiết lập timeout mới để gọi handleChapterSelect sau một khoảng thời gian nhất định
-    debounceChapterTimeout = setTimeout(() => {
-      handleChapterSelect(chapters[val]);
-      // update books progress for reading goal for user
-      setCheckFinalPageCounter(p => p + 1);
-    }, 300); // 300ms là khoảng thời gian debounce, có thể điều chỉnh tùy ý
   };
 
   // Thiết lập debounce timeout
   let debounceTimeout;
+  let lastPosition = null;
   // Hàm để cập nhật vị trí đọc khi người dùng chuyển đến trang mới
   const handlePageChange = (newPosition) => {
     setLocation(newPosition);
+    lastPosition = newPosition;
     // Xóa timeout trước đó nếu có
     if (debounceTimeout) {
       clearTimeout(debounceTimeout);
     }
     // Thiết lập timeout mới
     debounceTimeout = setTimeout(() => {
-      saveReadPositionToDatabase(newPosition);
+      if (lastPosition === newPosition) { // Kiểm tra nếu vị trí hiện tại là vị trí cuối cùng mà người dùng chọn
+        saveReadPositionToDatabase(newPosition);
+      }
     }, 1000); // 1s là khoảng thời gian debounce, có thể điều chỉnh tùy ý
   };
 
@@ -211,7 +224,6 @@ const Reader = () => {
   const loadEpubFile = () => {
     const epub = new Epub(`${types.BACKEND_URL}/api/bookepub/${book.epub}`);
     epubRef.current = epub;
-
     // Get the chapter information
     epub.ready.then(() => {
       const chaptersInfo = epub.navigation.toc;
@@ -231,32 +243,31 @@ const Reader = () => {
     })
     return currentChapterIndex
   }
+
   const handleNextPage = async () => {
-
     if (epubViewRef.current.rendition) {
-
-      // locate to next page
-      await epubViewRef.current.rendition.next().then(() => {
-        // update current progress for slider
-        const currentIndex = getCurrentChapterIndex(epubViewRef.current.rendition.location.start.href);
-        setSelectedSliderChapter(currentIndex);
-        setCheckFinalPageCounter(p => p + 1)
-        // update progress for reading goal for user
-        if (currentAccount) {
-          updateReadPagesRequest(currentAccount._id)
-        }
-      })
-
-      // retrieve text from current page
-      const text = await getCurrentPageText(epubViewRef.current.rendition);
-      const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
-      setSentences(sentences);
-      setCurrentSentenceIndex(0);
-
-
+      const currentIndex = getCurrentChapterIndex(
+        epubViewRef.current.rendition.location.start.href
+      );
+      if (currentIndex < MAX_TRIAL_CHAPTERS) {
+        // locate to next page
+        await epubViewRef.current.rendition.next().then(() => {
+          // update current progress for slider
+          const currentIndex = getCurrentChapterIndex(
+            epubViewRef.current.rendition.location.start.href
+          );
+          setSelectedSliderChapter(currentIndex);
+          setCheckFinalPageCounter((p) => p + 1);
+          // update progress for reading goal for user
+          if (currentAccount) {
+            updateReadPagesRequest(currentAccount._id);
+          }
+        });
+      } else {
+        openTrialModal();
+      }
     }
-    setPrevEpubViewRef(epubViewRef.current.location)
-
+    setPrevEpubViewRef(epubViewRef.current.location);
   };
 
   const handlePreviousPage = () => {
@@ -266,17 +277,22 @@ const Reader = () => {
   };
 
   const handleChapterSelect = async (chapter) => {
-    if (epubViewRef.current && epubViewRef.current.rendition) {
-      try {
-        // Display the selected chapter
-        await epubViewRef.current.rendition.display(chapter.href);
+    const chapterIndex = chapters.findIndex((ch) => ch.href === chapter.href);
+    if (chapterIndex < MAX_TRIAL_CHAPTERS) {
+      if (epubViewRef.current && epubViewRef.current.rendition) {
+        try {
+          // Display the selected chapter
+          await epubViewRef.current.rendition.display(chapter.href);
 
-        // Hide the chapter menu
-        setShowChapterMenu(false);
-        onCloseChapters();
-      } catch (error) {
-        console.error("Error navigating to selected chapter:", error);
+          // Hide the chapter menu
+          setShowChapterMenu(false);
+          onCloseChapters();
+        } catch (error) {
+          console.error("Error navigating to selected chapter:", error);
+        }
       }
+    } else {
+      openTrialModal();
     }
   };
 
@@ -340,8 +356,42 @@ const Reader = () => {
           }
         );
       }
+      if(res.book.access_level !== 0){
+        setMAX_TRIAL_CHAPTERS(2);
+      }
     });
   }, [id]);
+
+  useEffect(() => {
+    if (book) {
+      if (currentAccount) {
+        CheckCaseReadingTryBook();
+      }
+    }
+  }, [book]);
+
+  const CheckCaseReadingTryBook = () => {
+    if (currentAccount) {
+      getMembershipByIdRequest(currentAccount._id).then((res) => {
+        if(res.membership){
+          setIsMembership(true);
+          if(book.access_level === 1){
+            setMAX_TRIAL_CHAPTERS(1000);
+          }
+        }
+      });
+      //
+      getTransactionUserBuyBookRequest(book._id, currentAccount._id).then((resp) => {
+        console.log("resp.transaction", resp.transaction);
+        if(resp.transaction){
+          setIsBuyBook(true);
+          if(book.access_level === 2){
+            setMAX_TRIAL_CHAPTERS(1000);
+          }
+        }
+      }); 
+    }
+  };
 
   useEffect(() => {
     handleCheckFinalChapter()
@@ -463,8 +513,10 @@ const Reader = () => {
         duration: 2000,
       });
     } else {
-      if (rendition) {
-        const text = await getCurrentPageText(rendition);
+      if (epubViewRef.current.rendition) {
+        // lấy text cho chức năng text to speech
+        const text = await getCurrentPageText(epubViewRef.current.rendition);
+        console.log("text", text);
         // Thay thế các ký tự xuống dòng và tab bằng dấu cách, loại bỏ khoảng trắng dư thừa và sau đó tách thành các câu
         const sentences = text
           .replace(/[\n\t]/g, " ")
@@ -510,12 +562,21 @@ const Reader = () => {
   };
 
   const handleNextPageRead = async () => {
-    if (rendition) {
-      try {
-        await rendition.next();
-        await handleReadPage(); // trở lại set sentences
-      } catch (error) {
-        console.error("Error getting next page text:", error);
+    if (epubViewRef.current.rendition) {
+      const currentIndex = getCurrentChapterIndex(
+        epubViewRef.current.rendition.location.start.href
+      );
+      if (currentIndex < MAX_TRIAL_CHAPTERS) {
+        if (rendition) {
+          try {
+            await rendition.next();
+            await handleReadPage(); // trở lại set sentences
+          } catch (error) {
+            console.error("Error getting next page text:", error);
+          }
+        }
+      }else{
+        openTrialModal();
       }
     }
   };
@@ -542,9 +603,6 @@ const Reader = () => {
   useEffect(() => {
     if (audioUrl && audioRef.current) {
       audioRef.current.src = audioUrl;
-      // audioRef.current.play().catch((error) => {
-      //   console.error("Error playing audio:", error);
-      // });
       const playAudio = async () => {
         try {
           audioRef.current.load();
@@ -572,15 +630,6 @@ const Reader = () => {
     }
   };
 
-  const handleStopReading = () => {
-    setIsReading(false);
-    setIsPaused(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setCurrentSentenceIndex(0);
-    }
-  };
-
   const handlePauseReading = () => {
     setIsPaused(true);
     if (audioRef.current) {
@@ -596,6 +645,21 @@ const Reader = () => {
         setIsPaused(true);
       });
     }
+  };
+
+  const handleBuyEbook = () => {
+    const price = book.price;
+    const productId = book._id;
+    var description = "Mua lẻ sách " + book.name;
+    var type = "Book";
+    var payment = {
+      price: price,
+      description: description,
+      type: type,
+      productId: productId,
+    };
+    localStorage.setItem("payment", JSON.stringify(payment));
+    router.replace("/payment", undefined, { shallow: true });
   };
 
   return (
@@ -654,6 +718,7 @@ const Reader = () => {
                   height={70}
                 />
               </div>
+              {/* {promptSubscription()} */}
               <EpubView
                 className={styles.epubContainer}
                 ref={epubViewRef}
@@ -671,7 +736,6 @@ const Reader = () => {
                   rendition.themes.select("custom");
                   setRendition(rendition);
                 }}
-              // epubOptions={{ flow: 'scrolled ' }}
               />
             </>
           )}
@@ -708,6 +772,7 @@ const Reader = () => {
           </div>
         )}
       </div>
+      
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -900,6 +965,50 @@ const Reader = () => {
                   Submit
                 </Button>
               </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={book && book.access_level !== 0 && isTrialModalOpen} onClose={() => closeTrialModal()}>
+        <ModalContent>
+          <ModalHeader>Thông báo</ModalHeader>
+          {!currentAccount ? (
+            <>
+              <ModalBody>
+                <p>Bạn đã đạt đến giới hạn số trang đọc thử. Vui lòng đăng nhập và đăng ký gói cước người dùng để tiếp tục đọc</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button onPress={() => {
+                  router.replace('/login', undefined, { shallow: true })
+                  }}>Đăng nhập</Button>
+              </ModalFooter>
+            </>
+          ) : (
+            <>
+              {book && book.access_level === 1 && !isMembership ? (
+                <>
+                  <ModalBody>
+                    <p>Bạn đã đạt đến giới hạn số trang đọc thử. Vui lòng đăng ký gói cước người dùng để tiếp tục đọc</p>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button onPress={() => { 
+                      router.replace('/member-package', undefined, { shallow: true })
+                      }}>Tham gia gói hội viên</Button>
+                  </ModalFooter>
+                </>
+              ) : (
+                book && book.access_level === 2 && !isBuyBook ? (
+                  <>
+                    <ModalBody>
+                      <p>Bạn đã đạt đến giới hạn số trang đọc thử. Vui lòng mua sách để tiếp tục đọc.</p>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button onPress={() => { handleBuyEbook()}}>Mua sách</Button>
+                    </ModalFooter>
+                  </>
+                ) : null
+              )}
             </>
           )}
         </ModalContent>

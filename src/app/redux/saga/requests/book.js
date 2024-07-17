@@ -160,8 +160,7 @@ export const findBookByCategoryRequest = async (payload) => {
 export const getReadHistoryRequest = async (id) => {
   return fetch(`${type.BACKEND_URL}/api/readHistory/get-readHistory/${id}`, {
     method: "GET",
-    headers: type.getRequestHeader(),
-    credentials: 'include',
+    headers: type.requestHeader,
   })
     .then((response) => {
       console.log("response", response);

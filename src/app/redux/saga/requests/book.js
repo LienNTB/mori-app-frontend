@@ -163,12 +163,10 @@ export const getReadHistoryRequest = async (id) => {
     headers: type.requestHeader,
   })
     .then((response) => {
-      console.log("response", response);
       return response.json();
     })
 
     .catch((error) => {
-      console.log("response", error);
       throw error;
     });
 };

@@ -23,7 +23,6 @@ import { forgetPasswordRequest } from "../redux/saga/requests/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
-import Cookies from 'js-cookie';
 
 const Login = () => {
   const router = useRouter();
@@ -91,8 +90,7 @@ const Login = () => {
             }
             else {
               localStorage.setItem("user", JSON.stringify(resp.user))
-              localStorage.setItem("accessToken", JSON.stringify(resp.accessToken))
-              Cookies.set("refreshToken", resp.refreshToken)
+              localStorage.setItem("token", JSON.stringify(resp.token))
               router.replace('/homepage', undefined, { shallow: true })
               resolve(resp.message)
             }

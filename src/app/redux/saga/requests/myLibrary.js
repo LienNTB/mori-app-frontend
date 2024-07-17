@@ -3,8 +3,7 @@ import * as type from "../../types";
 export const getBooksFromMyLibraryRequest = async (userId) => {
   return fetch(`${type.BACKEND_URL}/api/myLibrary/get-books/${userId}`, {
     method: "GET",
-    headers: type.getRequestHeader(),
-    credentials: 'include',
+    headers: type.requestHeader,
   })
     .then((response) => {
       return response.json();
@@ -33,8 +32,7 @@ export const addBookToLibraryRequest = async (bookRequest) => {
 export const deleteBookFromLibraryRequest = async (bookRequest) => {
   return fetch(`${type.BACKEND_URL}/api/myLibrary/book/`, {
     method: "DELETE",
-    headers: type.getRequestHeader(),
-    credentials: 'include',
+    headers: type.requestHeader,
 
     body: JSON.stringify(bookRequest),
   })

@@ -190,7 +190,9 @@ export const findOneReadHistoryRequest = async (book_id, user_id) => {
     `${type.BACKEND_URL}/api/readHistory/get-readHistory/${book_id}/${user_id}`,
     {
       method: "GET",
-      headers: type.requestHeader,
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
   )
     .then((response) => {

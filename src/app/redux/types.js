@@ -16,7 +16,10 @@ export const requestHeader = {
 };
 
 export const getRequestHeader = () => {
-  const accessToken = localStorage.getItem('accessToken') || "";
+  let accessToken = "";
+  if (typeof window !== "undefined") {
+    accessToken = localStorage.getItem('accessToken') || "";
+  }
   return {
     "Content-Type": "application/json",
     Origin: FRONTEND_URL_DEV,

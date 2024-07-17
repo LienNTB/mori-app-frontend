@@ -16,7 +16,7 @@ export const getUserTransactionsRequest = async (account, type) => {
     `${Type.BACKEND_URL}/api/transaction/get-usertrans?account=${account}&type=${type}`,
     {
       method: "GET",
-      headers: type.requestHeader,
+      headers: Type.requestHeader,
     }
   )
     .then((response) => {
@@ -34,7 +34,7 @@ export const getTransactionUserBuyBookRequest = async (book_id, user_id) => {
     `${Type.BACKEND_URL}/api/transaction/get-transaction/${book_id}/${user_id}`,
     {
       method: "GET",
-      headers: type.requestHeader,
+      headers: Type.requestHeader,
     }
   )
     .then((response) => {

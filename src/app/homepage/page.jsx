@@ -13,7 +13,6 @@ import {
   resetReadingProgressRequest,
 } from "../redux/saga/requests/readingGoal";
 import { getUserRecommendationsRequest } from "../redux/saga/requests/account";
-import { getMembershipById } from "../redux/actions/membership";
 import { createMembershipWillBeOutdatedNotificationRequest, getMembershipByIdRequest, updateMembershipStatusRequest } from "../redux/saga/requests/membership";
 
 const HomePage = () => {

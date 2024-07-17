@@ -27,3 +27,21 @@ export const getUserTransactionsRequest = async (account, type) => {
       throw error;
     });
 };
+
+
+export const getTransactionUserBuyBookRequest = async (book_id, user_id) => {
+  return fetch(
+    `${Type.BACKEND_URL}/api/transaction/get-transaction/${book_id}/${user_id}`,
+    {
+      method: "GET",
+      headers: type.requestHeader,
+    }
+  )
+    .then((response) => {
+      return response.json();
+    })
+
+    .catch((error) => {
+      throw error;
+    });
+};
